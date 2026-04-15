@@ -21,3 +21,8 @@
 - `ios-formats.md` — iOS 포맷별 샘플
 - `build-test.md` — 빌드와 테스트 방법
 - `troubleshooting.md` — 막혔을 때 보는 문서
+
+## 참고
+
+이 샘플은 현재 네이티브 SDK 구조와 hook 자리까지 준비한 상태다.
+실제 SDK 버전과 의존성은 파트너 가이드 값에 맞춰 넣는다.
