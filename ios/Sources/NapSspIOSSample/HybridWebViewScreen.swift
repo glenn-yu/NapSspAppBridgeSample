@@ -1,3 +1,4 @@
+#if os(iOS) && canImport(UIKit)
 import SwiftUI
 import WebKit
 
@@ -129,3 +130,4 @@ struct HybridWebViewScreen: UIViewRepresentable {
 
     func updateUIView(_ uiView: WKWebView, context: Context) { }
 }
+#endif

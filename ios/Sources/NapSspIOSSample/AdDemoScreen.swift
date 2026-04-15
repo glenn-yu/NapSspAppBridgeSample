@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 
 struct AdDemoScreen: View {
@@ -10,7 +11,7 @@ struct AdDemoScreen: View {
             Text(title).font(.title2).bold()
             Text(subtitle)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(.systemGray5))
+                .fill(Color.gray.opacity(0.2))
                 .frame(height: 140)
                 .overlay(
                     VStack(spacing: 8) {
@@ -27,7 +28,8 @@ struct AdDemoScreen: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(Color.white)
         .cornerRadius(16)
     }
 }
+#endif

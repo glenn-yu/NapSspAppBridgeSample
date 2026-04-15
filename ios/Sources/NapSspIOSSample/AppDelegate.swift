@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -6,3 +7,4 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 }
+#endif
