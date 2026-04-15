@@ -34,9 +34,10 @@ fun FormatDetailScreen(
                     SampleFormat.Video -> "재생용 컨테이너를 붙이는 자리"
                     SampleFormat.RewardVideo -> "보상 시청 후 EARNEDREWARD를 받는 자리"
                     SampleFormat.InterstitialVideo -> "전체 화면 전면 동영상을 띄우는 자리"
+                    SampleFormat.HybridWebView -> "WebView 안에서 네이티브 브리지를 타는 자리"
                 }
             )
-            Text("실제 nap ssp SDK 코드가 들어갈 위치를 여기로 잡는다")
+            Text(SdkHooks.describe(format))
             Button(onClick = onRunSample, modifier = Modifier.fillMaxWidth()) {
                 Text("샘플 상태 갱신")
             }
