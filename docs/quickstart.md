@@ -17,3 +17,8 @@ nap ssp Native SDK를 처음 볼 때 **무엇부터 하면 되는지** 바로 �
 - Android는 Gradle과 `AdMixer` 설정이 가능한가
 - iOS는 CocoaPods 또는 SPM으로 SDK를 넣을 수 있는가
 - 미디어 키와 광고 단위 ID를 받았는가
+
+## 참고
+
+이 샘플은 현재 네이티브 SDK 구조와 hook 자리까지 준비한 상태다.
+실제 SDK 버전과 의존성은 파트너 가이드 값에 맞춰 넣는다.
