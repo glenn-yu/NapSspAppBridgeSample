@@ -7,5 +7,6 @@ object SdkHooks {
         SampleFormat.Video -> "Video SDK hook here"
         SampleFormat.RewardVideo -> "Reward video SDK hook here"
         SampleFormat.InterstitialVideo -> "Interstitial video SDK hook here"
+        SampleFormat.HybridWebView -> "WebView hybrid bridge hook here"
     }
 }

@@ -17,8 +17,9 @@ Android와 iOS에서 각각 광고 포맷을 어떻게 붙이는지 보여주는
 3. `docs/format-matrix.md`
 4. `docs/android-formats.md`
 5. `docs/ios-formats.md`
-6. `examples/android-formats-sample.md`
-7. `examples/ios-formats-sample.md`
+6. `docs/hybrid-webview.md`
+7. `examples/android-formats-sample.md`
+8. `examples/ios-formats-sample.md`
 
 ## 한 줄 요약
 

@@ -8,6 +8,7 @@ enum SdkHooks {
         case .video: return "Video SDK hook here"
         case .rewardVideo: return "Reward video SDK hook here"
         case .interstitialVideo: return "Interstitial video SDK hook here"
+        case .hybridWebView: return "WebView hybrid bridge hook here"
         }
     }
 }
