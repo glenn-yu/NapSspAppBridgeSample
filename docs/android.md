@@ -1,30 +1,19 @@
-# Android 샘플
+# Android 시작하기
 
-## 이 샘플이 하는 일
+## 먼저 하는 일
 
-- WebView를 연다
-- 웹 페이지를 띄운다
-- 웹에서 받은 메시지를 화면에 보여준다
-- 네이티브에서 웹으로 다시 답을 보낸다
+앱이 켜질 때 `NapSspInitializer.initialize()`를 먼저 호출한다.
+그 다음에 포맷별 화면에서 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상을 붙인다.
 
-## 웹에서 보내는 예시
+## 구조
 
-```js
-window.AppBridge.postMessage({
-  type: 'log',
-  payload: 'android test'
-})
-```
+- `MainActivity` — 샘플 화면 진입점
+- `SampleFormat` — 포맷 목록
+- `SampleViewModel` — 선택 상태
+- `FormatDetailScreen` — 포맷 상세 화면
+- `SdkHooks` — 실제 SDK 코드가 들어갈 자리
+- `NapSspInitializer` — SDK 초기화 자리
 
-## 네이티브에서 하는 예시
+## 다음 단계
 
-- 메시지를 받는다
-- 로그를 찍는다
-- 화면에 문자열을 보여준다
-- `evaluateJavascript`로 웹 함수를 호출한다
-
-## 보통 들어갈 파일
-
-- `MainActivity`
-- `AppBridge` 또는 `WebViewBridge`
-- 웹을 띄우는 Compose/뷰 코드
+실제 nap ssp Android SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.

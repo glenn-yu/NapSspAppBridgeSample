@@ -1,30 +1,18 @@
-# iOS 샘플
+# iOS 시작하기
 
-## 이 샘플이 하는 일
+## 먼저 하는 일
 
-- WKWebView를 연다
-- 웹 페이지를 띄운다
-- 웹에서 받은 메시지를 화면에 보여준다
-- 네이티브에서 웹으로 다시 답을 보낸다
+앱이 시작할 때 `NapSspInitializer.initialize()`를 먼저 호출한다.
+그 다음에 포맷별 화면에서 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상을 붙인다.
 
-## 웹에서 보내는 예시
+## 구조
 
-```js
-window.AppBridge.postMessage({
-  type: 'log',
-  payload: 'ios test'
-})
-```
+- `ContentView` — 샘플 화면 진입점
+- `SampleFormat` — 포맷 목록
+- `SampleViewModel` — 선택 상태
+- `SdkHooks` — 실제 SDK 코드가 들어갈 자리
+- `NapSspInitializer` — SDK 초기화 자리
 
-## 네이티브에서 하는 예시
+## 다음 단계
 
-- `WKScriptMessageHandler`로 메시지를 받는다
-- 로그를 찍는다
-- 화면에 문자열을 보여준다
-- `evaluateJavaScript`로 웹 함수를 호출한다
-
-## 보통 들어갈 파일
-
-- `ContentView` 또는 `WebView`
-- `Coordinator`
-- 웹을 띄우는 SwiftUI / UIKit 코드
+실제 nap ssp iOS SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.
