@@ -1,6 +1,7 @@
 package com.gwangy.nassspandroidsample
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -16,10 +17,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +44,18 @@ class MainActivity : ComponentActivity() {
 private fun SampleScreen(activity: MainActivity) {
     val viewModel = remember { SampleViewModel() }
     val uiState = viewModel.uiState
+    var adView by remember { mutableStateOf<View?>(null) }
+
+    LaunchedEffect(uiState.selectedFormat) {
+        adView = when (uiState.selectedFormat) {
+            SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
+            SampleFormat.Native -> NapSspSdkIntegration.nativeView(activity)
+            SampleFormat.Video -> NapSspSdkIntegration.videoView(activity)
+            SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideoView(activity)
+            SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideoView(activity)
+            SampleFormat.HybridWebView -> null
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -58,12 +76,12 @@ private fun SampleScreen(activity: MainActivity) {
                 onHookSdk = { viewModel.markBridgeReady() },
                 onExecuteSdk = {
                     val result = when (uiState.selectedFormat) {
-                        SampleFormat.Banner -> NapSspSdkIntegration.banner(activity)
-                        SampleFormat.Native -> NapSspSdkIntegration.native(activity)
-                        SampleFormat.Video -> NapSspSdkIntegration.video(activity)
-                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideo(activity)
-                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideo(activity)
-                        SampleFormat.HybridWebView -> "hybrid uses WebView bridge"
+                        SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
+                        SampleFormat.Native -> NapSspSdkIntegration.nativeView(activity)
+                        SampleFormat.Video -> NapSspSdkIntegration.videoView(activity)
+                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideoView(activity)
+                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideoView(activity)
+                        SampleFormat.HybridWebView -> null
                     }
                     viewModel.markBridgeReady()
                     println("NapSsp Android result: $result")
@@ -80,10 +98,19 @@ private fun SampleScreen(activity: MainActivity) {
                         .height(360.dp)
                 )
             } else {
-                AdDemoScreen(
-                    title = uiState.selectedFormat.title,
-                    subtitle = "NapSsp Android SDK 결과 화면"
-                )
+                if (adView != null) {
+                    AndroidView(
+                        factory = { adView!! },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(320.dp)
+                    )
+                } else {
+                    AdDemoScreen(
+                        title = uiState.selectedFormat.title,
+                        subtitle = "NapSsp Android SDK 결과 화면"
+                    )
+                }
             }
         }
 

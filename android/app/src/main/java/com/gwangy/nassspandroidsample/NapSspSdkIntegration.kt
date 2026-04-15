@@ -1,6 +1,7 @@
 package com.gwangy.nassspandroidsample
 
 import android.content.Context
+import android.view.View
 
 object NapSspSdkIntegration {
     fun initialize(context: Context) {
@@ -17,11 +18,10 @@ object NapSspSdkIntegration {
         }
     }
 
-    fun banner(context: Context): String {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return "missing banner id"
+    fun bannerView(context: Context): View? {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         AdEventLogger.request("banner", adUnitId)
         return runCatching {
-            val adMixerClass = Class.forName("com.nasmedia.admixer.core.AdMixer")
             val adInfoClass = Class.forName("com.nasmedia.admixer.ads.AdInfo")
             val adViewClass = Class.forName("com.nasmedia.admixer.ads.AdView")
             val builder = adInfoClass.getMethod("builder", String::class.java).invoke(null, adUnitId)
@@ -32,15 +32,15 @@ object NapSspSdkIntegration {
             adViewClass.getMethod("loadAd").invoke(adView)
             AdEventLogger.loaded("banner", adUnitId)
             AdEventLogger.displayed("banner", adUnitId)
-            "banner ready: $adUnitId"
+            adView as View
         }.getOrElse {
             AdEventLogger.failed("banner", adUnitId, it.message ?: "banner failed")
-            "banner fallback: $adUnitId"
+            null
         }
     }
 
-    fun native(context: Context): String {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return "missing native id"
+    fun nativeView(context: Context): View? {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         AdEventLogger.request("native", adUnitId)
         return runCatching {
             val adInfoClass = Class.forName("com.nasmedia.admixer.ads.AdInfo")
@@ -53,15 +53,15 @@ object NapSspSdkIntegration {
             nativeClass.getMethod("loadNativeAd").invoke(nativeView)
             AdEventLogger.loaded("native", adUnitId)
             AdEventLogger.displayed("native", adUnitId)
-            "native ready: $adUnitId"
+            nativeView as View
         }.getOrElse {
             AdEventLogger.failed("native", adUnitId, it.message ?: "native failed")
-            "native fallback: $adUnitId"
+            null
         }
     }
 
-    fun video(context: Context): String {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return "missing video id"
+    fun videoView(context: Context): View? {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
         AdEventLogger.request("video", adUnitId)
         return runCatching {
             val adInfoClass = Class.forName("com.nasmedia.admixer.ads.AdInfo")
@@ -74,15 +74,15 @@ object NapSspSdkIntegration {
             videoClass.getMethod("loadAd").invoke(videoView)
             AdEventLogger.loaded("video", adUnitId)
             AdEventLogger.displayed("video", adUnitId)
-            "video ready: $adUnitId"
+            videoView as View
         }.getOrElse {
             AdEventLogger.failed("video", adUnitId, it.message ?: "video failed")
-            "video fallback: $adUnitId"
+            null
         }
     }
 
-    fun rewardVideo(context: Context): String {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return "missing reward id"
+    fun rewardVideoView(context: Context): View? {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return null
         AdEventLogger.request("rewardVideo", adUnitId)
         return runCatching {
             val adInfoClass = Class.forName("com.nasmedia.admixer.ads.AdInfo")
@@ -95,15 +95,15 @@ object NapSspSdkIntegration {
             rewardClass.getMethod("loadRewardVideoAd").invoke(rewardView)
             AdEventLogger.loaded("rewardVideo", adUnitId)
             AdEventLogger.displayed("rewardVideo", adUnitId)
-            "reward ready: $adUnitId"
+            rewardView as View
         }.getOrElse {
             AdEventLogger.failed("rewardVideo", adUnitId, it.message ?: "reward failed")
-            "reward fallback: $adUnitId"
+            null
         }
     }
 
-    fun interstitialVideo(context: Context): String {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return "missing interstitial id"
+    fun interstitialVideoView(context: Context): View? {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return null
         AdEventLogger.request("interstitialVideo", adUnitId)
         return runCatching {
             val adInfoClass = Class.forName("com.nasmedia.admixer.ads.AdInfo")
@@ -116,10 +116,10 @@ object NapSspSdkIntegration {
             interstitialClass.getMethod("loadInterstitialVideoAd").invoke(interstitialView)
             AdEventLogger.loaded("interstitialVideo", adUnitId)
             AdEventLogger.displayed("interstitialVideo", adUnitId)
-            "interstitial ready: $adUnitId"
+            interstitialView as View
         }.getOrElse {
             AdEventLogger.failed("interstitialVideo", adUnitId, it.message ?: "interstitial failed")
-            "interstitial fallback: $adUnitId"
+            null
         }
     }
 }

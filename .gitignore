@@ -1,4 +1,13 @@
-android/.gradle/
-android/app/build/
-ios/.build/
-android/local.properties
+# Android
+.gradle/
+**/build/
+local.properties
+
+# Xcode / Swift Package Manager
+DerivedData/
+.swiftpm/
+Package.resolved
+xcuserdata/
+
+# macOS
+.DS_Store
