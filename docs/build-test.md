@@ -9,6 +9,7 @@
 - 버전은 실제 가이드에 맞춰 채운다
 - 앱 시작 시 `NapSspInitializer.initialize()`를 호출한다
 - 앱을 실행하고 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상을 선택해 본다
+- 빌드 전 `java -version`이 동작해야 한다. 이 workspace는 Android Gradle wrapper를 포함하지만, Java runtime이 없으면 `./gradlew :app:assembleDebug`가 실패한다.
 
 ## iOS
 

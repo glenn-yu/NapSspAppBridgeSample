@@ -22,3 +22,4 @@
 
 - JDK / Xcode / 시뮬레이터 환경을 먼저 확인한다
 - 예시 코드가 실제 프로젝트 구조와 맞는지 본다
+- Android는 `java -version` / `JAVA_HOME`부터 확인한다. 이 workspace는 Gradle wrapper가 있어도 Java runtime이 없으면 빌드할 수 없다.
