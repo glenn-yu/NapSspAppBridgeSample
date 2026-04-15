@@ -1,23 +1,22 @@
 # 빌드와 테스트
 
-이 문서는 나중에 실제 프로젝트가 들어가면 바로 쓸 수 있게 만든다.
+이 문서는 샘플을 실제로 돌릴 때 확인할 것만 적는다.
 
 ## Android
 
-```bash
-./gradlew testDebugUnitTest
-./gradlew installDebug
-```
+- Gradle에 nap ssp SDK와 필요한 네트워크 SDK를 넣는다
+- `AdMixer.registerAdapter(...)`와 `setIsUseMediation(true)`가 필요한지 확인한다
+- 앱을 실행하고 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상이 뜨는지 본다
 
 ## iOS
 
-```bash
-xcodebuild test -project YOUR_PROJECT.xcodeproj -scheme YOUR_SCHEME -destination 'platform=iOS Simulator,id=YOUR_SIMULATOR_ID'
-```
+- CocoaPods 또는 SPM으로 SDK를 넣는다
+- ATT, Info.plist, 네트워크 설정을 확인한다
+- 앱을 실행하고 각 포맷이 뜨는지 본다
 
 ## 확인할 것
 
 - 앱이 실제로 뜨는가
-- 웹뷰가 열리는가
-- 웹 메시지가 네이티브로 오는가
-- 네이티브 답이 웹에 돌아가는가
+- 광고 뷰가 화면에 붙는가
+- 로드 성공 이벤트가 오는가
+- 닫기 / 완료 / 리워드 이벤트가 오는가

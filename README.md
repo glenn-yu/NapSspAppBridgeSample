@@ -1,30 +1,25 @@
-# NapSspAppBridgeSample 시작 안내서
+# nap ssp Native SDK 샘플
 
-WebView 안에서 네이티브 기능과 웹페이지가 서로 통신하는 예시 프로젝트입니다.
-
-## 목적
-
-- Android와 iOS에서 같은 방식으로 WebView를 띄우기
-- 웹에서 네이티브로 메시지를 보내기
-- 네이티브에서 웹으로 결과를 돌려주기
-- 광고 / 브리지 연동을 처음 보는 사람도 따라 할 수 있게 만들기
+이 레포는 nap ssp의 **Android SDK - Native**와 **iOS SDK - Native** 문서를 바탕으로,
+Android와 iOS에서 각각 광고 포맷을 어떻게 붙이는지 보여주는 샘플이다.
 
 ## 포함 내용
 
-- `docs/` — 설치, 시작, 브리지 설명, 포맷별 샘플
-- `android/` — Android WebView 샘플
-- `ios/` — iOS WKWebView 샘플
-- `shared/` — 웹에서 공통으로 쓰는 JS 예시
+- `docs/` — 설치, 시작, 포맷별 샘플, 빌드/테스트, 문제 해결
+- `examples/` — 포맷별 코드 스니펫
+- `android/` — Android 샘플 코드
+- `ios/` — iOS 샘플 코드
 
 ## 먼저 읽을 것
 
 1. `docs/README.md`
 2. `docs/quickstart.md`
-3. `docs/bridge-concept.md`
-4. `docs/format-matrix.md`
-5. `docs/android-formats.md`
-6. `docs/ios-formats.md`
+3. `docs/format-matrix.md`
+4. `docs/android-formats.md`
+5. `docs/ios-formats.md`
+6. `examples/android-formats-sample.md`
+7. `examples/ios-formats-sample.md`
 
 ## 한 줄 요약
 
-이 레포는 "웹뷰 앱에서 AppBridge를 어떻게 붙이는지"를 바로 보여주는 샘플이다.
+이 레포는 nap ssp 네이티브 SDK를 Android와 iOS 앱에 붙이는 방법을 초보자 기준으로 보여준다.

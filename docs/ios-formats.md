@@ -1,109 +1,134 @@
 # iOS 포맷별 샘플
 
-이 문서는 iOS에서 각 광고 포맷을 **어디에 붙이는지** 보여준다.
+이 문서는 iOS에서 nap ssp 네이티브 SDK를 붙일 때,
+포맷마다 어떤 뷰와 어떤 호출이 필요한지 보여준다.
 
-## 공통 브리지 이름
+## 공통 전제
 
-```swift
-let bridgeName = "AppBridge"
-```
-
-웹에서 보내는 메시지 예시:
-
-```js
-window.AppBridge.postMessage({
-  type: 'load_ad',
-  format: 'banner',
-  adUnitId: 'YOUR_AD_UNIT_ID'
-})
-```
+- `iOS SDK 시작하기 -Native`의 설치와 설정이 먼저 끝나 있어야 한다.
+- CocoaPods 또는 SPM으로 SDK를 넣는다.
+- 광고 단위 ID(`ADUNIT_ID`)는 파트너 사이트에서 받은 값을 쓴다.
 
 ## 1) 배너
 
 ### 언제 쓰나
 - 화면 아래 고정
-- 앱 흐름을 크게 끊지 않음
+- 앱 흐름을 크게 끊지 않을 때
 
-### 화면 배치
-- `UIView` 하단 영역
-- `SwiftUI`에서는 `UIViewRepresentable`
+### 핵심 흐름
+1. `AMMBannerView`를 만든다
+2. `rootViewController`를 준다
+3. `adUnitID`를 설정한다
+4. `load()`를 호출한다
+5. `stop()`으로 정리한다
 
-### 샘플 흐름
-- 웹에서 `format: 'banner'` 요청
-- 네이티브가 배너를 띄움
-- 노출 / 탭 이벤트를 웹으로 전달
+### 예시
+
+```swift
+let banner = AMMBannerView(rootViewController: self)
+banner.adUnitID = "ADUNIT_ID"
+banner.load()
+```
 
 ## 2) 네이티브
 
 ### 언제 쓰나
-- 콘텐츠 사이
+- 리스트 중간
 - 카드형 UI
-- 피드에 자연스럽게 섞을 때
+- 콘텐츠처럼 섞어 보여줄 때
 
-### 화면 배치
-- 커스텀 `UIView`
-- `xib` 또는 코드로 구성
+### 핵심 구성
+- 아이콘(icon)
+- 제목(headline)
+- 광고주(advertiser)
+- 설명(description)
+- 미디어(Media)
+- 버튼(cta)
 
-### 샘플 흐름
-- 웹에서 `format: 'native'` 요청
-- 네이티브가 카드 뷰를 만들고 표시
-- 버튼 클릭 시 웹에 이벤트 전달
+### 핵심 흐름
+1. `AMMNativeAdView.xib`를 만든다
+2. 뷰 연결 정보를 설정한다
+3. `AMMNativeAdViewContainer`를 만든다
+4. `load()`를 호출한다
+5. 성공 후 화면에 붙인다
+
+### 예시
+
+```swift
+let nativeAd = AMMNativeAdViewContainer(rootViewController: self)
+nativeAd.adUnitID = "ADUNIT_ID"
+nativeAd.load()
+```
 
 ## 3) 동영상
 
 ### 언제 쓰나
 - 앱 안에 재생 영역이 필요할 때
-- 사용자가 직접 눌러 보는 영역
+- 사용자가 직접 보는 영역이 있을 때
 
-### 화면 배치
-- `WKWebView` 위 / 아래의 재생 컨테이너
+### 핵심 흐름
+1. `AMMVideoAdView`를 만든다
+2. `adUnitID`를 준다
+3. `load()`를 호출한다
+4. 성공하면 화면에 붙인다
+5. `stop()`으로 정리한다
 
-### 샘플 흐름
-- 웹에서 `format: 'video'` 요청
-- 네이티브가 동영상 뷰를 생성
-- 로딩 성공 / 재생 완료 이벤트를 웹으로 전달
+### 예시
+
+```swift
+let videoView = AMMVideoAdView(rootViewController: self)
+videoView.adUnitID = "ADUNIT_ID"
+videoView.load()
+```
 
 ## 4) 리워드 동영상
 
 ### 언제 쓰나
-- 보상 지급 흐름이 있을 때
-- "광고 보면 포인트 지급" 같은 화면
+- 광고를 보면 보상을 주는 흐름
+- 포인트, 보너스, 아이템 지급 화면
 
-### 화면 배치
-- 보상 버튼 뒤
-- 보상 확인 화면 뒤
+### 핵심 흐름
+1. `AMMRewardVideo`를 만든다
+2. `delegate`를 설정한다
+3. `load()`를 호출한다
+4. 준비되면 보여준다
+5. `onRewardVideoEarned()`에서 보상을 준다
 
-### 샘플 흐름
-- 웹에서 `format: 'reward'` 요청
-- 네이티브가 리워드 광고를 띄움
-- `onRewardVideoEarned()`를 웹으로 보냄
+### 예시
+
+```swift
+let rewardVideo = AMMRewardVideo(rootViewController: self)
+rewardVideo.adUnitID = "ADUNIT_ID"
+rewardVideo.delegate = self
+rewardVideo.load()
+```
 
 ## 5) 전면 동영상
 
 ### 언제 쓰나
-- 화면 전환 전에 보여줄 때
-- 완료 후 한 번 더 보여줄 때
+- 화면 전환 직전
+- 작업 완료 후
+- 전체 화면으로 보여줄 때
 
-### 화면 배치
-- 전체 화면 모달
-- 닫기 버튼이 있는 전면 영역
+### 핵심 흐름
+1. `AMMVideoInterstitial`를 만든다
+2. `delegate`를 설정한다
+3. `load()`를 호출한다
+4. 준비되면 보여준다
+5. `stop()`으로 정리한다
 
-### 샘플 흐름
-- 웹에서 `format: 'interstitial_video'` 요청
-- 네이티브가 전면 동영상 광고를 띄움
-- 닫기 / 완료 이벤트를 웹으로 전달
-
-## iOS에서 공통으로 쓰는 상태 메시지
+### 예시
 
 ```swift
-func sendToWeb(_ webView: WKWebView, json: String) {
-    webView.evaluateJavaScript("window.onNativeMessage(\(json))")
-}
+let interstitial = AMMVideoInterstitial(rootViewController: self)
+interstitial.adUnitID = "ADUNIT_ID"
+interstitial.delegate = self
+interstitial.load()
 ```
 
-## 핵심 포인트
+## 마지막으로 기억할 것
 
-- 포맷마다 붙는 뷰가 다르다
-- 웹은 요청만 보낸다
-- 네이티브가 실제 화면을 만든다
-- 이벤트는 다시 웹으로 보낸다
+- 포맷마다 **만드는 뷰가 다르다**
+- 포맷마다 **로드 함수가 다르다**
+- 포맷마다 **delegate 이벤트가 다르다**
+- 종료 시에는 꼭 리소스를 정리해야 한다
