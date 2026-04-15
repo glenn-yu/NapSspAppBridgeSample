@@ -13,9 +13,6 @@ dependencyResolutionManagement {
         mavenCentral()
         maven(url = "https://devrepo.kakao.com/nexus/content/groups/public/")
         maven(url = "https://artifact.bytedance.com/repository/pangle/")
-        // nap ssp vendor Maven repository placeholder.
-        // Replace with the exact repository URL from the vendor guide.
-        // maven(url = "<vendor-maven-repo-url>")
     }
 }
 

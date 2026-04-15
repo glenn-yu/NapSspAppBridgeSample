@@ -12,6 +12,12 @@ let package = Package(
     ]
 )
 
-// nap ssp SPM dependency placeholder.
-// Replace with the exact package URL/revision from the vendor guide.
-// Example: .package(url: "<vendor-spm-package-url>", from: "<version>")
+// nap ssp SPM package URLs from the vendor guide:
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git", from: "<version>")
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git", from: "<version>")
+// Optional network adapters:
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git", from: "<version>")
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git", from: "<version>")
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git", from: "<version>")
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-UnityAds-SPM.git", from: "<version>")
+// .package(url: "https://github.com/Nasmedia-Tech/iOS-SSP-AppLovin-SPM.git", from: "<version>")

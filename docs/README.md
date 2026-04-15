@@ -27,4 +27,4 @@
 
 이 샘플은 현재 네이티브 SDK 구조와 hook 자리까지 준비한 상태다.
 실제 SDK 버전과 의존성은 파트너 가이드 값에 맞춰 넣는다.
-Android는 Maven 저장소/좌표를, iOS는 SPM 패키지 URL/버전을 넣는다.
+Android는 `io.github.nasmedia-tech:admixer-ssp:1.0.21`, iOS는 `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`와 `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` 기준으로 맞춰 둔다.

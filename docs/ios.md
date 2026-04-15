@@ -16,4 +16,4 @@
 ## 다음 단계
 
 실제 nap ssp iOS SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.
-SPM package URL과 version은 vendor guide 값을 그대로 사용한다.
+현재 샘플은 SPM 패키지 `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`와 `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` 기준으로 맞춰 둔다.
