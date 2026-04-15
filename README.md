@@ -1,4 +1,4 @@
-# NapSspAppBridgeSample
+# NapSspAppBridgeSample 시작 안내서
 
 WebView 안에서 네이티브 기능과 웹페이지가 서로 통신하는 예시 프로젝트입니다.
 
@@ -7,11 +7,11 @@ WebView 안에서 네이티브 기능과 웹페이지가 서로 통신하는 예
 - Android와 iOS에서 같은 방식으로 WebView를 띄우기
 - 웹에서 네이티브로 메시지를 보내기
 - 네이티브에서 웹으로 결과를 돌려주기
-- 광고/브리지 연동을 처음 보는 사람도 따라 하게 만들기
+- 광고 / 브리지 연동을 처음 보는 사람도 따라 할 수 있게 만들기
 
 ## 포함 내용
 
-- `docs/` — 설치, 셋업, 브리지 설명, 실행 예시
+- `docs/` — 설치, 시작, 브리지 설명, 실행 예시
 - `android/` — Android WebView 샘플
 - `ios/` — iOS WKWebView 샘플
 - `shared/` — 웹에서 공통으로 쓰는 JS 예시
