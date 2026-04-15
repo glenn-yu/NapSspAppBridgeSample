@@ -11,12 +11,11 @@
 
 ## 처음 읽을 순서
 
-1. `docs/README.md`
+1. `docs/start-here.md`
 2. `docs/quickstart.md`
 3. `docs/install.md`
-4. `docs/setup.md`
-5. `docs/format-matrix.md`
-6. `docs/hybrid-webview.md`
+4. `docs/format-matrix.md`
+5. `docs/hybrid-webview.md`
 
 ## 한 줄로 말하면
 
