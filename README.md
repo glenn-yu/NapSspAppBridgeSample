@@ -11,7 +11,7 @@ WebView 안에서 네이티브 기능과 웹페이지가 서로 통신하는 예
 
 ## 포함 내용
 
-- `docs/` — 설치, 시작, 브리지 설명, 실행 예시
+- `docs/` — 설치, 시작, 브리지 설명, 포맷별 샘플
 - `android/` — Android WebView 샘플
 - `ios/` — iOS WKWebView 샘플
 - `shared/` — 웹에서 공통으로 쓰는 JS 예시
@@ -21,8 +21,9 @@ WebView 안에서 네이티브 기능과 웹페이지가 서로 통신하는 예
 1. `docs/README.md`
 2. `docs/quickstart.md`
 3. `docs/bridge-concept.md`
-4. `docs/android.md`
-5. `docs/ios.md`
+4. `docs/format-matrix.md`
+5. `docs/android-formats.md`
+6. `docs/ios-formats.md`
 
 ## 한 줄 요약
 
