@@ -17,5 +17,14 @@ object SdkHooks {
     fun interstitialVideo(): String = "Interstitial video SDK hook ready"
     fun hybridWebView(): String = "WebView hybrid bridge ready"
 
+    fun execute(format: SampleFormat, context: android.content.Context): String = when (format) {
+        SampleFormat.Banner -> { NapSspSdkIntegration.banner(context); "banner executed" }
+        SampleFormat.Native -> { NapSspSdkIntegration.native(context); "native executed" }
+        SampleFormat.Video -> { NapSspSdkIntegration.video(context); "video executed" }
+        SampleFormat.RewardVideo -> { NapSspSdkIntegration.rewardVideo(context); "reward executed" }
+        SampleFormat.InterstitialVideo -> { NapSspSdkIntegration.interstitialVideo(context); "interstitial executed" }
+        SampleFormat.HybridWebView -> { "hybrid uses WebView bridge" }
+    }
+
     fun hybridStatus(): String = "NapSsp hybrid bridge ready"
 }

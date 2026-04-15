@@ -19,6 +19,7 @@ fun FormatDetailScreen(
     format: SampleFormat,
     onRunSample: () -> Unit,
     onHookSdk: () -> Unit,
+    onExecuteSdk: () -> Unit,
 ) {
     Card(colors = CardDefaults.cardColors()) {
         Column(
@@ -43,6 +44,9 @@ fun FormatDetailScreen(
             }
             Button(onClick = onHookSdk, modifier = Modifier.fillMaxWidth()) {
                 Text("SDK 연결 위치 표시")
+            }
+            Button(onClick = onExecuteSdk, modifier = Modifier.fillMaxWidth()) {
+                Text("SDK 훅 실행")
             }
         }
     }

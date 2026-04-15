@@ -44,6 +44,22 @@ struct ContentView: View {
                     Button("SDK 연결 위치 표시") {
                         viewModel.markBridgeReady()
                     }
+                    Button("SDK 훅 실행") {
+                        switch viewModel.state.selectedFormat {
+                        case .banner:
+                            NapSspSdkIntegration.banner()
+                        case .native:
+                            NapSspSdkIntegration.native()
+                        case .video:
+                            NapSspSdkIntegration.video()
+                        case .rewardVideo:
+                            NapSspSdkIntegration.rewardVideo()
+                        case .interstitialVideo:
+                            NapSspSdkIntegration.interstitialVideo()
+                        case .hybridWebView:
+                            viewModel.markBridgeReady()
+                        }
+                    }
                 }
             }
             .navigationTitle("nap ssp")

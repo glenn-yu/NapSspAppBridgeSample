@@ -19,6 +19,28 @@ enum SdkHooks {
     static func interstitialVideo() -> String { "Interstitial video SDK hook ready" }
     static func hybridWebView() -> String { "WebView hybrid bridge ready" }
 
+    static func execute(_ format: SampleFormat) -> String {
+        switch format {
+        case .banner:
+            NapSspSdkIntegration.banner()
+            return "banner executed"
+        case .native:
+            NapSspSdkIntegration.native()
+            return "native executed"
+        case .video:
+            NapSspSdkIntegration.video()
+            return "video executed"
+        case .rewardVideo:
+            NapSspSdkIntegration.rewardVideo()
+            return "reward executed"
+        case .interstitialVideo:
+            NapSspSdkIntegration.interstitialVideo()
+            return "interstitial executed"
+        case .hybridWebView:
+            return "hybrid uses WebView bridge"
+        }
+    }
+
     static func hybridStatus() -> String {
         "NapSsp hybrid bridge ready"
     }

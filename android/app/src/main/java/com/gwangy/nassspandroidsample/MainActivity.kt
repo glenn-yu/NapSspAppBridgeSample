@@ -55,7 +55,17 @@ private fun SampleScreen() {
             FormatDetailScreen(
                 format = uiState.selectedFormat,
                 onRunSample = { viewModel.selectFormat(uiState.selectedFormat) },
-                onHookSdk = { viewModel.markBridgeReady() }
+                onHookSdk = { viewModel.markBridgeReady() },
+                onExecuteSdk = {
+                    when (uiState.selectedFormat) {
+                        SampleFormat.Banner -> NapSspSdkIntegration.banner(this@MainActivity)
+                        SampleFormat.Native -> NapSspSdkIntegration.native(this@MainActivity)
+                        SampleFormat.Video -> NapSspSdkIntegration.video(this@MainActivity)
+                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideo(this@MainActivity)
+                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideo(this@MainActivity)
+                        SampleFormat.HybridWebView -> viewModel.markBridgeReady()
+                    }
+                }
             )
         }
 
