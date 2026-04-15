@@ -31,6 +31,7 @@
 - `init`은 초기화 진입점으로 `NapSspInitializer.initialize()`를 부른다.
 - `getStatus`는 현재 `NapSsp hybrid bridge ready`를 돌려준다.
 - 나머지 메시지는 현재 `hook ok` 응답을 돌려준다.
+- 요청/로드/노출/클릭/실패성 메시지는 `AdEventLogger`로 기록한다.
 - 응답은 웹 페이지의 상태 영역에 보인다.
 
 ## Android

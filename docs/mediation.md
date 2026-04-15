@@ -54,3 +54,4 @@
 - 미디어 키와 ADUNIT ID는 반드시 파트너 사이트 기준으로 사용한다.
 - 포맷별로 사용할 ADUNIT ID를 샘플에 맞게 분리해서 둔다.
 - 요청/로드/노출/클릭/실패 로그는 `AdEventLogger`로 남긴다.
+- `NapSspConfig`에 앱별 media key / ad unit / mediation 힌트를 모아 둔다.
