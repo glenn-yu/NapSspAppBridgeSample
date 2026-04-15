@@ -29,4 +29,4 @@ nap ssp 네이티브 SDK 샘플을 열기 전에 필요한 기본 환경을 확�
 
 ## 다음 단계
 
-설치가 끝나면 `setup.md`와 `quickstart.md`를 순서대로 본다.
+설치가 끝나면 `setup.md`, `mediation.md`, `quickstart.md`를 순서대로 본다.

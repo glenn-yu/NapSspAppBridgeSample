@@ -18,3 +18,4 @@
 
 실제 nap ssp Android SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.
 현재 샘플은 `io.github.nasmedia-tech:admixer-ssp:1.0.21`와 `com.google.android.gms:play-services-ads-identifier:18.9.0` 기준으로 맞춰 둔다.
+미디에이션이 필요하면 `docs/mediation.md`의 선택 네트워크를 같이 붙인다.
