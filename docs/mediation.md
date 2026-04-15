@@ -55,4 +55,4 @@
 - 포맷별로 사용할 ADUNIT ID를 샘플에 맞게 분리해서 둔다.
 - 요청/로드/노출/클릭/실패 로그는 `AdEventLogger`로 남긴다.
 - `NapSspConfig`에 앱별 media key / ad unit / mediation 힌트를 모아 둔다.
-- 실제 광고 객체는 `NapSspSdkIntegration`에 넣고, 지금은 hook 호출 자리만 유지한다.
+- 실제 광고 객체는 `NapSspSdkIntegration`에 넣고, SDK가 없는 환경에서는 fallback을 보여준다.
