@@ -22,19 +22,19 @@ enum SdkHooks {
     static func execute(_ format: SampleFormat) -> String {
         switch format {
         case .banner:
-            NapSspSdkIntegration.banner()
+            _ = NapSspSdkIntegration.banner()
             return "banner executed"
         case .native:
-            NapSspSdkIntegration.native()
+            _ = NapSspSdkIntegration.native()
             return "native executed"
         case .video:
-            NapSspSdkIntegration.video()
+            _ = NapSspSdkIntegration.video()
             return "video executed"
         case .rewardVideo:
-            NapSspSdkIntegration.rewardVideo()
+            _ = NapSspSdkIntegration.rewardVideo()
             return "reward executed"
         case .interstitialVideo:
-            NapSspSdkIntegration.interstitialVideo()
+            _ = NapSspSdkIntegration.interstitialVideo()
             return "interstitial executed"
         case .hybridWebView:
             return "hybrid uses WebView bridge"
