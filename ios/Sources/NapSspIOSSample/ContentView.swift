@@ -15,6 +15,7 @@ struct ContentView: View {
                     Text(viewModel.state.selectedFormat.rawValue)
                     Text(viewModel.state.selectedFormat.descriptionText)
                     Text("여기에 실제 nap ssp SDK 연결 코드를 넣는다")
+                    Text("임시 media key: 11111")
                 }
 
                 Section("포맷 선택") {
