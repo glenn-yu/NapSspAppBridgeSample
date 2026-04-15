@@ -7,7 +7,7 @@
 ### 핵심 의존성
 
 - `io.github.nasmedia-tech:admixer-ssp:1.0.21`
-- `com.google.android.gms:play-services-ads-identifier:18.9.0`
+- `com.google.android.gms:play-services-ads-identifier:18.3.0`
 
 ### 선택 미디에이션
 

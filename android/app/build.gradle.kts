@@ -8,6 +8,15 @@ android {
     namespace = "com.gwangy.nassspandroidsample"
     compileSdk = 35
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     defaultConfig {
         applicationId = "com.gwangy.nassspandroidsample"
         minSdk = 24
@@ -40,7 +49,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
 
     implementation("io.github.nasmedia-tech:admixer-ssp:1.0.21")
-    implementation("com.google.android.gms:play-services-ads-identifier:18.9.0")
+    implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
 
     // Optional mediations from the vendor guide:
     // implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
