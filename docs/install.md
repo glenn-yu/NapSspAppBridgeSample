@@ -8,13 +8,13 @@ nap ssp 네이티브 SDK 샘플을 열기 전에 필요한 기본 환경을 확�
 
 - Android Studio 또는 Gradle 빌드 환경이 있어야 한다.
 - JDK와 Android SDK가 설치되어 있어야 한다.
-- nap ssp Android SDK 의존성과 저장소 설정은 실제 가이드 값으로 채운다.
+- nap ssp Android SDK는 Maven 저장소와 의존성 좌표를 가이드 값으로 채운다.
 
 ## iOS
 
 - Xcode와 iOS 빌드 환경이 있어야 한다.
 - CocoaPods 또는 SPM 중 하나로 SDK를 넣을 수 있어야 한다.
-- nap ssp iOS SDK 의존성은 실제 가이드 값으로 채운다.
+- nap ssp iOS SDK는 SPM 패키지 URL과 버전을 가이드 값으로 채운다.
 
 ## 먼저 확인할 것
 

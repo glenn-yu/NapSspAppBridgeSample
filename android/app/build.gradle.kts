@@ -39,6 +39,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    // nap ssp SDK dependencies go here after matching the guide version.
-    // implementation("io.github.nasmedia-tech:admixer-ssp:<version>")
+    // nap ssp Maven dependency placeholder.
+    // Replace with the exact artifact/version from the vendor guide.
+    // example: implementation("<group>:<artifact>:<version>")
 }

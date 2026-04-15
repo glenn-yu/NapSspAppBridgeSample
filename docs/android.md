@@ -17,3 +17,4 @@
 ## 다음 단계
 
 실제 nap ssp Android SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.
+Maven 저장소와 dependency coordinate는 vendor guide 값을 그대로 사용한다.
