@@ -33,6 +33,13 @@ struct ContentView: View {
                     }
                 }
 
+                if viewModel.state.selectedFormat == .hybridWebView {
+                    Section("웹뷰 하이브리드 미리보기") {
+                        HybridWebViewScreen(urlString: "https://example.com")
+                            .frame(height: 360)
+                    }
+                }
+
                 Section {
                     Button("SDK 연결 위치 표시") {
                         viewModel.markBridgeReady()
