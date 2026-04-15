@@ -8,22 +8,40 @@
 - 네이티브 SDK는 브리지 역할로 붙인다.
 - 웹 쪽에서 광고 이벤트를 호출하고, 네이티브가 SDK 로드를 담당한다.
 
+## 공통 브리지 규약
+
+웹 페이지는 다음 이름으로 네이티브에 메시지를 보낸다.
+
+- Android: `window.NapSspBridge.postMessage(...)`
+- iOS: `window.webkit.messageHandlers.NapSspBridge.postMessage(...)`
+
+### 메시지 예시
+
+- `init`
+- `loadBanner`
+- `loadNative`
+- `loadVideo`
+- `loadRewardVideo`
+- `loadInterstitialVideo`
+- `getStatus`
+
 ## Android
 
 ### 권장 구조
 
 - `WebView`를 메인 화면으로 띄운다.
-- `addJavascriptInterface(...)` 또는 `WebMessageListener`로 브리지를 만든다.
+- `addJavascriptInterface(...)`로 브리지를 만든다.
 - 브리지에서 `NapSspInitializer.initialize()`를 먼저 호출한다.
 - 이후 네이티브 SDK 호출은 `SdkHooks` 쪽으로 넘긴다.
 
-### 기본 흐름
+### 웹에서 호출하는 예시
 
-1. WebView를 띄운다.
-2. JS 브리지를 연결한다.
-3. 웹에서 `loadAd`, `showAd`, `ready` 같은 메시지를 보낸다.
-4. Android 네이티브가 SDK를 호출한다.
-5. 결과를 다시 웹으로 돌려준다.
+```html
+<script>
+  window.NapSspBridge.postMessage(JSON.stringify({ type: 'init' }))
+  window.NapSspBridge.postMessage(JSON.stringify({ type: 'loadBanner' }))
+</script>
+```
 
 ## iOS
 
@@ -34,23 +52,20 @@
 - 브리지에서 `NapSspInitializer.initialize()`를 먼저 호출한다.
 - 이후 네이티브 SDK 호출은 `SdkHooks` 쪽으로 넘긴다.
 
-### 기본 흐름
+### 웹에서 호출하는 예시
 
-1. WKWebView를 띄운다.
-2. JS 메시지 핸들러를 연결한다.
-3. 웹에서 `loadAd`, `showAd`, `ready` 같은 메시지를 보낸다.
-4. iOS 네이티브가 SDK를 호출한다.
-5. 결과를 다시 웹으로 돌려준다.
+```html
+<script>
+  window.webkit.messageHandlers.NapSspBridge.postMessage({ type: 'init' })
+  window.webkit.messageHandlers.NapSspBridge.postMessage({ type: 'loadBanner' })
+</script>
+```
 
-## 브리지에서 다룰 메시지 예시
+## 샘플에서 지금 확인되는 것
 
-- `init`
-- `loadBanner`
-- `loadNative`
-- `loadVideo`
-- `loadRewardVideo`
-- `loadInterstitialVideo`
-- `getStatus`
+- 웹뷰 화면이 실제로 뜬다.
+- 브리지 메시지가 네이티브 로그로 들어온다.
+- 웹 쪽에서 메시지 규약만 맞추면 바로 확장할 수 있다.
 
 ## 주의할 점
 
