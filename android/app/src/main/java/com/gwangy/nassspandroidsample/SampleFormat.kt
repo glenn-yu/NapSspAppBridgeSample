@@ -1,10 +1,10 @@
 package com.gwangy.nassspandroidsample
 
 enum class SampleFormat(val title: String, val description: String) {
-    Banner("배너", "화면 아래 고정형 샘플"),
-    Native("네이티브", "카드형 UI에 섞는 샘플"),
-    Video("동영상", "앱 안 재생 영역 샘플"),
-    RewardVideo("리워드 동영상", "시청 완료 보상 샘플"),
-    InterstitialVideo("전면 동영상", "전체 화면 노출 샘플"),
-    HybridWebView("웹뷰 하이브리드", "WebView 안에 광고 브릿지를 붙이는 샘플")
+    Banner("배너", "화면 아래에 붙는 작은 광고"),
+    Native("네이티브", "앱 화면에 자연스럽게 섞이는 광고"),
+    Video("동영상", "앱 안에서 재생되는 광고"),
+    RewardVideo("리워드 동영상", "끝까지 보면 보상이 있는 광고"),
+    InterstitialVideo("전면 동영상", "화면 전체를 덮는 광고"),
+    HybridWebView("웹뷰 하이브리드", "웹 버튼으로 네이티브 광고를 여는 방식")
 }

@@ -1,20 +1,24 @@
 # 셋업
 
-## 목표
-
-이 레포를 열었을 때 바로 어디를 보면 되는지 알 수 있게 하는 것.
+이 문서는 "레포 안에서 어디를 보면 되는지"만 알려준다.
 
 ## 폴더 역할
 
-- `android/` — Android 샘플 프로젝트
-- `ios/` — iOS 샘플 프로젝트
-- `docs/` — 초보자용 설명서
-- `examples/` — 포맷별 코드 스니펫
+- `android/` — Android 샘플 앱
+- `ios/` — iOS 샘플 앱
+- `docs/` — 설명서
+- `examples/` — 짧은 코드 예시
 
-## 셋업 순서
+## 먼저 볼 파일
 
-1. `quickstart.md`를 본다.
-2. `format-matrix.md`를 본다.
-3. Android 또는 iOS 문서를 연다.
-4. `NapSspInitializer`와 `SdkHooks`를 먼저 확인한다.
-5. 실제 SDK 버전이 있으면 그 자리만 채운다.
+1. `docs/quickstart.md`
+2. `docs/format-matrix.md`
+3. `docs/hybrid-webview.md`
+4. `android/.../NapSspInitializer.kt`
+5. `android/.../SdkHooks.kt`
+6. `ios/.../NapSspInitializer.swift`
+7. `ios/.../SdkHooks.swift`
+
+## 한 줄 요약
+
+초보자는 `quickstart.md`부터 시작하고, 그다음 포맷별 문서를 보면 된다.

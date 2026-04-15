@@ -3,7 +3,6 @@ package com.gwangy.nassspandroidsample
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +24,7 @@ fun AdDemoScreen(title: String, subtitle: String, onClose: (() -> Unit)? = null)
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FB))
     ) {
         Column(
             modifier = Modifier
@@ -34,16 +33,17 @@ fun AdDemoScreen(title: String, subtitle: String, onClose: (() -> Unit)? = null)
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
-            Text(subtitle)
+            Text(subtitle, color = Color(0xFF5F6B7A))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFE0E0E0))
-                    .padding(24.dp)
+                    .background(Color(0xFFEAF0F6))
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("SDK 화면 폴백", fontWeight = FontWeight.Bold)
-                Text("실제 nap ssp SDK 바이너리가 들어오면 이 자리에 광고 뷰가 붙는다.")
+                Text("광고 자리", fontWeight = FontWeight.Bold)
+                Text("실제 nap ssp SDK가 연결되면 여기에 광고 뷰가 표시된다.")
             }
             onClose?.let {
                 Button(onClick = it, modifier = Modifier.fillMaxWidth()) {

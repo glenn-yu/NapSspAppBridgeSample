@@ -9,14 +9,14 @@ struct AdDemoScreen: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title).font(.title2).bold()
-            Text(subtitle)
+            Text(subtitle).foregroundStyle(.secondary)
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.2))
+                .fill(Color(red: 0.92, green: 0.94, blue: 0.97))
                 .frame(height: 140)
                 .overlay(
                     VStack(spacing: 8) {
-                        Text("SDK 화면 폴백").bold()
-                        Text("실제 nap ssp SDK 바이너리가 들어오면 이 자리에 광고 뷰가 붙는다.")
+                        Text("광고 자리").bold()
+                        Text("실제 nap ssp SDK가 연결되면 여기에 광고 뷰가 표시된다.")
                             .multilineTextAlignment(.center)
                             .font(.footnote)
                     }

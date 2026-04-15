@@ -1,20 +1,24 @@
-# iOS 시작하기
+# iOS
 
-## 먼저 하는 일
+이 문서는 iOS 샘플을 처음 보는 사람용이다.
 
-앱이 시작할 때 `AppDelegate`에서 `NapSspInitializer.initialize()`를 먼저 호출한다.
-그 다음에 포맷별 화면에서 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상을 붙인다.
+## 먼저 볼 것
 
-## 구조
+- `NapSspInitializer.swift`
+- `SdkHooks.swift`
+- `NapSspSdkIntegration.swift`
+- `HybridWebViewScreen.swift`
 
-- `ContentView` — 샘플 화면 진입점
-- `SampleFormat` — 포맷 목록
-- `SampleViewModel` — 선택 상태
-- `SdkHooks` — 실제 SDK 코드가 들어갈 자리
-- `NapSspInitializer` — SDK 초기화 자리
+## 순서
 
-## 다음 단계
+1. `quickstart.md`를 본다.
+2. `format-matrix.md`에서 포맷을 고른다.
+3. `SdkHooks.swift`를 본다.
+4. `NapSspSdkIntegration.swift`를 본다.
+5. `HybridWebViewScreen.swift`를 본다.
 
-실제 nap ssp iOS SDK를 넣으면, 각 포맷의 hook 함수 안에 광고 뷰 생성과 로드를 넣는다.
-현재 샘플은 SPM 패키지 `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`와 `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git` 기준으로 맞춰 둔다.
-미디에이션이 필요하면 `docs/mediation.md`의 선택 네트워크를 같이 붙인다.
+## 핵심
+
+- `SdkHooks`는 설명용 문구를 보여준다.
+- `NapSspSdkIntegration`는 실제 SDK를 부르는 자리다.
+- `HybridWebViewScreen`는 웹 버튼을 네이티브로 넘기는 자리다.

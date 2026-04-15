@@ -21,7 +21,7 @@ fun FormatDetailScreen(
     onHookSdk: () -> Unit,
     onExecuteSdk: () -> Unit,
 ) {
-    Card(colors = CardDefaults.cardColors()) {
+    Card(colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF8F9FB))) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -30,23 +30,23 @@ fun FormatDetailScreen(
             Text(format.description)
             Text(
                 text = when (format) {
-                    SampleFormat.Banner -> "화면 하단에 배너 뷰를 붙이는 자리"
-                    SampleFormat.Native -> "카드형 레이아웃에 네이티브 자산을 꽂는 자리"
-                    SampleFormat.Video -> "재생용 컨테이너를 붙이는 자리"
-                    SampleFormat.RewardVideo -> "보상 시청 후 EARNEDREWARD를 받는 자리"
-                    SampleFormat.InterstitialVideo -> "전체 화면 전면 동영상을 띄우는 자리"
-                    SampleFormat.HybridWebView -> "WebView 안에서 네이티브 브리지를 타는 자리"
+                    SampleFormat.Banner -> "화면 아래에 작게 붙는 광고"
+                    SampleFormat.Native -> "앱 화면에 자연스럽게 섞이는 광고"
+                    SampleFormat.Video -> "앱 안에서 재생되는 광고"
+                    SampleFormat.RewardVideo -> "끝까지 보면 보상이 있는 광고"
+                    SampleFormat.InterstitialVideo -> "화면 전체를 덮는 광고"
+                    SampleFormat.HybridWebView -> "웹페이지 버튼으로 네이티브 광고를 여는 방식"
                 }
             )
-            Text(SdkHooks.describe(format))
+            Text(SdkHooks.describe(format), color = androidx.compose.ui.graphics.Color(0xFF5F6B7A))
             Button(onClick = onRunSample, modifier = Modifier.fillMaxWidth()) {
-                Text("샘플 상태 갱신")
+                Text("현재 포맷 다시 보기")
             }
             Button(onClick = onHookSdk, modifier = Modifier.fillMaxWidth()) {
-                Text("SDK 연결 위치 표시")
+                Text("연결 자리 보기")
             }
             Button(onClick = onExecuteSdk, modifier = Modifier.fillMaxWidth()) {
-                Text("SDK 훅 실행")
+                Text("광고 띄우기")
             }
         }
     }

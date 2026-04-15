@@ -30,6 +30,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppContextHolder.appContext = applicationContext
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
@@ -64,8 +65,14 @@ private fun SampleScreen(activity: MainActivity) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text("nap ssp Android Native Sample", fontWeight = FontWeight.Bold)
-            Text("포맷을 고르고, 실제 nap ssp SDK 코드를 꽂을 수 있는 구조")
+            AdDemoScreen(
+                title = "nap ssp Android 샘플",
+                subtitle = "1) 포맷 선택 → 2) 광고 코드 실행 → 3) 화면에서 결과 확인"
+            )
+        }
+
+        item {
+            Text("현재 상태", fontWeight = FontWeight.SemiBold)
             Text(uiState.message)
         }
 
@@ -83,7 +90,14 @@ private fun SampleScreen(activity: MainActivity) {
                         SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideoView(activity)
                         SampleFormat.HybridWebView -> null
                     }
-                    viewModel.markBridgeReady()
+                    val message = if (uiState.selectedFormat == SampleFormat.HybridWebView) {
+                        "하이브리드 WebView는 init 후 웹 버튼으로 광고를 부른다"
+                    } else if (result != null) {
+                        "${uiState.selectedFormat.title} 광고 뷰 연결 완료"
+                    } else {
+                        "${uiState.selectedFormat.title} 광고 연결 실패 또는 폴백"
+                    }
+                    viewModel.reportResult(message)
                     println("NapSsp Android result: $result")
                 }
             )
@@ -92,6 +106,7 @@ private fun SampleScreen(activity: MainActivity) {
         item {
             if (uiState.selectedFormat == SampleFormat.HybridWebView) {
                 Text("웹뷰 하이브리드 미리보기", fontWeight = FontWeight.SemiBold)
+                Text("웹 버튼을 누르면 네이티브 SDK가 반응한다")
                 HybridWebViewScreen(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -99,6 +114,7 @@ private fun SampleScreen(activity: MainActivity) {
                 )
             } else {
                 if (adView != null) {
+                    Text("SDK 뷰가 화면에 붙은 상태", fontWeight = FontWeight.SemiBold)
                     AndroidView(
                         factory = { adView!! },
                         modifier = Modifier
@@ -124,7 +140,7 @@ private fun SampleScreen(activity: MainActivity) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Text(format.title)
+                    Text(format.title, fontWeight = FontWeight.Bold)
                     Text(format.description)
                 }
             }

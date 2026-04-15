@@ -12,32 +12,32 @@ enum SdkHooks {
         }
     }
 
-    static func banner() -> String { "Banner SDK hook ready" }
-    static func native() -> String { "Native SDK hook ready" }
-    static func video() -> String { "Video SDK hook ready" }
-    static func rewardVideo() -> String { "Reward video SDK hook ready" }
-    static func interstitialVideo() -> String { "Interstitial video SDK hook ready" }
-    static func hybridWebView() -> String { "WebView hybrid bridge ready" }
+    static func banner() -> String { "배너 광고를 붙일 준비가 됨" }
+    static func native() -> String { "네이티브 광고를 붙일 준비가 됨" }
+    static func video() -> String { "동영상 광고를 붙일 준비가 됨" }
+    static func rewardVideo() -> String { "리워드 동영상 광고를 붙일 준비가 됨" }
+    static func interstitialVideo() -> String { "전면 동영상 광고를 붙일 준비가 됨" }
+    static func hybridWebView() -> String { "웹뷰에서 네이티브 브리지를 사용할 준비가 됨" }
 
     static func execute(_ format: SampleFormat) -> String {
         switch format {
         case .banner:
             _ = NapSspSdkIntegration.banner()
-            return "banner executed"
+            return "배너 광고 실행"
         case .native:
             _ = NapSspSdkIntegration.native()
-            return "native executed"
+            return "네이티브 광고 실행"
         case .video:
             _ = NapSspSdkIntegration.video()
-            return "video executed"
+            return "동영상 광고 실행"
         case .rewardVideo:
             _ = NapSspSdkIntegration.rewardVideo()
-            return "reward executed"
+            return "리워드 동영상 광고 실행"
         case .interstitialVideo:
             _ = NapSspSdkIntegration.interstitialVideo()
-            return "interstitial executed"
+            return "전면 동영상 광고 실행"
         case .hybridWebView:
-            return "hybrid uses WebView bridge"
+            return "웹뷰 브리지 실행"
         }
     }
 

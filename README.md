@@ -1,26 +1,23 @@
 # nap ssp Native SDK 샘플
 
-이 레포는 nap ssp의 **Android SDK - Native**와 **iOS SDK - Native** 문서를 바탕으로,
-Android와 iOS에서 각각 광고 포맷을 어떻게 붙이는지 보여주는 샘플이다.
+이 레포는 Android와 iOS에서 nap ssp 광고를 붙이는 방법을 **처음 보는 사람도 따라할 수 있게** 보여주는 샘플이다.
 
-## 포함 내용
+## 이 레포에서 할 수 있는 것
 
-- `docs/` — 설치, 시작, 미디에이션, 포맷별 샘플, 빌드/테스트, 문제 해결
-- `examples/` — 포맷별 코드 스니펫
-- `android/` — Android 샘플 코드
-- `ios/` — iOS 샘플 코드
+- Android 샘플 보기
+- iOS 샘플 보기
+- WebView 하이브리드 연결 보기
+- 포맷별 광고 연결 자리 확인하기
 
-## 먼저 읽을 것
+## 처음 읽을 순서
 
 1. `docs/README.md`
 2. `docs/quickstart.md`
-3. `docs/format-matrix.md`
-4. `docs/android-formats.md`
-5. `docs/ios-formats.md`
+3. `docs/install.md`
+4. `docs/setup.md`
+5. `docs/format-matrix.md`
 6. `docs/hybrid-webview.md`
-7. `examples/android-formats-sample.md`
-8. `examples/ios-formats-sample.md`
 
-## 한 줄 요약
+## 한 줄로 말하면
 
-이 레포는 nap ssp 네이티브 SDK를 Android와 iOS 앱에 붙이는 방법을 초보자 기준으로 보여준다.
+이 레포는 "광고 코드를 어디에 넣는지"를 초보자도 따라오게 만든 안내서다.

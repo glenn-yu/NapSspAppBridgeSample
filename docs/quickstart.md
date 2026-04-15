@@ -1,24 +1,26 @@
 # 빠른 시작
 
-## 목표
+이 문서는 "처음 보는 사람" 기준이다.
 
-nap ssp Native SDK를 처음 볼 때 **무엇부터 하면 되는지** 바로 보여주는 것.
+## 딱 3개만 먼저 보기
 
-## 순서
+1. `install.md` — 준비물이 있는지 확인
+2. `setup.md` — 레포 안에서 어디를 보면 되는지 확인
+3. `format-matrix.md` — 어떤 광고 포맷을 쓸지 고르기
 
-1. 이 레포를 연다.
-2. `docs/format-matrix.md`를 읽는다.
-3. Android 또는 iOS 포맷별 문서를 읽는다.
-4. 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상 중 필요한 것부터 붙인다.
-5. 샘플 화면에서 포맷을 눌러 실제 SDK hook 자리를 확인한다.
+## 그다음 할 일
+
+- Android면 `android-formats.md` 보기
+- iOS면 `ios-formats.md` 보기
+- 웹뷰 연동이 필요하면 `hybrid-webview.md` 보기
 
 ## 먼저 확인할 것
 
-- Android는 Gradle과 `AdMixer` 설정이 가능한가
-- iOS는 CocoaPods 또는 SPM으로 SDK를 넣을 수 있는가
+- Android Studio 또는 Xcode가 설치돼 있는가
+- JDK / Android SDK 또는 iOS 빌드 환경이 있는가
 - 미디어 키와 광고 단위 ID를 받았는가
 
-## 참고
+## 이 레포의 역할
 
-이 샘플은 현재 네이티브 SDK 구조와 hook 자리까지 준비한 상태다.
-실제 SDK 버전과 의존성은 파트너 가이드 값에 맞춰 넣는다.
+이 샘플은 Android와 iOS에서 nap ssp SDK를 어디에 연결하는지 보여준다.
+실제 광고 코드가 들어갈 자리는 이미 마련돼 있다.

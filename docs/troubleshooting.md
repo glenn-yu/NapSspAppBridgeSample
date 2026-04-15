@@ -1,25 +1,15 @@
 # 문제 해결
 
-## 광고가 안 뜰 때
+문제가 생기면 아래 순서대로 본다.
 
-- 미디어 키와 광고 단위 ID가 맞는지 확인한다
-- SDK 초기화가 끝났는지 확인한다
-- 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상에 맞는 코드가 들어갔는지 본다
+1. JDK / Android SDK / Xcode가 있는지 확인한다.
+2. media key와 광고 단위 ID가 맞는지 확인한다.
+3. WebView 버튼 이름과 네이티브 브리지 이름이 같은지 확인한다.
+4. 빌드 산출물을 지우고 다시 빌드한다.
+5. 그래도 안 되면 `quickstart.md`부터 다시 본다.
 
-## 네트워크가 안 붙을 때
+## 가장 흔한 실수
 
-- Android는 Gradle 의존성과 저장소 설정을 확인한다
-- iOS는 CocoaPods 또는 SPM 설정을 확인한다
-- Google / AdFit / Pangle 같은 네트워크 추가가 필요한지 본다
-
-## 이벤트가 안 올 때
-
-- 리스너 / delegate가 연결되어 있는지 확인한다
-- 로그를 먼저 본다
-- 로드 성공 뒤에 show/load를 올바르게 호출했는지 본다
-
-## 빌드가 안 될 때
-
-- JDK / Xcode / 시뮬레이터 환경을 먼저 확인한다
-- 예시 코드가 실제 프로젝트 구조와 맞는지 본다
-- Android는 `java -version` / `JAVA_HOME`부터 확인한다. 이 workspace는 Gradle wrapper가 있어도 Java runtime이 없으면 빌드할 수 없다.
+- SDK 버전과 문서 버전이 다른 경우
+- Android/iOS 광고 ID를 섞어 쓴 경우
+- WebView 메시지 이름을 잘못 적은 경우

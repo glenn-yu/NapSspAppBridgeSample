@@ -11,11 +11,15 @@ class SampleViewModel {
     fun selectFormat(format: SampleFormat) {
         uiState = uiState.copy(
             selectedFormat = format,
-            message = "${format.title} 샘플을 여는 자리"
+            message = "${format.title} 준비됨"
         )
     }
 
     fun markBridgeReady() {
-        uiState = uiState.copy(message = "실제 nap ssp SDK 연결 지점을 여기에 붙인다")
+        uiState = uiState.copy(message = "연결 위치 확인 완료")
+    }
+
+    fun reportResult(result: String) {
+        uiState = uiState.copy(message = result)
     }
 }

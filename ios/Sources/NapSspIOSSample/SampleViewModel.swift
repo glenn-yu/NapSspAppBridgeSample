@@ -7,11 +7,15 @@ final class SampleViewModel: ObservableObject {
 
     func select(_ format: SampleFormat) {
         state.selectedFormat = format
-        state.message = "\(format.rawValue) 샘플을 여는 자리"
+        state.message = "\(format.rawValue) 준비됨"
     }
 
     func markBridgeReady() {
-        state.message = "실제 nap ssp SDK 연결 지점을 여기에 붙인다"
+        state.message = "연결 위치 확인 완료"
+    }
+
+    func reportResult(_ result: String) {
+        state.message = result
     }
 }
 #endif

@@ -12,12 +12,12 @@ enum SampleFormat: String, CaseIterable, Identifiable {
 
     var descriptionText: String {
         switch self {
-        case .banner: return "화면 아래 고정형 샘플"
-        case .native: return "카드형 UI에 섞는 샘플"
-        case .video: return "앱 안 재생 영역 샘플"
-        case .rewardVideo: return "시청 완료 보상 샘플"
-        case .interstitialVideo: return "전체 화면 노출 샘플"
-        case .hybridWebView: return "WebView 안에 광고 브릿지를 붙이는 샘플"
+        case .banner: return "화면 아래에 붙는 작은 광고"
+        case .native: return "앱 화면에 자연스럽게 섞이는 광고"
+        case .video: return "앱 안에서 재생되는 광고"
+        case .rewardVideo: return "끝까지 보면 보상이 있는 광고"
+        case .interstitialVideo: return "화면 전체를 덮는 광고"
+        case .hybridWebView: return "웹 버튼으로 네이티브 광고를 여는 방식"
         }
     }
 }

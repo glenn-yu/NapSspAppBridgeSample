@@ -7,16 +7,23 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             List {
-                Section("nap ssp iOS Native Sample") {
-                    Text("포맷을 고르고, 나중에 실제 SDK 코드를 꽂는 구조")
+                Section {
+                    AdDemoScreen(
+                        title: "nap ssp iOS 샘플",
+                        subtitle: "1) 포맷 선택 → 2) 광고 코드 실행 → 3) 화면에서 결과 확인"
+                    )
+                }
+
+                Section("현재 상태") {
                     Text(viewModel.state.message)
                 }
 
-                Section("현재 선택된 포맷") {
+                Section("지금 선택된 광고") {
                     Text(viewModel.state.selectedFormat.rawValue)
+                        .font(.headline)
                     Text(viewModel.state.selectedFormat.descriptionText)
                     Text(SdkHooks.describe(viewModel.state.selectedFormat))
-                    Text("임시 media key: 11111")
+                        .foregroundStyle(.secondary)
                 }
 
                 Section("포맷 선택") {
@@ -35,10 +42,10 @@ struct ContentView: View {
                 }
 
                 Section {
-                    Button("SDK 연결 위치 표시") {
+                    Button("연결 자리 보기") {
                         viewModel.markBridgeReady()
                     }
-                    Button("SDK 훅 실행") {
+                    Button("광고 띄우기") {
                         let result: String
                         switch viewModel.state.selectedFormat {
                         case .banner:
@@ -52,16 +59,23 @@ struct ContentView: View {
                         case .interstitialVideo:
                             result = NapSspSdkIntegration.interstitialVideo()
                         case .hybridWebView:
-                            result = "hybrid uses WebView bridge"
+                            result = "하이브리드 WebView는 init 후 웹 버튼으로 광고를 부른다"
                         }
-                        viewModel.markBridgeReady()
+                        if viewModel.state.selectedFormat == .hybridWebView {
+                            viewModel.reportResult(result)
+                        } else if result.contains("fallback") {
+                            viewModel.reportResult("\(viewModel.state.selectedFormat.rawValue) 광고 연결 실패 또는 폴백")
+                        } else {
+                            viewModel.reportResult("\(viewModel.state.selectedFormat.rawValue) 광고 뷰 연결 완료")
+                        }
                         print("NapSsp iOS result: \(result)")
                     }
                 }
 
                 if viewModel.state.selectedFormat == .hybridWebView {
                     Section("웹뷰 하이브리드 미리보기") {
-                        HybridWebViewScreen(urlString: "https://example.com")
+                        Text("먼저 init을 누르고, 그다음 광고 버튼을 눌러보면 된다")
+                        HybridWebViewScreen()
                             .frame(height: 360)
                     }
                 } else {
