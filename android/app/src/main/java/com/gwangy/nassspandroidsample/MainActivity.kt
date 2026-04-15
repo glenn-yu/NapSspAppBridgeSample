@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    SampleScreen()
+                    SampleScreen(this@MainActivity)
                 }
             }
         }
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleScreen() {
+private fun SampleScreen(activity: MainActivity) {
     val viewModel = remember { SampleViewModel() }
     val uiState = viewModel.uiState
 
@@ -57,14 +57,16 @@ private fun SampleScreen() {
                 onRunSample = { viewModel.selectFormat(uiState.selectedFormat) },
                 onHookSdk = { viewModel.markBridgeReady() },
                 onExecuteSdk = {
-                    when (uiState.selectedFormat) {
-                        SampleFormat.Banner -> NapSspSdkIntegration.banner(this@MainActivity)
-                        SampleFormat.Native -> NapSspSdkIntegration.native(this@MainActivity)
-                        SampleFormat.Video -> NapSspSdkIntegration.video(this@MainActivity)
-                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideo(this@MainActivity)
-                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideo(this@MainActivity)
-                        SampleFormat.HybridWebView -> viewModel.markBridgeReady()
+                    val result = when (uiState.selectedFormat) {
+                        SampleFormat.Banner -> NapSspSdkIntegration.banner(activity)
+                        SampleFormat.Native -> NapSspSdkIntegration.native(activity)
+                        SampleFormat.Video -> NapSspSdkIntegration.video(activity)
+                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideo(activity)
+                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideo(activity)
+                        SampleFormat.HybridWebView -> "hybrid uses WebView bridge"
                     }
+                    viewModel.markBridgeReady()
+                    println("NapSsp Android result: $result")
                 }
             )
         }
@@ -76,6 +78,11 @@ private fun SampleScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(360.dp)
+                )
+            } else {
+                AdDemoScreen(
+                    title = uiState.selectedFormat.title,
+                    subtitle = "NapSsp Android SDK 결과 화면"
                 )
             }
         }

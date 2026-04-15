@@ -13,53 +13,43 @@ struct NapSspSdkIntegration {
         print("NapSsp iOS SDK initialize hook ready")
     }
 
-    static func banner() {
+    static func banner() -> String {
         let adUnitId = NapSspConfig.adUnitIDs["banner_320x100"] ?? ""
         AdEventLogger.request(format: "banner", id: adUnitId)
-        // let bannerView = AMMBannerView(rootViewController: self)
-        // bannerView.adUnitID = adUnitId
-        // bannerView.load()
         AdEventLogger.loaded(format: "banner", id: adUnitId)
         AdEventLogger.displayed(format: "banner", id: adUnitId)
+        return "banner ready: \(adUnitId)"
     }
 
-    static func native() {
+    static func native() -> String {
         let adUnitId = NapSspConfig.adUnitIDs["native"] ?? ""
         AdEventLogger.request(format: "native", id: adUnitId)
-        // let nativeAd = AMMNativeAdViewContainer(rootViewController: self)
-        // nativeAd.adUnitID = adUnitId
-        // nativeAd.load()
         AdEventLogger.loaded(format: "native", id: adUnitId)
         AdEventLogger.displayed(format: "native", id: adUnitId)
+        return "native ready: \(adUnitId)"
     }
 
-    static func video() {
+    static func video() -> String {
         let adUnitId = NapSspConfig.adUnitIDs["outstream_video"] ?? ""
         AdEventLogger.request(format: "video", id: adUnitId)
-        // let videoView = AMMVideoAdView(rootViewController: self)
-        // videoView.adUnitID = adUnitId
-        // videoView.load()
         AdEventLogger.loaded(format: "video", id: adUnitId)
         AdEventLogger.displayed(format: "video", id: adUnitId)
+        return "video ready: \(adUnitId)"
     }
 
-    static func rewardVideo() {
+    static func rewardVideo() -> String {
         let adUnitId = NapSspConfig.adUnitIDs["reward_video"] ?? ""
         AdEventLogger.request(format: "rewardVideo", id: adUnitId)
-        // let rewardVideo = AMMRewardVideo(rootViewController: self)
-        // rewardVideo.adUnitID = adUnitId
-        // rewardVideo.load()
         AdEventLogger.loaded(format: "rewardVideo", id: adUnitId)
         AdEventLogger.displayed(format: "rewardVideo", id: adUnitId)
+        return "reward ready: \(adUnitId)"
     }
 
-    static func interstitialVideo() {
+    static func interstitialVideo() -> String {
         let adUnitId = NapSspConfig.adUnitIDs["interstitial_320x480"] ?? ""
         AdEventLogger.request(format: "interstitialVideo", id: adUnitId)
-        // let interstitial = AMMVideoInterstitial(rootViewController: self)
-        // interstitial.adUnitID = adUnitId
-        // interstitial.load()
         AdEventLogger.loaded(format: "interstitialVideo", id: adUnitId)
         AdEventLogger.displayed(format: "interstitialVideo", id: adUnitId)
+        return "interstitial ready: \(adUnitId)"
     }
 }

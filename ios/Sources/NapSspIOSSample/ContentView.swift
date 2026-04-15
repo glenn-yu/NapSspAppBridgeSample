@@ -33,32 +33,42 @@ struct ContentView: View {
                     }
                 }
 
-                if viewModel.state.selectedFormat == .hybridWebView {
-                    Section("웹뷰 하이브리드 미리보기") {
-                        HybridWebViewScreen(urlString: "https://example.com")
-                            .frame(height: 360)
-                    }
-                }
-
                 Section {
                     Button("SDK 연결 위치 표시") {
                         viewModel.markBridgeReady()
                     }
                     Button("SDK 훅 실행") {
+                        let result: String
                         switch viewModel.state.selectedFormat {
                         case .banner:
-                            NapSspSdkIntegration.banner()
+                            result = NapSspSdkIntegration.banner()
                         case .native:
-                            NapSspSdkIntegration.native()
+                            result = NapSspSdkIntegration.native()
                         case .video:
-                            NapSspSdkIntegration.video()
+                            result = NapSspSdkIntegration.video()
                         case .rewardVideo:
-                            NapSspSdkIntegration.rewardVideo()
+                            result = NapSspSdkIntegration.rewardVideo()
                         case .interstitialVideo:
-                            NapSspSdkIntegration.interstitialVideo()
+                            result = NapSspSdkIntegration.interstitialVideo()
                         case .hybridWebView:
-                            viewModel.markBridgeReady()
+                            result = "hybrid uses WebView bridge"
                         }
+                        viewModel.markBridgeReady()
+                        print("NapSsp iOS result: \(result)")
+                    }
+                }
+
+                if viewModel.state.selectedFormat == .hybridWebView {
+                    Section("웹뷰 하이브리드 미리보기") {
+                        HybridWebViewScreen(urlString: "https://example.com")
+                            .frame(height: 360)
+                    }
+                } else {
+                    Section("SDK 결과 화면") {
+                        AdDemoScreen(
+                            title: viewModel.state.selectedFormat.rawValue,
+                            subtitle: "NapSsp iOS SDK 결과 화면"
+                        )
                     }
                 }
             }
