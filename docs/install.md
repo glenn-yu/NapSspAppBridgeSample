@@ -10,6 +10,7 @@ nap ssp 네이티브 SDK 샘플을 열기 전에 필요한 기본 환경을 확�
 - JDK와 Android SDK가 설치되어 있어야 한다.
 - nap ssp Android SDK는 `io.github.nasmedia-tech:admixer-ssp:1.0.21`를 사용한다.
 - Google Ads ID 의존성도 함께 넣는다: `com.google.android.gms:play-services-ads-identifier:18.9.0`
+- 테스트용 media key/ad unit ID 예시는 앱별로 다르다.
 
 ## iOS
 
@@ -18,6 +19,7 @@ nap ssp 네이티브 SDK 샘플을 열기 전에 필요한 기본 환경을 확�
 - nap ssp iOS SDK는 SPM 패키지로 넣는다.
 - 기본 패키지: `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`
 - 코어 패키지: `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git`
+- 테스트용 media key/ad unit ID 예시는 앱별로 다르다.
 
 ## 먼저 확인할 것
 
