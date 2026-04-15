@@ -9,6 +9,11 @@ private enum HybridMessage: String {
     case loadRewardVideo = "loadRewardVideo"
     case loadInterstitialVideo = "loadInterstitialVideo"
     case getStatus = "getStatus"
+    case adRequest = "adRequest"
+    case adLoaded = "adLoaded"
+    case adDisplayed = "adDisplayed"
+    case adClicked = "adClicked"
+    case adFailed = "adFailed"
 }
 
 private final class NapSspHybridDispatcher {
@@ -18,17 +23,37 @@ private final class NapSspHybridDispatcher {
             NapSspInitializer.initialize()
             return "init ok"
         case .loadBanner:
+            HybridEventBridge.logRequest("loadBanner")
             return "banner hook ok"
         case .loadNative:
+            HybridEventBridge.logRequest("loadNative")
             return "native hook ok"
         case .loadVideo:
+            HybridEventBridge.logRequest("loadVideo")
             return "video hook ok"
         case .loadRewardVideo:
+            HybridEventBridge.logRequest("loadRewardVideo")
             return "reward hook ok"
         case .loadInterstitialVideo:
+            HybridEventBridge.logRequest("loadInterstitialVideo")
             return "interstitial hook ok"
         case .getStatus:
             return "status ok"
+        case .adRequest:
+            HybridEventBridge.logRequest(message)
+            return "request logged"
+        case .adLoaded:
+            HybridEventBridge.logLoaded(message)
+            return "loaded logged"
+        case .adDisplayed:
+            HybridEventBridge.logDisplayed(message)
+            return "displayed logged"
+        case .adClicked:
+            HybridEventBridge.logClicked(message)
+            return "clicked logged"
+        case .adFailed:
+            HybridEventBridge.logFailed(message, reason: "manual fail")
+            return "failed logged"
         case .none:
             return "unknown message"
         }
@@ -43,7 +68,7 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         let rawMessage = String(describing: message.body)
         print("NapSsp hybrid bridge message: \(rawMessage)")
         let ack = dispatcher.handle(rawMessage)
-        webView?.evaluateJavaScript("window.__napSspAck && window.__napSspAck('\(ack.replacingOccurrences(of: "'", with: "\\'"))')")
+        webView?.evaluateJavaScript("window.__napSspAck && window.__napSspAck('" + ack.replacingOccurrences(of: "'", with: "\\'") + "')")
     }
 }
 
@@ -68,6 +93,11 @@ private let sampleHybridHTML = """
   <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('loadVideo')\">loadVideo</button>
   <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('loadRewardVideo')\">loadRewardVideo</button>
   <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('loadInterstitialVideo')\">loadInterstitialVideo</button>
+  <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('adRequest')\">adRequest</button>
+  <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('adLoaded')\">adLoaded</button>
+  <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('adDisplayed')\">adDisplayed</button>
+  <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('adClicked')\">adClicked</button>
+  <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('adFailed')\">adFailed</button>
   <button onclick=\"window.webkit.messageHandlers.NapSspBridge.postMessage('getStatus')\">getStatus</button>
   <div id=\"log\">status: waiting</div>
   <script>

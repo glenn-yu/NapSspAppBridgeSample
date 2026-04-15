@@ -18,7 +18,12 @@ private enum class HybridMessage(val raw: String) {
     LoadVideo("loadVideo"),
     LoadRewardVideo("loadRewardVideo"),
     LoadInterstitialVideo("loadInterstitialVideo"),
-    GetStatus("getStatus");
+    GetStatus("getStatus"),
+    AdRequest("adRequest"),
+    AdLoaded("adLoaded"),
+    AdDisplayed("adDisplayed"),
+    AdClicked("adClicked"),
+    AdFailed("adFailed");
 
     companion object {
         fun from(raw: String): HybridMessage? = entries.firstOrNull { it.raw == raw }
@@ -31,12 +36,17 @@ private class NapSspHybridDispatcher {
             NapSspInitializer.initialize()
             "init ok"
         }
-        HybridMessage.LoadBanner -> "banner hook ok"
-        HybridMessage.LoadNative -> "native hook ok"
-        HybridMessage.LoadVideo -> "video hook ok"
-        HybridMessage.LoadRewardVideo -> "reward hook ok"
-        HybridMessage.LoadInterstitialVideo -> "interstitial hook ok"
+        HybridMessage.LoadBanner -> { HybridEventBridge.logRequest("loadBanner"); "banner hook ok" }
+        HybridMessage.LoadNative -> { HybridEventBridge.logRequest("loadNative"); "native hook ok" }
+        HybridMessage.LoadVideo -> { HybridEventBridge.logRequest("loadVideo"); "video hook ok" }
+        HybridMessage.LoadRewardVideo -> { HybridEventBridge.logRequest("loadRewardVideo"); "reward hook ok" }
+        HybridMessage.LoadInterstitialVideo -> { HybridEventBridge.logRequest("loadInterstitialVideo"); "interstitial hook ok" }
         HybridMessage.GetStatus -> "status ok"
+        HybridMessage.AdRequest -> { HybridEventBridge.logRequest(message); "request logged" }
+        HybridMessage.AdLoaded -> { HybridEventBridge.logLoaded(message); "loaded logged" }
+        HybridMessage.AdDisplayed -> { HybridEventBridge.logDisplayed(message); "displayed logged" }
+        HybridMessage.AdClicked -> { HybridEventBridge.logClicked(message); "clicked logged" }
+        HybridMessage.AdFailed -> { HybridEventBridge.logFailed(message, "manual fail"); "failed logged" }
         null -> "unknown message"
     }
 }
@@ -75,6 +85,11 @@ private const val SAMPLE_HYBRID_HTML = """
   <button onclick=\"window.NapSspBridge.postMessage('loadVideo')\">loadVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadRewardVideo')\">loadRewardVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadInterstitialVideo')\">loadInterstitialVideo</button>
+  <button onclick=\"window.NapSspBridge.postMessage('adRequest')\">adRequest</button>
+  <button onclick=\"window.NapSspBridge.postMessage('adLoaded')\">adLoaded</button>
+  <button onclick=\"window.NapSspBridge.postMessage('adDisplayed')\">adDisplayed</button>
+  <button onclick=\"window.NapSspBridge.postMessage('adClicked')\">adClicked</button>
+  <button onclick=\"window.NapSspBridge.postMessage('adFailed')\">adFailed</button>
   <button onclick=\"window.NapSspBridge.postMessage('getStatus')\">getStatus</button>
   <div id=\"log\">status: waiting</div>
   <script>
