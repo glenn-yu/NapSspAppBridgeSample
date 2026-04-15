@@ -25,6 +25,13 @@
 - `loadInterstitialVideo`
 - `getStatus`
 
+## 현재 샘플 동작
+
+- 메시지를 보내면 네이티브가 분기한다.
+- `init`은 초기화 진입점으로 `NapSspInitializer.initialize()`를 부른다.
+- 나머지 메시지는 현재 `hook ok` 응답을 돌려준다.
+- 응답은 웹 페이지의 상태 영역에 보인다.
+
 ## Android
 
 ### 권장 구조
@@ -38,8 +45,8 @@
 
 ```html
 <script>
-  window.NapSspBridge.postMessage(JSON.stringify({ type: 'init' }))
-  window.NapSspBridge.postMessage(JSON.stringify({ type: 'loadBanner' }))
+  window.NapSspBridge.postMessage('init')
+  window.NapSspBridge.postMessage('loadBanner')
 </script>
 ```
 
@@ -56,16 +63,10 @@
 
 ```html
 <script>
-  window.webkit.messageHandlers.NapSspBridge.postMessage({ type: 'init' })
-  window.webkit.messageHandlers.NapSspBridge.postMessage({ type: 'loadBanner' })
+  window.webkit.messageHandlers.NapSspBridge.postMessage('init')
+  window.webkit.messageHandlers.NapSspBridge.postMessage('loadBanner')
 </script>
 ```
-
-## 샘플에서 지금 확인되는 것
-
-- 웹뷰 화면이 실제로 뜬다.
-- 브리지 메시지가 네이티브 로그로 들어온다.
-- 웹 쪽에서 메시지 규약만 맞추면 바로 확장할 수 있다.
 
 ## 주의할 점
 

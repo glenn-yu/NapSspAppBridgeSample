@@ -11,21 +11,45 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
+private enum class HybridMessage(val raw: String) {
+    Init("init"),
+    LoadBanner("loadBanner"),
+    LoadNative("loadNative"),
+    LoadVideo("loadVideo"),
+    LoadRewardVideo("loadRewardVideo"),
+    LoadInterstitialVideo("loadInterstitialVideo"),
+    GetStatus("getStatus");
+
+    companion object {
+        fun from(raw: String): HybridMessage? = entries.firstOrNull { it.raw == raw }
+    }
+}
+
+private class NapSspHybridDispatcher {
+    fun handle(message: String): String = when (HybridMessage.from(message)) {
+        HybridMessage.Init -> {
+            NapSspInitializer.initialize()
+            "init ok"
+        }
+        HybridMessage.LoadBanner -> "banner hook ok"
+        HybridMessage.LoadNative -> "native hook ok"
+        HybridMessage.LoadVideo -> "video hook ok"
+        HybridMessage.LoadRewardVideo -> "reward hook ok"
+        HybridMessage.LoadInterstitialVideo -> "interstitial hook ok"
+        HybridMessage.GetStatus -> "status ok"
+        null -> "unknown message"
+    }
+}
+
 class NapSspHybridBridge(private val webView: WebView) {
+    private val dispatcher = NapSspHybridDispatcher()
+
     @JavascriptInterface
     fun postMessage(message: String) {
         println("NapSsp hybrid bridge message: $message")
+        val ack = dispatcher.handle(message)
         webView.post {
-            val ack = when (message) {
-                "init" -> "init ok"
-                "loadBanner" -> "banner hook ok"
-                "loadNative" -> "native hook ok"
-                "loadVideo" -> "video hook ok"
-                "loadRewardVideo" -> "reward hook ok"
-                "loadInterstitialVideo" -> "interstitial hook ok"
-                else -> "unknown message"
-            }
-            webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('$ack')", null)
+            webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('${ack.replace("'", "\\'")}')", null)
         }
     }
 }
@@ -51,6 +75,7 @@ private const val SAMPLE_HYBRID_HTML = """
   <button onclick=\"window.NapSspBridge.postMessage('loadVideo')\">loadVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadRewardVideo')\">loadRewardVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadInterstitialVideo')\">loadInterstitialVideo</button>
+  <button onclick=\"window.NapSspBridge.postMessage('getStatus')\">getStatus</button>
   <div id=\"log\">status: waiting</div>
   <script>
     window.__napSspAck = function(message) {
