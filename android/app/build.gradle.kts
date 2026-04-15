@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.glennyu.nassspandroidsample"
+    namespace = "com.gwangy.nassspandroidsample"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.glennyu.nassspandroidsample"
+        applicationId = "com.gwangy.nassspandroidsample"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
