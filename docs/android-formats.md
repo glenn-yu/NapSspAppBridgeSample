@@ -3,6 +3,13 @@
 이 문서는 Android에서 nap ssp 네이티브 SDK를 붙일 때,
 포맷마다 어떤 뷰와 어떤 호출이 필요한지 보여준다.
 
+## 파일 역할
+
+- `NapSspInitializer.kt` — 앱 시작 시 한 번 실행하는 초기화 자리
+- `SdkHooks.kt` — 포맷별 실제 SDK 연결 함수 자리
+- `FormatDetailScreen.kt` — 포맷 설명과 연결 버튼
+- `MainActivity.kt` — 전체 샘플 화면 진입점
+
 ## 공통 전제
 
 - `Android SDK 시작하기 - Native`의 초기화와 Gradle 설정이 먼저 끝나 있어야 한다.
@@ -21,6 +28,9 @@
 3. `container.addView(banner)` 또는 레이아웃 XML에 넣는다
 4. `loadAd()` 또는 자동 로드를 쓴다
 5. `onResume / onPause / onDestroy`를 정리한다
+
+### 연결 지점
+- `SdkHooks.describe(SampleFormat.Banner)`
 
 ### 예시
 
@@ -57,6 +67,9 @@ container.addView(banner);
 5. `loadNativeAd()`를 호출한다
 6. 성공 후 화면에 붙인다
 
+### 연결 지점
+- `SdkHooks.describe(SampleFormat.Native)`
+
 ### 예시
 
 ```java
@@ -82,6 +95,9 @@ nativeAdView.loadNativeAd();
 4. 성공하면 뷰를 화면에 붙인다
 5. `onResume / onPause / onDestroy`를 정리한다
 
+### 연결 지점
+- `SdkHooks.describe(SampleFormat.Video)`
+
 ### 예시
 
 ```java
@@ -102,6 +118,9 @@ videoAdView.loadAd();
 3. `loadRewardVideoAd()`로 미리 불러온다
 4. 준비되면 `showRewardVideoAd()`를 호출한다
 5. `EARNEDREWARD` 이벤트에서 보상을 준다
+
+### 연결 지점
+- `SdkHooks.describe(SampleFormat.RewardVideo)`
 
 ### 예시
 
@@ -125,6 +144,9 @@ rewardAd.loadRewardVideoAd();
 3. `loadInterstitialVideoAd()`를 호출한다
 4. 준비되면 `showInterstitialVideoAd()`를 호출한다
 5. `CLOSE`, `COMPLETION`, `SKIPPED` 이벤트를 처리한다
+
+### 연결 지점
+- `SdkHooks.describe(SampleFormat.InterstitialVideo)`
 
 ### 예시
 

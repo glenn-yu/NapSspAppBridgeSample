@@ -3,6 +3,13 @@
 이 문서는 iOS에서 nap ssp 네이티브 SDK를 붙일 때,
 포맷마다 어떤 뷰와 어떤 호출이 필요한지 보여준다.
 
+## 파일 역할
+
+- `NapSspInitializer.swift` — 앱 시작 시 한 번 실행하는 초기화 자리
+- `SdkHooks.swift` — 포맷별 실제 SDK 연결 함수 자리
+- `ContentView.swift` — 전체 샘플 화면 진입점
+- `SampleViewModel.swift` — 포맷 선택 상태 관리
+
 ## 공통 전제
 
 - `iOS SDK 시작하기 -Native`의 설치와 설정이 먼저 끝나 있어야 한다.
@@ -21,6 +28,9 @@
 3. `adUnitID`를 설정한다
 4. `load()`를 호출한다
 5. `stop()`으로 정리한다
+
+### 연결 지점
+- `SdkHooks.describe(.banner)`
 
 ### 예시
 
@@ -52,6 +62,9 @@ banner.load()
 4. `load()`를 호출한다
 5. 성공 후 화면에 붙인다
 
+### 연결 지점
+- `SdkHooks.describe(.native)`
+
 ### 예시
 
 ```swift
@@ -73,6 +86,9 @@ nativeAd.load()
 4. 성공하면 화면에 붙인다
 5. `stop()`으로 정리한다
 
+### 연결 지점
+- `SdkHooks.describe(.video)`
+
 ### 예시
 
 ```swift
@@ -93,6 +109,9 @@ videoView.load()
 3. `load()`를 호출한다
 4. 준비되면 보여준다
 5. `onRewardVideoEarned()`에서 보상을 준다
+
+### 연결 지점
+- `SdkHooks.describe(.rewardVideo)`
 
 ### 예시
 
@@ -116,6 +135,9 @@ rewardVideo.load()
 3. `load()`를 호출한다
 4. 준비되면 보여준다
 5. `stop()`으로 정리한다
+
+### 연결 지점
+- `SdkHooks.describe(.interstitialVideo)`
 
 ### 예시
 
