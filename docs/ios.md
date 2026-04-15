@@ -2,7 +2,7 @@
 
 ## 먼저 하는 일
 
-앱이 시작할 때 `NapSspInitializer.initialize()`를 먼저 호출한다.
+앱이 시작할 때 `AppDelegate`에서 `NapSspInitializer.initialize()`를 먼저 호출한다.
 그 다음에 포맷별 화면에서 배너 / 네이티브 / 동영상 / 리워드 / 전면 동영상을 붙인다.
 
 ## 구조
