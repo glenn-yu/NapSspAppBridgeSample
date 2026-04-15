@@ -11,4 +11,8 @@ enum SdkHooks {
         case .hybridWebView: return "WebView hybrid bridge hook here"
         }
     }
+
+    static func hybridStatus() -> String {
+        "NapSsp hybrid bridge ready"
+    }
 }

@@ -9,4 +9,6 @@ object SdkHooks {
         SampleFormat.InterstitialVideo -> "Interstitial video SDK hook here"
         SampleFormat.HybridWebView -> "WebView hybrid bridge hook here"
     }
+
+    fun hybridStatus(): String = "NapSsp hybrid bridge ready"
 }

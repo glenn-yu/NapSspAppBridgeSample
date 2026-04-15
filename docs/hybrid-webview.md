@@ -29,6 +29,7 @@
 
 - 메시지를 보내면 네이티브가 분기한다.
 - `init`은 초기화 진입점으로 `NapSspInitializer.initialize()`를 부른다.
+- `getStatus`는 현재 `NapSsp hybrid bridge ready`를 돌려준다.
 - 나머지 메시지는 현재 `hook ok` 응답을 돌려준다.
 - 응답은 웹 페이지의 상태 영역에 보인다.
 
@@ -46,7 +47,7 @@
 ```html
 <script>
   window.NapSspBridge.postMessage('init')
-  window.NapSspBridge.postMessage('loadBanner')
+  window.NapSspBridge.postMessage('getStatus')
 </script>
 ```
 
@@ -64,7 +65,7 @@
 ```html
 <script>
   window.webkit.messageHandlers.NapSspBridge.postMessage('init')
-  window.webkit.messageHandlers.NapSspBridge.postMessage('loadBanner')
+  window.webkit.messageHandlers.NapSspBridge.postMessage('getStatus')
 </script>
 ```
 
