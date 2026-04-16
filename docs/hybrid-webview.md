@@ -45,7 +45,54 @@ window.__napSspAck = function(message) {
 
 ---
 
-## 3. 포맷별 호출 명령어 상세 가이드
+## 3. 웹(HTML/JS) 구현 예시 (Full Snippet)
+
+웹 개발자가 자신의 HTML 파일에 적용할 수 있는 표준 브릿지 호출 코드입니다.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>NapSsp Bridge Sample</title>
+  <script>
+    // 1. 네이티브 명령 전달 함수 (Android/iOS 통합)
+    function callNative(message) {
+        if (window.NapSspBridge) {
+            // Android 브릿지
+            window.NapSspBridge.postMessage(message);
+        } else if (window.webkit && window.webkit.messageHandlers.NapSspBridge) {
+            // iOS 브릿지
+            window.webkit.messageHandlers.NapSspBridge.postMessage(message);
+        } else {
+            console.error("Native Bridge not found");
+        }
+    }
+
+    // 2. 네이티브로부터 응답을 받는 전역 콜백 함수
+    window.__napSspAck = function(response) {
+        document.getElementById('status').innerText = response;
+        if (response.includes("clicked")) {
+            console.log("광고 클릭됨!");
+        }
+    };
+  </script>
+</head>
+<body>
+  <h2>Nap SSP 하이브리드 광고 테스트</h2>
+  <div id="status" style="padding:10px; background:#eee;">준비됨</div>
+
+  <!-- 명령 전달 버튼들 -->
+  <button onclick="callNative('init')">SDK 초기화</button>
+  <button onclick="callNative('loadBanner')">배너 광고 로드</button>
+  <button onclick="callNative('loadRewardVideo')">리워드 비디오</button>
+</body>
+</html>
+```
+
+---
+
+## 4. 포맷별 호출 명령어 상세 가이드
 
 JavaScript에서 네이티브 광고를 호출할 때 사용하는 명령어(`message`) 리스트입니다.
 
