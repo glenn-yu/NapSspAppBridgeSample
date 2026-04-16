@@ -1,14 +1,18 @@
 package com.gwangy.nassspandroidsample
 
 import android.annotation.SuppressLint
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
 private enum class HybridMessage(val raw: String) {
@@ -39,12 +43,10 @@ private class NapSspHybridDispatcher {
             }
             HybridMessage.LoadBanner -> {
                 HybridEventBridge.logRequest("loadBanner")
-                AppContextHolder.appContext?.let { NapSspSdkIntegration.bannerView(it) }
                 "banner hook ok - 광고 뷰 시도 완료"
             }
             HybridMessage.LoadNative -> {
                 HybridEventBridge.logRequest("loadNative")
-                AppContextHolder.appContext?.let { NapSspSdkIntegration.nativeView(it) }
                 "native hook ok - 광고 뷰 시도 완료"
             }
             HybridMessage.LoadVideo -> {
@@ -75,6 +77,7 @@ private class NapSspHybridDispatcher {
 
 class NapSspHybridBridge(private val webView: WebView) {
     private val dispatcher = NapSspHybridDispatcher()
+    var onLoadAdView: ((View) -> Unit)? = null
 
     init {
         // Register callback to notify WebView of asynchronous SDK events
@@ -89,6 +92,20 @@ class NapSspHybridBridge(private val webView: WebView) {
     @JavascriptInterface
     fun postMessage(message: String) {
         println("NapSsp hybrid bridge message: $message")
+        
+        val msgType = HybridMessage.from(message)
+        // Handle views that need to be added to the UI
+        if (msgType == HybridMessage.LoadBanner || msgType == HybridMessage.LoadNative) {
+            webView.post {
+                val adView = when(msgType) {
+                    HybridMessage.LoadBanner -> NapSspSdkIntegration.bannerView(webView.context)
+                    HybridMessage.LoadNative -> NapSspSdkIntegration.nativeView(webView.context)
+                    else -> null
+                }
+                adView?.let { onLoadAdView?.invoke(it) }
+            }
+        }
+
         val ack = dispatcher.handle(message)
         webView.post {
             webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('${ack.replace("'", "\\'")}')", null)
@@ -117,23 +134,16 @@ private const val SAMPLE_HYBRID_HTML = """
   <div class=\"tip\">
     <h2>하이브리드 WebView 사용법</h2>
     <p><span class=\"step\">1.</span> 먼저 <b>init</b>을 누른다.</p>
-    <p><span class=\"step\">2.</span> 그다음 <b>loadBanner / loadNative / loadVideo</b> 같은 광고 버튼을 눌러본다.</p>
-    <p><span class=\"step\">3.</span> 아래 상태창에서 네이티브 응답을 확인한다.</p>
+    <p><span class=\"step\">2.</span> 그다음 <b>loadBanner / loadNative</b> 등을 눌러 네이티브 광고를 호출한다.</p>
+    <p><span class=\"step\">3.</span> 웹뷰 아래에 실제 네이티브 광고 뷰가 꽂히는지 확인한다.</p>
   </div>
   <h1>NapSsp Hybrid WebView</h1>
-  <p>웹 버튼이 네이티브 광고 코드를 부른다.</p>
   <button class=\"primary\" onclick=\"window.NapSspBridge.postMessage('init')\">init</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadBanner')\">loadBanner</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadNative')\">loadNative</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadVideo')\">loadVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadRewardVideo')\">loadRewardVideo</button>
   <button onclick=\"window.NapSspBridge.postMessage('loadInterstitialVideo')\">loadInterstitialVideo</button>
-  <button onclick=\"window.NapSspBridge.postMessage('adRequest')\">adRequest</button>
-  <button onclick=\"window.NapSspBridge.postMessage('adLoaded')\">adLoaded</button>
-  <button onclick=\"window.NapSspBridge.postMessage('adDisplayed')\">adDisplayed</button>
-  <button onclick=\"window.NapSspBridge.postMessage('adClicked')\">adClicked</button>
-  <button onclick=\"window.NapSspBridge.postMessage('adFailed')\">adFailed</button>
-  <button onclick=\"window.NapSspBridge.postMessage('getStatus')\">getStatus</button>
   <div id=\"log\">status: waiting</div>
   <script>
     window.__napSspAck = function(message) {
@@ -150,20 +160,45 @@ fun HybridWebViewScreen(
     modifier: Modifier = Modifier,
 ) {
     val webViewState = remember { mutableStateOf<WebView?>(null) }
+    val adContainerState = remember { mutableStateOf<FrameLayout?>(null) }
 
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            WebView(context).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                webViewClient = WebViewClient()
-                addJavascriptInterface(NapSspHybridBridge(this), "NapSspBridge")
-                loadDataWithBaseURL(null, SAMPLE_HYBRID_HTML, "text/html", "utf-8", null)
-                webViewState.value = this
+    Column(modifier = modifier.fillMaxSize()) {
+        // 1. WebView Area
+        AndroidView(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            factory = { context ->
+                WebView(context).apply {
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+                    webViewClient = WebViewClient()
+                    
+                    val bridge = NapSspHybridBridge(this)
+                    bridge.onLoadAdView = { adView ->
+                        adContainerState.value?.let { container ->
+                            container.post {
+                                container.removeAllViews()
+                                container.addView(adView)
+                            }
+                        }
+                    }
+                    
+                    addJavascriptInterface(bridge, "NapSspBridge")
+                    loadDataWithBaseURL(null, SAMPLE_HYBRID_HTML, "text/html", "utf-8", null)
+                    webViewState.value = this
+                }
             }
-        }
-    )
+        )
+
+        // 2. Native Ad Area (WebView + Native Ad Hybrid)
+        AndroidView(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 0.dp),
+            factory = { context ->
+                FrameLayout(context).apply {
+                    adContainerState.value = this
+                }
+            }
+        )
+    }
 
     DisposableEffect(Unit) {
         onDispose {
