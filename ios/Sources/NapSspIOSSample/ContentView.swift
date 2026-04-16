@@ -10,11 +10,11 @@ struct ContentView: View {
                 Section {
                     AdDemoScreen(
                         title: "nap ssp iOS 샘플",
-                        subtitle: "1) 포맷 선택 → 2) 광고 코드 실행 → 3) 화면에서 결과 확인"
+                        subtitle: "포맷을 고르고 광고를 눌러보세요"
                     )
                 }
 
-                Section("현재 상태") {
+                Section {
                     Text(viewModel.state.message)
                 }
 
@@ -42,9 +42,6 @@ struct ContentView: View {
                 }
 
                 Section {
-                    Button("연결 자리 보기") {
-                        viewModel.markBridgeReady()
-                    }
                     Button("광고 띄우기") {
                         let result: String
                         switch viewModel.state.selectedFormat {
@@ -73,8 +70,8 @@ struct ContentView: View {
                 }
 
                 if viewModel.state.selectedFormat == .hybridWebView {
-                    Section("웹뷰 하이브리드 미리보기") {
-                        Text("먼저 init을 누르고, 그다음 광고 버튼을 눌러보면 된다")
+                    Section("웹뷰 하이브리드") {
+                        Text("먼저 init, 그다음 광고 버튼")
                         HybridWebViewScreen()
                             .frame(height: 360)
                     }

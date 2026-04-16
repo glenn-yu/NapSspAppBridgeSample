@@ -10,12 +10,12 @@ object SdkHooks {
         SampleFormat.HybridWebView -> hybridWebView()
     }
 
-    fun banner(): String = "배너 광고를 붙일 준비가 됨"
-    fun native(): String = "네이티브 광고를 붙일 준비가 됨"
-    fun video(): String = "동영상 광고를 붙일 준비가 됨"
-    fun rewardVideo(): String = "리워드 동영상 광고를 붙일 준비가 됨"
-    fun interstitialVideo(): String = "전면 동영상 광고를 붙일 준비가 됨"
-    fun hybridWebView(): String = "웹뷰에서 네이티브 브리지를 사용할 준비가 됨"
+    fun banner(): String = "배너 광고 준비됨"
+    fun native(): String = "네이티브 광고 준비됨"
+    fun video(): String = "동영상 광고 준비됨"
+    fun rewardVideo(): String = "리워드 광고 준비됨"
+    fun interstitialVideo(): String = "전면 광고 준비됨"
+    fun hybridWebView(): String = "웹뷰 브리지 준비됨"
 
     fun execute(format: SampleFormat, context: android.content.Context): String = when (format) {
         SampleFormat.Banner -> { NapSspSdkIntegration.bannerView(context); "배너 광고 실행" }

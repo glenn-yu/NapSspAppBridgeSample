@@ -14,7 +14,7 @@ object NapSspSdkIntegration {
                 .invoke(instance, context, NapSspConfig.MEDIA_KEY, NapSspConfig.AD_UNIT_IDS.values.toList())
             AdEventLogger.loaded("initialize", NapSspConfig.MEDIA_KEY)
         }.onFailure {
-            AdEventLogger.failed("initialize", NapSspConfig.MEDIA_KEY, it.message ?: "sdk init failed")
+            AdEventLogger.failed("initialize", NapSspConfig.MEDIA_KEY, it.message ?: "sdk init failed - check vendor SDK package")
         }
     }
 
@@ -34,7 +34,7 @@ object NapSspSdkIntegration {
             AdEventLogger.displayed("banner", adUnitId)
             adView as View
         }.getOrElse {
-            AdEventLogger.failed("banner", adUnitId, it.message ?: "banner failed")
+            AdEventLogger.failed("banner", adUnitId, it.message ?: "banner failed - check SDK binary and class names")
             null
         }
     }
@@ -55,7 +55,7 @@ object NapSspSdkIntegration {
             AdEventLogger.displayed("native", adUnitId)
             nativeView as View
         }.getOrElse {
-            AdEventLogger.failed("native", adUnitId, it.message ?: "native failed")
+            AdEventLogger.failed("native", adUnitId, it.message ?: "native failed - check SDK binary and class names")
             null
         }
     }
@@ -76,7 +76,7 @@ object NapSspSdkIntegration {
             AdEventLogger.displayed("video", adUnitId)
             videoView as View
         }.getOrElse {
-            AdEventLogger.failed("video", adUnitId, it.message ?: "video failed")
+            AdEventLogger.failed("video", adUnitId, it.message ?: "video failed - check SDK binary and class names")
             null
         }
     }
@@ -97,7 +97,7 @@ object NapSspSdkIntegration {
             AdEventLogger.displayed("rewardVideo", adUnitId)
             rewardView as View
         }.getOrElse {
-            AdEventLogger.failed("rewardVideo", adUnitId, it.message ?: "reward failed")
+            AdEventLogger.failed("rewardVideo", adUnitId, it.message ?: "reward failed - check SDK binary and class names")
             null
         }
     }
@@ -118,7 +118,7 @@ object NapSspSdkIntegration {
             AdEventLogger.displayed("interstitialVideo", adUnitId)
             interstitialView as View
         }.getOrElse {
-            AdEventLogger.failed("interstitialVideo", adUnitId, it.message ?: "interstitial failed")
+            AdEventLogger.failed("interstitialVideo", adUnitId, it.message ?: "interstitial failed - check SDK binary and class names")
             null
         }
     }

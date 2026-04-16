@@ -67,20 +67,17 @@ private fun SampleScreen(activity: MainActivity) {
         item {
             AdDemoScreen(
                 title = "nap ssp Android 샘플",
-                subtitle = "1) 포맷 선택 → 2) 광고 코드 실행 → 3) 화면에서 결과 확인"
+                subtitle = "포맷을 고르고 광고를 눌러보세요"
             )
         }
 
         item {
-            Text("현재 상태", fontWeight = FontWeight.SemiBold)
             Text(uiState.message)
         }
 
         item {
             FormatDetailScreen(
                 format = uiState.selectedFormat,
-                onRunSample = { viewModel.selectFormat(uiState.selectedFormat) },
-                onHookSdk = { viewModel.markBridgeReady() },
                 onExecuteSdk = {
                     val result = when (uiState.selectedFormat) {
                         SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
@@ -105,8 +102,8 @@ private fun SampleScreen(activity: MainActivity) {
 
         item {
             if (uiState.selectedFormat == SampleFormat.HybridWebView) {
-                Text("웹뷰 하이브리드 미리보기", fontWeight = FontWeight.SemiBold)
-                Text("웹 버튼을 누르면 네이티브 SDK가 반응한다")
+                Text("웹뷰 하이브리드", fontWeight = FontWeight.SemiBold)
+                Text("먼저 init, 그다음 광고 버튼")
                 HybridWebViewScreen(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -114,7 +111,6 @@ private fun SampleScreen(activity: MainActivity) {
                 )
             } else {
                 if (adView != null) {
-                    Text("SDK 뷰가 화면에 붙은 상태", fontWeight = FontWeight.SemiBold)
                     AndroidView(
                         factory = { adView!! },
                         modifier = Modifier

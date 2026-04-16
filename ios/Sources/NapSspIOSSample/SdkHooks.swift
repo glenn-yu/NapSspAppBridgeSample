@@ -12,12 +12,12 @@ enum SdkHooks {
         }
     }
 
-    static func banner() -> String { "배너 광고를 붙일 준비가 됨" }
-    static func native() -> String { "네이티브 광고를 붙일 준비가 됨" }
-    static func video() -> String { "동영상 광고를 붙일 준비가 됨" }
-    static func rewardVideo() -> String { "리워드 동영상 광고를 붙일 준비가 됨" }
-    static func interstitialVideo() -> String { "전면 동영상 광고를 붙일 준비가 됨" }
-    static func hybridWebView() -> String { "웹뷰에서 네이티브 브리지를 사용할 준비가 됨" }
+    static func banner() -> String { "배너 광고 준비됨" }
+    static func native() -> String { "네이티브 광고 준비됨" }
+    static func video() -> String { "동영상 광고 준비됨" }
+    static func rewardVideo() -> String { "리워드 광고 준비됨" }
+    static func interstitialVideo() -> String { "전면 광고 준비됨" }
+    static func hybridWebView() -> String { "웹뷰 브리지 준비됨" }
 
     static func execute(_ format: SampleFormat) -> String {
         switch format {

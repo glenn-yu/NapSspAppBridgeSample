@@ -8,7 +8,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.loaded(format: "initialize", id: NapSspConfig.mediaKey)
             print("NapSsp iOS SDK initialize hook ready")
         } else {
-            AdEventLogger.failed(format: "initialize", id: NapSspConfig.mediaKey, reason: "AMMediation not found")
+            AdEventLogger.failed(format: "initialize", id: NapSspConfig.mediaKey, reason: "AMMediation not found - check SDK package")
         }
     }
 
@@ -20,7 +20,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.displayed(format: "banner", id: adUnitId)
             return "banner ready: \(adUnitId)"
         }
-        AdEventLogger.failed(format: "banner", id: adUnitId, reason: "AMMBannerView not found")
+        AdEventLogger.failed(format: "banner", id: adUnitId, reason: "AMMBannerView not found - check SDK package")
         return "banner fallback: \(adUnitId)"
     }
 
@@ -32,7 +32,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.displayed(format: "native", id: adUnitId)
             return "native ready: \(adUnitId)"
         }
-        AdEventLogger.failed(format: "native", id: adUnitId, reason: "AMMNativeAdViewContainer not found")
+        AdEventLogger.failed(format: "native", id: adUnitId, reason: "AMMNativeAdViewContainer not found - check SDK package")
         return "native fallback: \(adUnitId)"
     }
 
@@ -44,7 +44,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.displayed(format: "video", id: adUnitId)
             return "video ready: \(adUnitId)"
         }
-        AdEventLogger.failed(format: "video", id: adUnitId, reason: "AMMVideoAdView not found")
+        AdEventLogger.failed(format: "video", id: adUnitId, reason: "AMMVideoAdView not found - check SDK package")
         return "video fallback: \(adUnitId)"
     }
 
@@ -56,7 +56,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.displayed(format: "rewardVideo", id: adUnitId)
             return "reward ready: \(adUnitId)"
         }
-        AdEventLogger.failed(format: "rewardVideo", id: adUnitId, reason: "AMMRewardVideo not found")
+        AdEventLogger.failed(format: "rewardVideo", id: adUnitId, reason: "AMMRewardVideo not found - check SDK package")
         return "reward fallback: \(adUnitId)"
     }
 
@@ -68,7 +68,7 @@ struct NapSspSdkIntegration {
             AdEventLogger.displayed(format: "interstitialVideo", id: adUnitId)
             return "interstitial ready: \(adUnitId)"
         }
-        AdEventLogger.failed(format: "interstitialVideo", id: adUnitId, reason: "AMMVideoInterstitial not found")
+        AdEventLogger.failed(format: "interstitialVideo", id: adUnitId, reason: "AMMVideoInterstitial not found - check SDK package")
         return "interstitial fallback: \(adUnitId)"
     }
 }

@@ -17,8 +17,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun FormatDetailScreen(
     format: SampleFormat,
-    onRunSample: () -> Unit,
-    onHookSdk: () -> Unit,
     onExecuteSdk: () -> Unit,
 ) {
     Card(colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF8F9FB))) {
@@ -30,21 +28,14 @@ fun FormatDetailScreen(
             Text(format.description)
             Text(
                 text = when (format) {
-                    SampleFormat.Banner -> "화면 아래에 작게 붙는 광고"
-                    SampleFormat.Native -> "앱 화면에 자연스럽게 섞이는 광고"
+                    SampleFormat.Banner -> "아래에 붙는 작은 광고"
+                    SampleFormat.Native -> "화면에 섞는 광고"
                     SampleFormat.Video -> "앱 안에서 재생되는 광고"
-                    SampleFormat.RewardVideo -> "끝까지 보면 보상이 있는 광고"
-                    SampleFormat.InterstitialVideo -> "화면 전체를 덮는 광고"
-                    SampleFormat.HybridWebView -> "웹페이지 버튼으로 네이티브 광고를 여는 방식"
+                    SampleFormat.RewardVideo -> "보상이 있는 광고"
+                    SampleFormat.InterstitialVideo -> "전체 화면 광고"
+                    SampleFormat.HybridWebView -> "웹 버튼으로 여는 광고"
                 }
             )
-            Text(SdkHooks.describe(format), color = androidx.compose.ui.graphics.Color(0xFF5F6B7A))
-            Button(onClick = onRunSample, modifier = Modifier.fillMaxWidth()) {
-                Text("현재 포맷 다시 보기")
-            }
-            Button(onClick = onHookSdk, modifier = Modifier.fillMaxWidth()) {
-                Text("연결 자리 보기")
-            }
             Button(onClick = onExecuteSdk, modifier = Modifier.fillMaxWidth()) {
                 Text("광고 띄우기")
             }
