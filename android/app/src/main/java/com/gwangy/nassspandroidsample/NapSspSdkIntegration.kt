@@ -3,8 +3,18 @@ package com.gwangy.nassspandroidsample
 import android.content.Context
 import android.view.View
 import com.nasmedia.admixerssp.common.AdMixer
-import com.nasmedia.admixerssp.common.ads.*
-import com.nasmedia.admixerssp.common.listener.*
+import com.nasmedia.admixerssp.ads.AdInfo
+import com.nasmedia.admixerssp.ads.AdView
+import com.nasmedia.admixerssp.ads.NativeAdView
+import com.nasmedia.admixerssp.ads.VideoAdView
+import com.nasmedia.admixerssp.ads.RewardInterstitialVideoAd
+import com.nasmedia.admixerssp.ads.InterstitialVideoAd
+import com.nasmedia.admixerssp.ads.AdError
+import com.nasmedia.admixerssp.listener.AdListener
+import com.nasmedia.admixerssp.listener.NativeAdListener
+import com.nasmedia.admixerssp.listener.VideoAdListener
+import com.nasmedia.admixerssp.listener.RewardVideoAdListener
+import com.nasmedia.admixerssp.listener.InterstitialVideoAdListener
 
 object NapSspSdkIntegration {
     
