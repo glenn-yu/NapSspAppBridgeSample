@@ -45,7 +45,35 @@ window.__napSspAck = function(message) {
 
 ---
 
-## 3. 전체 메시지 시나리오
+## 3. 포맷별 호출 명령어 상세 가이드
+
+JavaScript에서 네이티브 광고를 호출할 때 사용하는 명령어(`message`) 리스트입니다.
+
+| 광고 포맷 | JS 명령어 (Message) | 설명 |
+| :--- | :--- | :--- |
+| **배너 (Banner)** | `loadBanner` | 하단/상단에 고정되는 320x100 등 표준 배너 호출 |
+| **네이티브 (Native)** | `loadNative` | 앱 UI에 자연스럽게 녹아드는 맞춤형 광고 호출 |
+| **동영상 (Video)** | `loadVideo` | 피드 중간 등에서 재생되는 아웃스트림 비디오 호출 |
+| **리워드 (Reward)** | `loadRewardVideo` | 사용자가 시청 시 보상을 지급하는 전면 비디오 호출 |
+| **전면 (Interstitial)** | `loadInterstitialVideo` | 화면 전체를 덮는 전면형 동영상 광고 호출 |
+
+### 💡 포맷별 구현 팁
+
+#### 1. 배너 & 네이티브
+- 호출 즉시 네이티브 영역에 광고 뷰가 생성됩니다.
+- 성공 시 `SDK Event: loaded` 콜백이 웹으로 전달됩니다.
+
+#### 2. 리워드 비디오 (Reward Video)
+- 시청 완료 시 웹으로 `rewarded` 이벤트가 전달됩니다.
+- **예시 콜백**: `SDK Event: rewarded | Format: rewardVideo | Detail: success`
+- 웹에서는 이 콜백을 받았을 때 포인트 지급 등의 로직을 처리하면 됩니다.
+
+#### 3. 전면 광고 (Interstitial)
+- 호출 시 화면 전체가 광고로 덮이므로, 웹뷰의 인터랙션이 잠시 중단될 수 있음을 고려해야 합니다.
+
+---
+
+## 4. 전체 메시지 시나리오
 
 브릿지를 통해 전달되는 주요 메시지 타입입니다.
 
