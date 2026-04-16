@@ -13,8 +13,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    val localProperties = java.util.Properties()
+    val localFile = project.rootProject.file("local.properties")
+    if (localFile.exists()) {
+        localFile.inputStream().use { localProperties.load(it) }
     }
 
     defaultConfig {
@@ -23,7 +30,12 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // 보안 키 주입
+        buildConfigField("String", "NAP_MEDIA_KEY", "\"${localProperties.getProperty("napssp.media_key") ?: "10771"}\"")
+        buildConfigField("String", "NAP_ADUNIT_BANNER", "\"${localProperties.getProperty("napssp.adunit_banner") ?: "104704"}\"")
     }
+
 
     buildTypes {
         release {

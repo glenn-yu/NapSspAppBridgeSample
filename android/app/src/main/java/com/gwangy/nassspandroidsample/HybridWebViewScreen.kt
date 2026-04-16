@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.gwangy.nassspandroidsample.bridge.NapSspConfig
+import com.gwangy.nassspandroidsample.bridge.NapSspSdkIntegration
 import com.nasmedia.admixerssp.ads.AdView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
