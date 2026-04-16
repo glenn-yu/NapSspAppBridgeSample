@@ -2,13 +2,25 @@ package com.gwangy.nassspandroidsample
 
 import android.annotation.SuppressLint
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -17,8 +29,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.nasmedia.admixerssp.ads.AdView
-import com.nasmedia.admixerssp.ads.NativeAdView
-import com.nasmedia.admixerssp.ads.VideoAdView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID
 
@@ -31,8 +43,7 @@ class NapSspHybridBridge(
     @JavascriptInterface
     fun postMessage(jsonString: String) {
         val currentTime = System.currentTimeMillis()
-        // [중복 방지] 호출 간격 1초로 강화
-        if (currentTime - lastActionTime < 1000) return
+        if (currentTime - lastActionTime < 1200) return // 락 시간을 1.2초로 늘림
         lastActionTime = currentTime
 
         try {
@@ -47,7 +58,6 @@ class NapSspHybridBridge(
                 }
                 "loadAd" -> {
                     val format = params.optString("format")
-                    // 메인 스레드 호출 동기화
                     webView.post { onAdRequest(format) }
                 }
                 "clearAds" -> {
@@ -85,10 +95,9 @@ fun HybridWebViewScreen(
     var currentAdView by remember { mutableStateOf<View?>(null) }
     var adHeight by remember { mutableStateOf(0.dp) }
     var adSessionId by remember { mutableStateOf(UUID.randomUUID().toString()) }
-    
-    // [중복 방지] UI 레벨의 작업 중 플래그
     var isRequestingAd by remember { mutableStateOf(false) }
     
+    val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -113,61 +122,87 @@ fun HybridWebViewScreen(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             factory = { factoryContext ->
                 WebView(factoryContext).apply {
-                    settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
+                    settings.apply {
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        databaseEnabled = true
+                        setSupportMultipleWindows(true)
+                        javaScriptCanOpenWindowsAutomatically = true
+                        val originalUA = userAgentString
+                        userAgentString = "$originalUA NapSspHybridBridge"
+                    }
                     webViewClient = WebViewClient()
                     
                     addJavascriptInterface(NapSspHybridBridge(this) { format ->
-                        // [중복 방지] 요청 중이면 무시
                         if (isRequestingAd) return@NapSspHybridBridge
                         isRequestingAd = true
 
-                        if (format == "clear") {
-                            currentAdView = null
-                            adHeight = 0.dp
+                        coroutineScope.launch {
+                            // 1. 기존 광고 즉시 파괴
+                            if (format == "clear") {
+                                currentAdView = null
+                                adHeight = 0.dp
+                                NapSspSdkIntegration.clearAllAds()
+                                isRequestingAd = false
+                                return@launch
+                            }
+
+                            // 2. 🎯 [핵심] 기존 광고를 먼저 파괴하고 아주 짧은 대기 시간을 가짐
+                            // SDK 내부 레지스트리가 비워질 시간을 벌어줌
+                            currentAdView = null 
+                            NapSspSdkIntegration.clearAllAds()
+                            delay(200) // 200ms 대기 (Already Exist 방지 최후의 보루)
+
+                            // 3. 새로운 세션으로 광고 생성
+                            adSessionId = UUID.randomUUID().toString()
+                            val adView = when (format) {
+                                "banner" -> {
+                                    adHeight = 100.dp
+                                    NapSspSdkIntegration.bannerView(context)
+                                }
+                                "native" -> {
+                                    adHeight = 400.dp 
+                                    NapSspSdkIntegration.nativeView(context)
+                                }
+                                "video" -> {
+                                    adHeight = 250.dp
+                                    NapSspSdkIntegration.videoView(context)
+                                }
+                                "rewardVideo" -> { 
+                                    adHeight = 0.dp
+                                    NapSspSdkIntegration.rewardVideoView(context); null 
+                                }
+                                "interstitialVideo" -> { 
+                                    adHeight = 0.dp
+                                    NapSspSdkIntegration.interstitialVideoView(context); null 
+                                }
+                                "interstitialBanner" -> { 
+                                    adHeight = 0.dp
+                                    NapSspSdkIntegration.interstitialBannerView(context); null 
+                                }
+                                else -> { adHeight = 0.dp; null }
+                            }
+                            
+                            currentAdView = adView
                             isRequestingAd = false
-                            return@NapSspHybridBridge
                         }
-                        
-                        // 세션 갱신 및 광고 생성
-                        adSessionId = UUID.randomUUID().toString()
-                        val adView = when (format) {
-                            "banner" -> NapSspSdkIntegration.bannerView(context)
-                            "native" -> NapSspSdkIntegration.nativeView(context)
-                            "video" -> NapSspSdkIntegration.videoView(context)
-                            "rewardVideo" -> { NapSspSdkIntegration.rewardVideoView(context); null }
-                            "interstitialVideo" -> { NapSspSdkIntegration.interstitialVideoView(context); null }
-                            "interstitialBanner" -> { NapSspSdkIntegration.interstitialBannerView(context); null }
-                            else -> null
-                        }
-                        
-                        currentAdView = adView
-                        adHeight = when {
-                            adView is AdView -> 100.dp
-                            adView is NativeAdView -> 350.dp
-                            adView is VideoAdView -> 250.dp
-                            else -> 0.dp
-                        }
-                        
-                        // 작업 완료 후 락 해제
-                        isRequestingAd = false
                     }, "NapSspBridge")
-                    
                     loadUrl("file:///android_asset/index.html")
                 }
             }
         )
 
         key(adSessionId) {
-            val currentAdHeight = adHeight
-            if (currentAdView != null && currentAdHeight > 0.dp) {
+            val h = adHeight
+            if (currentAdView != null && h > 0.dp) {
                 Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.LightGray))
                 AndroidView(
-                    modifier = Modifier.fillMaxWidth().height(currentAdHeight).background(Color(0xFFEEEEEE)),
+                    modifier = Modifier.fillMaxWidth().height(h).background(Color.White),
                     factory = { factoryContext ->
                         FrameLayout(factoryContext).apply {
+                            layoutParams = ViewGroup.LayoutParams(-1, -1)
                             currentAdView?.let { adView ->
-                                (adView.parent as? android.view.ViewGroup)?.removeView(adView)
+                                (adView.parent as? ViewGroup)?.removeView(adView)
                                 adView.layoutParams = FrameLayout.LayoutParams(-1, -1)
                                 addView(adView)
                                 if (adView is AdView) adView.onResume()

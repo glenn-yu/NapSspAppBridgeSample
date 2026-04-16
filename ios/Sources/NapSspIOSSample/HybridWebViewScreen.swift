@@ -18,7 +18,7 @@ struct HybridResponse: Codable {
 // 웹뷰 브릿지 핸들러
 final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
-    var onAdLoaded: ((UIView?) -> Void)?
+    var onAdLoaded: ((UIView?, CGFloat) -> Void)? // 높이 정보 추가
 
     override init() {
         super.init()
@@ -42,7 +42,7 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             }
         case "clearAds":
             DispatchQueue.main.async {
-                self.onAdLoaded?(nil)
+                self.onAdLoaded?(nil, 0)
                 NapSspSdkIntegration.clearAllAds()
                 self.sendResponse(action: "clearAds", status: "success", data: "All ads cleared")
             }
@@ -55,18 +55,25 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         DispatchQueue.main.async {
             guard let rootVC = UIApplication.shared.windows.first?.rootViewController else { return }
             var view: UIView? = nil
+            var height: CGFloat = 0
             
             switch format {
-            case "banner": view = NapSspSdkIntegration.banner(rootVC: rootVC)
-            case "native": view = NapSspSdkIntegration.native(rootVC: rootVC)
-            case "video": view = NapSspSdkIntegration.video(rootVC: rootVC)
+            case "banner": 
+                view = NapSspSdkIntegration.banner(rootVC: rootVC)
+                height = 100
+            case "native": 
+                view = NapSspSdkIntegration.native(rootVC: rootVC)
+                height = 400 // 네이티브 넉넉한 높이
+            case "video": 
+                view = NapSspSdkIntegration.video(rootVC: rootVC)
+                height = 250
             case "rewardVideo": NapSspSdkIntegration.rewardVideo(rootVC: rootVC)
             case "interstitialVideo": NapSspSdkIntegration.interstitialVideo(rootVC: rootVC)
             case "interstitialBanner": NapSspSdkIntegration.interstitialBanner(rootVC: rootVC)
             default: break
             }
             
-            self.onAdLoaded?(view)
+            self.onAdLoaded?(view, height)
             self.sendResponse(action: "loadAd", status: "success", data: "Triggered \(format)")
         }
     }
@@ -88,8 +95,15 @@ struct WebViewContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.userContentController.add(bridge, name: "NapSspBridge")
+        config.allowsInlineMediaPlayback = true
+        config.mediaTypesRequiringUserActionForPlayback = []
         let webView = WKWebView(frame: .zero, configuration: config)
         bridge.webView = webView
+        webView.evaluateJavaScript("navigator.userAgent") { result, _ in
+            if let oldUA = result as? String {
+                webView.customUserAgent = oldUA + " NapSspHybridBridge"
+            }
+        }
         if let url = Bundle.main.url(forResource: "index", withExtension: "html") {
             webView.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         }
@@ -109,14 +123,10 @@ struct HybridWebViewScreen: View {
         VStack(spacing: 0) {
             WebViewContainer(bridge: bridge)
                 .onAppear {
-                    bridge.onAdLoaded = { view in
+                    bridge.onAdLoaded = { view, height in
                         self.adView = view
+                        self.adHeight = height
                         self.adViewId = UUID()
-                        
-                        if let _ = view as? AMMBannerView { self.adHeight = 100 }
-                        else if let _ = view as? AMMNativeAdViewContainer { self.adHeight = 350 }
-                        else if let _ = view as? AMMVideoAdView { self.adHeight = 250 }
-                        else { self.adHeight = 0 }
                     }
                 }
 
@@ -125,12 +135,11 @@ struct HybridWebViewScreen: View {
                 AdViewRepresentable(adView: view)
                     .id(adViewId)
                     .frame(maxWidth: .infinity)
-                    .frame(height: adHeight)
+                    .frame(height: adHeight) // 🎯 동적 높이 할당
                     .background(Color(UIColor.secondarySystemBackground))
             }
         }
         .onDisappear {
-            // 화면 종료 시 모든 광고 자원 해제
             NapSspSdkIntegration.clearAllAds()
         }
     }
@@ -139,8 +148,8 @@ struct HybridWebViewScreen: View {
 struct AdViewRepresentable: UIViewRepresentable {
     let adView: UIView
     func makeUIView(context: Context) -> UIView {
-        adView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        adView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        adView.setContentCompressionResistancePriority(.required, for: .vertical)
+        adView.setContentHuggingPriority(.required, for: .vertical)
         return adView
     }
     func updateUIView(_ uiView: UIView, context: Context) {}

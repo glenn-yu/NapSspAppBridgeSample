@@ -1,90 +1,128 @@
-# NapSsp Hybrid App Bridge 통합 개발 가이드 (AOS & iOS)
+# 🚀 NapSSP 하이브리드 광고 통합 풀스택 가이드 (Web to Native)
 
-이 문서는 Nap SSP Native SDK를 하이브리드 앱(WebView)에 통합하기 위한 **3대 핵심 요소**와 **정석 구현 방법**을 다룹니다.
-
----
-
-## 1. 하이브리드 통합의 3대 핵심 요소 (The 3 Pillars)
-
-성공적인 광고 연동을 위해 아래 3가지 파일(또는 로직)이 반드시 쌍을 이뤄야 합니다.
-
-### ① 웹 기둥 (Web Side - JavaScript)
-*   **역할**: 사용자 액션(버튼 클릭)을 감지하여 네이티브에 JSON 명령을 전달하고 결과를 수신합니다.
-*   **핵심**: 중복 호출 방지(Debounce) 로직이 포함되어야 합니다.
-*   **참조 파일**: `index.html`
-
-### ② 브릿지 기둥 (Native Glue - Bridge Screen)
-*   **역할**: 웹뷰와 네이티브 엔진 사이의 통로입니다. 웹의 JSON을 파싱하여 엔진을 호출합니다.
-*   **핵심**: 광고 갱신 시 UI를 강제로 리프레시하는 **세션 관리(`key`/`id`)**가 핵심입니다.
-*   **참조 파일**: `HybridWebViewScreen.kt` (AOS), `HybridWebViewScreen.swift` (iOS)
-
-### ③ SDK 엔진 기둥 (Native Engine - SDK Integration)
-*   **역할**: 실제 광고 SDK를 호출하고, 광고 객체의 **생명주기(Lifecycle)를 엄격하게 관리**합니다.
-*   **핵심**: `Already Exist` 오류를 막는 **정석 파괴 시퀀스**가 이 레이어에 구현됩니다.
-*   **참조 파일**: `NapSspSdkIntegration.kt` (AOS), `NapSspSdkIntegration.swift` (iOS)
+이 문서는 하이브리드 앱 개발자가 웹(JS)에서 광고를 요청하고, 네이티브(Android/iOS)에서 SDK를 실행하여 광고를 노출하는 **전체 연동 과정**을 다룹니다.
 
 ---
 
-## 2. [가장 중요] 플랫폼별 정석 파괴 시퀀스
+## 1. 연동 흐름 한눈에 보기 (Workflow)
 
-동일한 ID로 광고를 다시 부를 때 발생하는 오류를 방지하기 위해, 새로운 광고를 만들기 전 반드시 기존 객체를 아래 순서대로 처리해야 합니다.
+하이브리드 광고는 **웹(요청) → 브릿지(전달) → 네이티브(실행)** 순으로 동작합니다.
 
-### 2.1 Android (Kotlin) 시퀀스
-1.  **가시성 제거**: `banner.visibility = View.GONE` (엔진 중단 신호)
-2.  **일시 정지**: `banner.onPause()` (리소스 정리 시작)
-3.  **파괴**: `banner.onDestroy()` (리스너 강제 해제)
-4.  **부모 제거**: `parent.removeView(banner)` (레이아웃 탈착)
-5.  **참조 제거**: `banner = null` (메모리 해제)
-
-### 2.2 iOS (Swift) 시퀀스
-1.  **가시성 제거**: `view.isHidden = true`
-2.  **중단**: `banner.stop()` (리스너 해제 및 리소스 정리)
-3.  **부모 제거**: `view.removeFromSuperview()` (UI 계층 탈착)
-4.  **참조 제거**: `banner = nil` (메모리 해제)
+1.  **Web**: 사용자가 버튼 클릭 → `callNative('loadAd', {format: 'banner'})` 호출
+2.  **Bridge**: 네이티브가 웹의 JSON 메시지를 수신하여 파싱
+3.  **Native**: 기존 광고 파괴 후 새 광고 객체 생성 및 `loadAd()` 호출
+4.  **SDK**: 광고 로드 성공 시 네이티브 영역에 광고 노출
+5.  **Callback**: 네이티브가 웹의 `onNapSspMessage()`를 호출하여 성공/실패 보고
 
 ---
 
-## 3. 하이브리드 통신 규격 (Standard JSON Bridge)
+## 2. Web Side (HTML/JavaScript) 구현
 
-### 3.1 Web → Native (Request)
+웹 페이지(또는 `index.html`)에 아래 코드를 추가하여 네이티브와 통신할 준비를 합니다.
+
+### 2.1 네이티브 호출 및 응답 수신
 ```javascript
-const request = {
-    action: "loadAd",
-    params: { format: "banner", adUnitId: "104704" }
+// [중복 호출 방지용 플래그]
+let isRequesting = false;
+
+// ① 네이티브에 광고 요청 보내기
+function callNative(action, params = {}) {
+    if (isRequesting) return;
+    isRequesting = true;
+    setTimeout(() => { isRequesting = false; }, 1000); // 1초 데바운스
+
+    const message = JSON.stringify({ action, params });
+    
+    if (window.NapSspBridge) {
+        // Android 호출
+        window.NapSspBridge.postMessage(message);
+    } else if (window.webkit?.messageHandlers?.NapSspBridge) {
+        // iOS 호출
+        window.webkit.messageHandlers.NapSspBridge.postMessage(message);
+    }
+}
+
+// ② 네이티브로부터 결과 받기 (전역 함수)
+window.onNapSspMessage = function(responseStr) {
+    const res = JSON.parse(responseStr);
+    console.log(`액션: ${res.action}, 상태: ${res.status}, 데이터: ${res.data}`);
 };
-// Android
-window.NapSspBridge.postMessage(JSON.stringify(request));
-// iOS
-window.webkit.messageHandlers.NapSspBridge.postMessage(JSON.stringify(request));
 ```
 
 ---
 
-## 4. UI 갱신 및 관리 (HybridWebView)
+## 3. Bridge Side (Native Connection)
 
-### 4.1 UI 강제 리프레시 (Key Strategy)
-동일한 영역에 광고를 계속 새로 그리기 위해 고유 세션 ID를 사용합니다.
+웹의 메시지를 받아서 네이티브 엔진(`NapSspSdkIntegration`)으로 연결해주는 다리 역할을 합니다.
 
-*   **Android (Compose)**: 
-    ```kotlin
-    key(adSessionId) { 
-        AndroidView(factory = { context -> FrameLayout(context).apply { addView(adView) } }) 
+### 3.1 Android (Kotlin/Compose)
+```kotlin
+class NapSspHybridBridge(private val webView: WebView, val onAdLoaded: (View?) -> Unit) {
+    @JavascriptInterface
+    fun postMessage(jsonString: String) {
+        val request = JSONObject(jsonString)
+        val action = request.getString("action")
+        if (action == "loadAd") {
+            val format = request.getJSONObject("params").getString("format")
+            webView.post { 
+                val adView = NapSspSdkIntegration.loadAd(format) 
+                onAdLoaded(adView) // UI 업데이트
+            }
+        }
     }
-    ```
-*   **iOS (SwiftUI)**: 
-    ```swift
-    AdViewRepresentable(adView: view).id(adViewId)
-    ```
+}
+```
+
+### 3.2 iOS (Swift/SwiftUI)
+```swift
+final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard let body = message.body as? String else { return }
+        // JSON 파싱 후 NapSspSdkIntegration.shared.loadAd(format) 호출
+    }
+}
+```
 
 ---
 
-## 5. 자주 발생하는 오류 해결
+## 4. Native Side (SDK Integration - 4개 언어 지원)
 
-| 오류 현상 | 원인 및 해결책 |
-| :--- | :--- |
-| **Already Exist** | 위 섹션 2의 **정석 파괴 시퀀스**를 준수했는지 확인하세요. 특히 `onDestroy()`/`stop()` 호출 후 `Map`에서 확실히 제거해야 합니다. |
-| **중복 호출 (Double Firing)** | 네이티브 브릿지에서 타임스탬프 기반 락(Lock)을 걸거나, JS에서 `isProcessing` 플래그를 사용하세요. |
-| **빈 화면 (AOS)** | `AndroidManifest.xml`에 `usesCleartextTraffic="true"` 설정을 확인하세요. |
+가장 중요한 **"Already Exist"** 오류 방지를 위해 아래 정석 시퀀스를 각 언어별로 구현합니다.
+
+### 4.1 Android (Kotlin & Java 공통 정석 시퀀스)
+**순서: GONE → onPause → onDestroy → removeView → null**
+
+*   **Kotlin**: `ad.visibility = View.GONE; ad.onPause(); ad.onDestroy(); activeAds.remove(format)`
+*   **Java**: `ad.setVisibility(View.GONE); ad.onPause(); ad.onDestroy(); activeAds.remove(format);`
+
+### 4.2 iOS (Swift & Obj-C 공통 정석 시퀀스)
+**순서: isHidden → stop → removeFromSuperview → nil**
+
+*   **Swift**: `ad.isHidden = true; ad.stop(); ad.removeFromSuperview(); activeAds.removeValue(forKey: format)`
+*   **Obj-C**: `[ad setHidden:YES]; [ad stop]; [ad removeFromSuperview]; [activeAds removeObjectForKey:format];`
+
+---
+
+## 5. 어댑터(Adapter) 및 미디에이션 설정
+
+각 광고 네트워크별 필수 설정값입니다.
+
+| 네트워크 | Android 설정 | iOS 설정 | 비고 |
+| :--- | :--- | :--- | :--- |
+| **Google** | `APPLICATION_ID` (Manifest) | `GADApplicationIdentifier` (plist) | 필수 |
+| **Adfit** | `registerAdapter(ADAPTER_ADFIT)` | AdMixerMediationAdFit 설치 | 필수 |
+| **Pangle** | `PAGSdk.init()` 별도 호출 | `pagConfig.appID` 설정 | 필수 |
+| **AppLovin**| SDK Key (Manifest) | `AppLovinSdkKey` (plist) | 필수 |
+
+---
+
+## 6. UI 최적화: 고유 세션 관리
+
+웹뷰에서 광고를 계속 새로 고칠 때, UI 프레임워크가 이전 광고를 완전히 지우고 새 광고를 그리게 하려면 **고유 ID**를 부여해야 합니다.
+
+*   **Android**: `key(UUID.randomUUID().toString()) { AndroidView(...) }`
+*   **iOS**: `AdViewRepresentable(adView: view).id(UUID())`
 
 ---
 *Nasmedia Technical Support (2026-04-16 Updated)*
+*이 문서는 웹 소스부터 네이티브 엔진까지의 전체 연동 과정을 포함합니다.*

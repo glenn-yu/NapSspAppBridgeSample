@@ -7,11 +7,12 @@ import com.nasmedia.admixerssp.ads.*
 import com.nasmedia.admixerssp.common.AdMixer
 import com.nasmedia.admixerssp.common.AdMixerLog
 import com.nasmedia.admixerssp.common.nativeads.NativeAdViewBinder
+import kotlin.random.Random
 
 object NapSspSdkIntegration {
 
     var onAdEventCallback: ((event: String, format: String, detail: String) -> Unit)? = null
-
+    
     private var isSdkInitialized = false
     private val activeAds = mutableMapOf<String, Any>()
 
@@ -66,25 +67,10 @@ object NapSspSdkIntegration {
     @Synchronized
     fun initialize(context: Context) {
         if (isSdkInitialized) return
-        
-        // AppConfig가 있는 경우 동적 키 사용, 없으면 NapSspConfig 사용
-        val mediaKey = NapSspConfig.MEDIA_KEY
-        
-        AdEventLogger.request("initialize", mediaKey)
-        runCatching {
-            AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
-            AdMixer.getInstance().initialize(
-                context, 
-                mediaKey, 
-                ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList())
-            )
-            isSdkInitialized = true
-            notifyEvent("loaded", "initialize", mediaKey)
-        }.onFailure {
-            val reason = it.message ?: "sdk init failed"
-            AdEventLogger.failed("initialize", mediaKey, reason)
-            onAdEventCallback?.invoke("failed", "initialize", reason)
-        }
+        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
+        AdMixer.getInstance().initialize(context, NapSspConfig.MEDIA_KEY, ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList()))
+        isSdkInitialized = true
+        notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
     }
 
     @Synchronized
@@ -92,7 +78,7 @@ object NapSspSdkIntegration {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
         
-        destroyAndRemoveAd(format)
+        destroyAndRemoveAd(format) // 정석 시퀀스 실행
 
         return runCatching {
             val adView = AdView(context)
@@ -122,10 +108,19 @@ object NapSspSdkIntegration {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         val format = "native"
         destroyAndRemoveAd(format)
+
+        val layouts = listOf(
+            R.layout.admixer_item_320x480,
+            R.layout.admixer_item_300x250,
+            R.layout.admixer_item_320x100,
+            R.layout.admixer_item_320x50
+        )
+        val selectedLayout = layouts[Random.nextInt(layouts.size)]
+
         return runCatching {
             val nativeView = NativeAdView(context)
             val adInfo = AdInfo.Builder(adUnitId).setIsUseMediation(true).build()
-            val viewBinder = NativeAdViewBinder.Builder(R.layout.admixer_item_320x480)
+            val viewBinder = NativeAdViewBinder.Builder(selectedLayout)
                 .setIconImageId(R.id.iv_icon).setTitleId(R.id.tv_title)
                 .setAdvertiserId(R.id.tv_adv).setDescriptionId(R.id.tv_desc)
                 .setMainViewId(R.id.iv_main).setCtaId(R.id.btn_cta).build()
