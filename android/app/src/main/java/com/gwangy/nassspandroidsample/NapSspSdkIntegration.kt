@@ -11,7 +11,7 @@ import com.nasmedia.admixerssp.common.nativeads.NativeAdViewBinder
 object NapSspSdkIntegration {
 
     var onAdEventCallback: ((event: String, format: String, detail: String) -> Unit)? = null
-    
+
     private var isSdkInitialized = false
     private val activeAds = mutableMapOf<String, Any>()
 
@@ -24,38 +24,47 @@ object NapSspSdkIntegration {
         onAdEventCallback?.invoke(event, format, id)
     }
 
-    // 기존 광고를 완벽하게 파괴하고 맵에서 제거
+    // Destroy and remove existing ad view/object for the format
     private fun destroyAndRemoveAd(format: String) {
-        activeAds[format]?.let { ad ->
+        activeAds.remove(format)?.let { ad ->
             if (ad is View) {
                 (ad.parent as? ViewGroup)?.removeView(ad)
             }
             when (ad) {
-                is AdView -> ad.onDestroy()
-                is NativeAdView -> ad.onDestroy()
-                is VideoAdView -> ad.onDestroy()
-                is InterstitialAd -> ad.stopInterstitial()
-                is InterstitialVideoAd -> ad.stopInterstitialVideoAd()
-                is RewardInterstitialVideoAd -> ad.stopRewardVideoAd()
+                is AdView -> runCatching { ad.onDestroy() }
+                is NativeAdView -> runCatching { ad.onDestroy() }
+                is VideoAdView -> runCatching { ad.onDestroy() }
+                is InterstitialAd -> runCatching { ad.stopInterstitial() }
+                is InterstitialVideoAd -> runCatching { ad.stopInterstitialVideoAd() }
+                is RewardInterstitialVideoAd -> runCatching { ad.stopRewardVideoAd() }
+                else -> {}
             }
         }
-        activeAds.remove(format)
     }
 
+    // Initialize with optional runtime override via AppConfig
     fun initialize(context: Context) {
         if (isSdkInitialized) return
-        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
-        AdMixer.getInstance().initialize(context, NapSspConfig.MEDIA_KEY, ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList()))
-        isSdkInitialized = true
-        notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
+        val mediaKey = AppConfig.getMediaKey(context) ?: NapSspConfig.MEDIA_KEY
+        AdEventLogger.request("initialize", mediaKey)
+        runCatching {
+            AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
+            AdMixer.getInstance().initialize(context, mediaKey, NapSspConfig.AD_UNIT_IDS.values.toList())
+            isSdkInitialized = true
+            notifyEvent("loaded", "initialize", mediaKey)
+        }.onFailure {
+            val reason = it.message ?: "sdk init failed"
+            AdEventLogger.failed("initialize", mediaKey, reason)
+            onAdEventCallback?.invoke("failed", "initialize", reason)
+        }
     }
 
-    // 모든 포맷: 네이티브처럼 매번 새로 생성 (Redraw)
+    // Banner
     fun bannerView(context: Context): View? {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
+        val adUnitId = AppConfig.getAdUnit(context, "banner_320x100") ?: NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
         destroyAndRemoveAd(format)
-        
+
         return runCatching {
             val adView = AdView(context)
             adView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
@@ -79,8 +88,9 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
+    // Native
     fun nativeView(context: Context): View? {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return null
+        val adUnitId = AppConfig.getAdUnit(context, "native") ?: NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         val format = "native"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -108,8 +118,9 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
+    // Video
     fun videoView(context: Context): View? {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
+        val adUnitId = AppConfig.getAdUnit(context, "outstream_video") ?: NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
         val format = "video"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -131,8 +142,120 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
-    fun rewardVideoView(context: Context) {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
+    // Reward
+    fun rewardVideoView(context: Context): View? {
+        val adUnitId = AppConfig.getAdUnit(context, "reward_video") ?: NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return null
+        val format = "rewardVideo"
+        destroyAndRemoveAd(format)
+        return runCatching {
+            val rewardAd = RewardInterstitialVideoAd(context)
+            rewardAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            rewardAd.setListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    rewardAd.showRewardVideoAd()
+                }
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.EARNEDREWARD -> onAdEventCallback?.invoke("rewarded", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
+            })
+            activeAds[format] = rewardAd
+            rewardAd.loadRewardVideoAd()
+        }.getOrNull()
+    }
+
+    // Interstitial video
+    fun interstitialVideoView(context: Context): View? {
+        val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return null
+        val format = "interstitialVideo"
+        destroyAndRemoveAd(format)
+        return runCatching {
+            val interstitialAd = InterstitialVideoAd(context)
+            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            interstitialAd.setListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    interstitialAd.showInterstitialVideoAd()
+                }
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
+            })
+            activeAds[format] = interstitialAd
+            interstitialAd.loadInterstitialVideoAd()
+        }.getOrNull()
+    }
+
+    // Interstitial banner
+    fun interstitialBannerView(context: Context) {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
+        val format = "interstitialBanner"
+        destroyAndRemoveAd(format)
+        runCatching {
+            val interstitialAd = InterstitialAd(context)
+            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).interstitialAdType(AdInfo.InterstitialAdType.Basic).build())
+            interstitialAd.setAdListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    interstitialAd.showInterstitial()
+                }
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
+            })
+            activeAds[format] = interstitialAd
+            interstitialAd.startInterstitial()
+        }.getOrNull()
+    }
+
+    fun clearAllAds() {
+        activeAds.keys.toList().forEach { destroyAndRemoveAd(it) }
+    }
+
+    fun resumeAll() {
+        activeAds.values.forEach { ad ->
+            if (ad is AdView) ad.onResume()
+            else if (ad is NativeAdView) ad.onResume()
+            else if (ad is VideoAdView) ad.onResume()
+        }
+    }
+
+    fun pauseAll() {
+        activeAds.values.forEach { ad ->
+            if (ad is AdView) ad.onPause()
+            else if (ad is NativeAdView) ad.onPause()
+            else if (ad is VideoAdView) ad.onPause()
+        }
+    }
+}
+    fun rewardVideoView(context: Context): View? {
+        val adUnitId = AppConfig.getAdUnit(context, "reward_video") ?: NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return null
+>>>>>>> 2e3c92b (feat(android): add runtime AppConfig and use overrides for media key/ad unit ids)
         val format = "rewardVideo"
         destroyAndRemoveAd(format)
         runCatching {
@@ -161,8 +284,13 @@ object NapSspSdkIntegration {
         }
     }
 
+<<<<<<< HEAD
     fun interstitialVideoView(context: Context) {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
+=======
+    fun interstitialVideoView(context: Context): View? {
+        val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return null
+>>>>>>> 2e3c92b (feat(android): add runtime AppConfig and use overrides for media key/ad unit ids)
         val format = "interstitialVideo"
         destroyAndRemoveAd(format)
         runCatching {
