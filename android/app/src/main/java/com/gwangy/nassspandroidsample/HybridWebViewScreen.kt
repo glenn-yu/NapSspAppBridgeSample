@@ -34,6 +34,21 @@ private enum class HybridMessage(val raw: String) {
     }
 }
 
+private fun String.toJsString(): String = buildString {
+    append('"')
+    for (ch in this@toJsString) {
+        when (ch) {
+            '\\' -> append("\\\\")
+            '"' -> append("\\\"")
+            '\n' -> append("\\n")
+            '\r' -> append("\\r")
+            '\t' -> append("\\t")
+            else -> append(ch)
+        }
+    }
+    append('"')
+}
+
 private class NapSspHybridDispatcher {
     fun handle(message: String): String {
         return when (HybridMessage.from(message)) {
@@ -84,7 +99,7 @@ class NapSspHybridBridge(private val webView: WebView) {
         NapSspSdkIntegration.onAdEventCallback = { event, format, detail ->
             val jsMessage = "SDK Event: $event | Format: $format | Detail: $detail"
             webView.post {
-                webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('${jsMessage.replace("'", "\\'")}')", null)
+                webView.evaluateJavascript("window.__napSspAck && window.__napSspAck(${jsMessage.toJsString()})", null)
             }
         }
     }
@@ -92,7 +107,7 @@ class NapSspHybridBridge(private val webView: WebView) {
     @JavascriptInterface
     fun postMessage(message: String) {
         println("NapSsp hybrid bridge message: $message")
-        
+
         val msgType = HybridMessage.from(message)
         // Handle views that need to be added to the UI
         if (msgType == HybridMessage.LoadBanner || msgType == HybridMessage.LoadNative) {
@@ -108,7 +123,7 @@ class NapSspHybridBridge(private val webView: WebView) {
 
         val ack = dispatcher.handle(message)
         webView.post {
-            webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('${ack.replace("'", "\\'")}')", null)
+            webView.evaluateJavascript("window.__napSspAck && window.__napSspAck(${ack.toJsString()})", null)
         }
     }
 }
@@ -163,7 +178,6 @@ fun HybridWebViewScreen(
     val adContainerState = remember { mutableStateOf<FrameLayout?>(null) }
 
     Column(modifier = modifier.fillMaxSize()) {
-        // 1. WebView Area
         AndroidView(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             factory = { context ->
@@ -189,9 +203,10 @@ fun HybridWebViewScreen(
             }
         )
 
-        // 2. Native Ad Area (WebView + Native Ad Hybrid)
         AndroidView(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 120.dp),
             factory = { context ->
                 FrameLayout(context).apply {
                     adContainerState.value = this
