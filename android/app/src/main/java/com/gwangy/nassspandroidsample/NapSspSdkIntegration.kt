@@ -2,19 +2,9 @@ package com.gwangy.nassspandroidsample
 
 import android.content.Context
 import android.view.View
-import com.admixer.ssp.AdMixer
-import com.admixer.ssp.AdInfo
-import com.admixer.ssp.AdView
-import com.admixer.ssp.NativeAdView
-import com.admixer.ssp.VideoAdView
-import com.admixer.ssp.RewardInterstitialVideoAd
-import com.admixer.ssp.InterstitialVideoAd
-import com.admixer.ssp.AdListener
-import com.admixer.ssp.NativeAdListener
-import com.admixer.ssp.VideoAdListener
-import com.admixer.ssp.RewardVideoAdListener
-import com.admixer.ssp.InterstitialVideoAdListener
-import com.admixer.ssp.AdError
+import com.nasmedia.admixerssp.common.AdMixer
+import com.nasmedia.admixerssp.ads.*
+import com.nasmedia.admixerssp.listener.*
 
 object NapSspSdkIntegration {
     
@@ -34,6 +24,7 @@ object NapSspSdkIntegration {
     fun initialize(context: Context) {
         AdEventLogger.request("initialize", NapSspConfig.MEDIA_KEY)
         runCatching {
+            // AdMixer initialization
             AdMixer.getInstance().initialize(
                 context, 
                 NapSspConfig.MEDIA_KEY, 
