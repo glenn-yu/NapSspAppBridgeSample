@@ -2,8 +2,19 @@ package com.gwangy.nassspandroidsample
 
 import android.content.Context
 import android.view.View
-import com.nasmedia.admixer.core.AdMixer
-import com.nasmedia.admixer.ads.*
+import com.admixer.ssp.AdMixer
+import com.admixer.ssp.AdInfo
+import com.admixer.ssp.AdView
+import com.admixer.ssp.NativeAdView
+import com.admixer.ssp.VideoAdView
+import com.admixer.ssp.RewardInterstitialVideoAd
+import com.admixer.ssp.InterstitialVideoAd
+import com.admixer.ssp.AdListener
+import com.admixer.ssp.NativeAdListener
+import com.admixer.ssp.VideoAdListener
+import com.admixer.ssp.RewardVideoAdListener
+import com.admixer.ssp.InterstitialVideoAdListener
+import com.admixer.ssp.AdError
 
 object NapSspSdkIntegration {
     
@@ -159,7 +170,7 @@ object NapSspSdkIntegration {
 
             rewardAd.setAdInfo(adInfo, context)
             rewardAd.loadRewardVideoAd()
-            null // Reward video is an Activity overlay, not a View
+            null
         }.getOrElse {
             AdEventLogger.failed(format, adUnitId, it.message ?: "reward setup failed")
             null
@@ -192,7 +203,7 @@ object NapSspSdkIntegration {
 
             interstitialAd.setAdInfo(adInfo, context)
             interstitialAd.loadInterstitialVideoAd()
-            null // Interstitial is an Activity overlay, not a View
+            null
         }.getOrElse {
             AdEventLogger.failed(format, adUnitId, it.message ?: "interstitial setup failed")
             null
