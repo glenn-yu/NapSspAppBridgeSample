@@ -2,211 +2,240 @@ package com.gwangy.nassspandroidsample
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
+import com.nasmedia.admixerssp.ads.*
 import com.nasmedia.admixerssp.common.AdMixer
-import com.nasmedia.admixerssp.common.ads.AdInfo
-import com.nasmedia.admixerssp.common.ads.AdView
-import com.nasmedia.admixerssp.common.ads.NativeAdView
-import com.nasmedia.admixerssp.common.ads.VideoAdView
-import com.nasmedia.admixerssp.common.ads.RewardInterstitialVideoAd
-import com.nasmedia.admixerssp.common.ads.InterstitialVideoAd
-import com.nasmedia.admixerssp.common.ads.AdError
-import com.nasmedia.admixerssp.common.listener.AdListener
-import com.nasmedia.admixerssp.common.listener.NativeAdListener
-import com.nasmedia.admixerssp.common.listener.VideoAdListener
-import com.nasmedia.admixerssp.common.listener.RewardVideoAdListener
-import com.nasmedia.admixerssp.common.listener.InterstitialVideoAdListener
+import com.nasmedia.admixerssp.common.AdMixerLog
+import com.nasmedia.admixerssp.common.nativeads.NativeAdViewBinder
 
 object NapSspSdkIntegration {
+
+    var onAdEventCallback: ((event: String, format: String, detail: String) -> Unit)? = null
     
-    // Bridge callback to notify WebView
-    var onAdEventCallback: ((String, String, String) -> Unit)? = null
+    private var isSdkInitialized = false
+    private val activeAds = mutableMapOf<String, Any>()
 
     private fun notifyEvent(event: String, format: String, id: String) {
-        when(event) {
-            "loaded" -> AdEventLogger.loaded(format, id)
+        when (event) {
+            "loaded"    -> AdEventLogger.loaded(format, id)
             "displayed" -> AdEventLogger.displayed(format, id)
-            "clicked" -> AdEventLogger.clicked(format, id)
-            "failed" -> {} // Handled separately with reason
+            "clicked"   -> AdEventLogger.clicked(format, id)
         }
         onAdEventCallback?.invoke(event, format, id)
     }
 
-    fun initialize(context: Context) {
-        AdEventLogger.request("initialize", NapSspConfig.MEDIA_KEY)
-        runCatching {
-            AdMixer.getInstance().initialize(
-                context, 
-                NapSspConfig.MEDIA_KEY, 
-                NapSspConfig.AD_UNIT_IDS.values.toList()
-            )
-            notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
-        }.onFailure {
-            val reason = it.message ?: "sdk init failed"
-            AdEventLogger.failed("initialize", NapSspConfig.MEDIA_KEY, reason)
-            onAdEventCallback?.invoke("failed", "initialize", reason)
+    // 기존 광고를 완벽하게 파괴하고 맵에서 제거
+    private fun destroyAndRemoveAd(format: String) {
+        activeAds[format]?.let { ad ->
+            if (ad is View) {
+                (ad.parent as? ViewGroup)?.removeView(ad)
+            }
+            when (ad) {
+                is AdView -> ad.onDestroy()
+                is NativeAdView -> ad.onDestroy()
+                is VideoAdView -> ad.onDestroy()
+                is InterstitialAd -> ad.stopInterstitial()
+                is InterstitialVideoAd -> ad.stopInterstitialVideoAd()
+                is RewardInterstitialVideoAd -> ad.stopRewardVideoAd()
+            }
         }
+        activeAds.remove(format)
     }
 
+    fun initialize(context: Context) {
+        if (isSdkInitialized) return
+        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
+        AdMixer.getInstance().initialize(context, NapSspConfig.MEDIA_KEY, ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList()))
+        isSdkInitialized = true
+        notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
+    }
+
+    // 모든 포맷: 네이티브처럼 매번 새로 생성 (Redraw)
     fun bannerView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
-        AdEventLogger.request(format, adUnitId)
+        destroyAndRemoveAd(format)
         
         return runCatching {
-            val adInfo = AdInfo.Builder(adUnitId)
-                .setIsUseMediation(true)
-                .build()
             val adView = AdView(context)
-            adView.setAdInfo(adInfo)
-            
-            adView.setAdListener(object : AdListener {
-                override fun onAdLoaded() = notifyEvent("loaded", format, adUnitId)
-                override fun onAdReceived(p0: String?) = notifyEvent("displayed", format, adUnitId)
-                override fun onAdClicked() = notifyEvent("clicked", format, adUnitId)
-                override fun onAdFailedToLoad(error: AdError) {
-                    AdEventLogger.failed(format, adUnitId, error.toString())
-                    onAdEventCallback?.invoke("failed", format, error.toString())
+            adView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            adView.setAlwaysShowAdView(true)
+            adView.setAdViewListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    adView.showAd()
                 }
-                override fun onAdClosed() {}
-                override fun onAdLeftApplication() {}
+                override fun onFailedToReceiveAd(view: Any?, adapterName: String?, errorCode: Int, errorMsg: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$errorCode] $errorMsg")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    if (event == AdEvent.DISPLAYED) notifyEvent("displayed", format, adUnitId)
+                    if (event == AdEvent.CLICK) notifyEvent("clicked", format, adUnitId)
+                }
             })
-            
+            activeAds[format] = adView
             adView.loadAd()
             adView
-        }.getOrElse {
-            AdEventLogger.failed(format, adUnitId, it.message ?: "banner setup failed")
-            null
-        }
+        }.getOrNull()
     }
 
     fun nativeView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         val format = "native"
-        AdEventLogger.request(format, adUnitId)
-        
+        destroyAndRemoveAd(format)
         return runCatching {
-            val adInfo = AdInfo.Builder(adUnitId)
-                .setIsUseMediation(true)
-                .build()
             val nativeView = NativeAdView(context)
-            
-            nativeView.setAdListener(object : NativeAdListener {
-                override fun onAdLoaded() = notifyEvent("loaded", format, adUnitId)
-                override fun onAdReceived(p0: String?) = notifyEvent("displayed", format, adUnitId)
-                override fun onAdClicked() = notifyEvent("clicked", format, adUnitId)
-                override fun onAdFailedToLoad(error: AdError) {
-                    AdEventLogger.failed(format, adUnitId, error.toString())
-                    onAdEventCallback?.invoke("failed", format, error.toString())
+            val adInfo = AdInfo.Builder(adUnitId).setIsUseMediation(true).build()
+            val viewBinder = NativeAdViewBinder.Builder(R.layout.admixer_item_320x480)
+                .setIconImageId(R.id.iv_icon).setTitleId(R.id.tv_title)
+                .setAdvertiserId(R.id.tv_adv).setDescriptionId(R.id.tv_desc)
+                .setMainViewId(R.id.iv_main).setCtaId(R.id.btn_cta).build()
+            nativeView.setAdInfo(adInfo)
+            nativeView.setViewBinder(viewBinder)
+            nativeView.setAdViewListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) = notifyEvent("loaded", format, adUnitId)
+                override fun onFailedToReceiveAd(view: Any?, adapterName: String?, errorCode: Int, errorMsg: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$errorCode] $errorMsg")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    if (event == AdEvent.DISPLAYED) notifyEvent("displayed", format, adUnitId)
+                    if (event == AdEvent.CLICK) notifyEvent("clicked", format, adUnitId)
                 }
             })
-
-            nativeView.setAdInfo(adInfo, context)
+            activeAds[format] = nativeView
             nativeView.loadNativeAd()
             nativeView
-        }.getOrElse {
-            AdEventLogger.failed(format, adUnitId, it.message ?: "native setup failed")
-            null
-        }
+        }.getOrNull()
     }
 
     fun videoView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
         val format = "video"
-        AdEventLogger.request(format, adUnitId)
-        
+        destroyAndRemoveAd(format)
         return runCatching {
-            val adInfo = AdInfo.Builder(adUnitId)
-                .setIsUseMediation(true)
-                .build()
             val videoView = VideoAdView(context)
-            
-            videoView.setAdListener(object : VideoAdListener {
-                override fun onAdLoaded() = notifyEvent("loaded", format, adUnitId)
-                override fun onAdReceived(p0: String?) = notifyEvent("displayed", format, adUnitId)
-                override fun onAdClicked() = notifyEvent("clicked", format, adUnitId)
-                override fun onAdFailedToLoad(error: AdError) {
-                    AdEventLogger.failed(format, adUnitId, error.toString())
-                    onAdEventCallback?.invoke("failed", format, error.toString())
+            videoView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            videoView.setAdViewListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) = notifyEvent("loaded", format, adUnitId)
+                override fun onFailedToReceiveAd(view: Any?, adapterName: String?, errorCode: Int, errorMsg: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$errorCode] $errorMsg")
                 }
-                override fun onAdStarted() {}
-                override fun onAdCompleted() {}
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    if (event == AdEvent.DISPLAYED) notifyEvent("displayed", format, adUnitId)
+                    if (event == AdEvent.CLICK) notifyEvent("clicked", format, adUnitId)
+                }
             })
-
-            videoView.setAdInfo(adInfo, context)
+            activeAds[format] = videoView
             videoView.loadAd()
             videoView
-        }.getOrElse {
-            AdEventLogger.failed(format, adUnitId, it.message ?: "video setup failed")
-            null
-        }
+        }.getOrNull()
     }
 
-    fun rewardVideoView(context: Context): View? {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return null
+    fun rewardVideoView(context: Context) {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
         val format = "rewardVideo"
-        AdEventLogger.request(format, adUnitId)
-        
-        return runCatching {
-            val adInfo = AdInfo.Builder(adUnitId)
-                .setIsUseMediation(true)
-                .build()
+        destroyAndRemoveAd(format)
+        runCatching {
             val rewardAd = RewardInterstitialVideoAd(context)
-            
-            rewardAd.setAdListener(object : RewardVideoAdListener {
-                override fun onAdLoaded() = notifyEvent("loaded", format, adUnitId)
-                override fun onAdReceived(p0: String?) = notifyEvent("displayed", format, adUnitId)
-                override fun onAdClicked() = notifyEvent("clicked", format, adUnitId)
-                override fun onAdFailedToLoad(error: AdError) {
-                    AdEventLogger.failed(format, adUnitId, error.toString())
-                    onAdEventCallback?.invoke("failed", format, error.toString())
+            rewardAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            rewardAd.setListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    rewardAd.showRewardVideoAd()
                 }
-                override fun onAdReward(p0: String?, p1: Int) {
-                    onAdEventCallback?.invoke("rewarded", format, "$p0:$p1")
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
                 }
-                override fun onAdClosed() {}
-                override fun onAdCompleted() {}
-                override fun onAdStarted() {}
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.EARNEDREWARD -> onAdEventCallback?.invoke("rewarded", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
             })
-
-            rewardAd.setAdInfo(adInfo, context)
+            activeAds[format] = rewardAd
             rewardAd.loadRewardVideoAd()
-            null
-        }.getOrElse {
-            AdEventLogger.failed(format, adUnitId, it.message ?: "reward setup failed")
-            null
         }
     }
 
-    fun interstitialVideoView(context: Context): View? {
-        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return null
+    fun interstitialVideoView(context: Context) {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
         val format = "interstitialVideo"
-        AdEventLogger.request(format, adUnitId)
-        
-        return runCatching {
-            val adInfo = AdInfo.Builder(adUnitId)
-                .setIsUseMediation(true)
-                .build()
+        destroyAndRemoveAd(format)
+        runCatching {
             val interstitialAd = InterstitialVideoAd(context)
-            
-            interstitialAd.setAdListener(object : InterstitialVideoAdListener {
-                override fun onAdLoaded() = notifyEvent("loaded", format, adUnitId)
-                override fun onAdReceived(p0: String?) = notifyEvent("displayed", format, adUnitId)
-                override fun onAdClicked() = notifyEvent("clicked", format, adUnitId)
-                override fun onAdFailedToLoad(error: AdError) {
-                    AdEventLogger.failed(format, adUnitId, error.toString())
-                    onAdEventCallback?.invoke("failed", format, error.toString())
+            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            interstitialAd.setListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    interstitialAd.showInterstitialVideoAd()
                 }
-                override fun onAdClosed() {}
-                override fun onAdCompleted() {}
-                override fun onAdStarted() {}
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
             })
-
-            interstitialAd.setAdInfo(adInfo, context)
+            activeAds[format] = interstitialAd
             interstitialAd.loadInterstitialVideoAd()
-            null
-        }.getOrElse {
-            AdEventLogger.failed(format, adUnitId, it.message ?: "interstitial setup failed")
-            null
+        }
+    }
+
+    fun interstitialBannerView(context: Context) {
+        val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
+        val format = "interstitialBanner"
+        destroyAndRemoveAd(format)
+        runCatching {
+            val interstitialAd = InterstitialAd(context)
+            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).interstitialAdType(AdInfo.InterstitialAdType.Basic).build())
+            interstitialAd.setAdListener(object : AdListener {
+                override fun onReceivedAd(adapterName: String?, view: Any?) {
+                    notifyEvent("loaded", format, adUnitId)
+                    interstitialAd.showInterstitial()
+                }
+                override fun onFailedToReceiveAd(v: Any?, a: String?, e: Int, m: String?) {
+                    onAdEventCallback?.invoke("failed", format, "[$e] $m")
+                }
+                override fun onEventAd(view: Any?, event: AdEvent?) {
+                    when (event) {
+                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        else -> {}
+                    }
+                }
+            })
+            activeAds[format] = interstitialAd
+            interstitialAd.startInterstitial()
+        }
+    }
+
+    fun clearAllAds() {
+        activeAds.keys.toList().forEach { destroyAndRemoveAd(it) }
+    }
+
+    fun resumeAll() {
+        activeAds.values.forEach { ad ->
+            if (ad is AdView) ad.onResume()
+            else if (ad is NativeAdView) ad.onResume()
+            else if (ad is VideoAdView) ad.onResume()
+        }
+    }
+
+    fun pauseAll() {
+        activeAds.values.forEach { ad ->
+            if (ad is AdView) ad.onPause()
+            else if (ad is NativeAdView) ad.onPause()
+            else if (ad is VideoAdView) ad.onPause()
         }
     }
 }

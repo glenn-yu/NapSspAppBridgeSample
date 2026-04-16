@@ -1,14 +1,16 @@
 package com.gwangy.nassspandroidsample
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +19,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -30,11 +34,20 @@ import androidx.compose.ui.viewinterop.AndroidView
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // 애플리케이션 컨텍스트 조기 할당
         AppContextHolder.appContext = applicationContext
+        
+        // 윈도우 인셋 최적화 (시스템 바 아이콘 로딩 이슈 방어)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         setContent {
             MaterialTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    SampleScreen(this@MainActivity)
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    HybridWebViewScreen()
                 }
             }
         }
@@ -45,17 +58,28 @@ class MainActivity : ComponentActivity() {
 private fun SampleScreen(activity: MainActivity) {
     val viewModel = remember { SampleViewModel() }
     val uiState = viewModel.uiState
-    var adView by remember { mutableStateOf<View?>(null) }
 
-    LaunchedEffect(uiState.selectedFormat) {
-        adView = when (uiState.selectedFormat) {
-            SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
-            SampleFormat.Native -> NapSspSdkIntegration.nativeView(activity)
-            SampleFormat.Video -> NapSspSdkIntegration.videoView(activity)
-            SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideoView(activity)
-            SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideoView(activity)
-            SampleFormat.HybridWebView -> null
+    // (counter, format) — incrementing counter forces key() to create a fresh AndroidView
+    // even if the same format is requested twice in a row
+    var slotCounter by remember { mutableStateOf(0) }
+    var adSlot by remember { mutableStateOf<Pair<Int, SampleFormat>?>(null) }
+
+    // Wire SDK events → ViewModel so the user sees load / fail / click feedback in the UI
+    DisposableEffect(Unit) {
+        NapSspSdkIntegration.onAdEventCallback = { event, format, detail ->
+            val msg = when (event) {
+                "loaded"    -> "$format 광고 로드 완료"
+                "failed"    -> "$format 실패: $detail"
+                "displayed" -> "$format 노출"
+                "clicked"   -> "$format 클릭"
+                "rewarded"  -> "리워드 획득!"
+                "completed" -> "$format 재생 완료"
+                "closed"    -> "$format 닫힘"
+                else        -> "$format $event"
+            }
+            viewModel.reportResult(msg)
         }
+        onDispose { NapSspSdkIntegration.onAdEventCallback = null }
     }
 
     LazyColumn(
@@ -79,23 +103,25 @@ private fun SampleScreen(activity: MainActivity) {
             FormatDetailScreen(
                 format = uiState.selectedFormat,
                 onExecuteSdk = {
-                    val result = when (uiState.selectedFormat) {
-                        SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
-                        SampleFormat.Native -> NapSspSdkIntegration.nativeView(activity)
-                        SampleFormat.Video -> NapSspSdkIntegration.videoView(activity)
-                        SampleFormat.RewardVideo -> NapSspSdkIntegration.rewardVideoView(activity)
-                        SampleFormat.InterstitialVideo -> NapSspSdkIntegration.interstitialVideoView(activity)
-                        SampleFormat.HybridWebView -> null
+                    when (uiState.selectedFormat) {
+                        SampleFormat.RewardVideo -> {
+                            NapSspSdkIntegration.rewardVideoView(activity)
+                            viewModel.reportResult("리워드 영상 요청 중…")
+                        }
+                        SampleFormat.InterstitialVideo -> {
+                            NapSspSdkIntegration.interstitialVideoView(activity)
+                            viewModel.reportResult("전면 영상 요청 중…")
+                        }
+                        SampleFormat.HybridWebView -> {
+                            viewModel.reportResult("웹뷰: init 후 웹 버튼으로 광고를 불러주세요")
+                        }
+                        else -> {
+                            // increment counter so key() forces a brand-new AndroidView
+                            slotCounter++
+                            adSlot = slotCounter to uiState.selectedFormat
+                            viewModel.reportResult("${uiState.selectedFormat.title} 광고 요청 중…")
+                        }
                     }
-                    val message = if (uiState.selectedFormat == SampleFormat.HybridWebView) {
-                        "하이브리드 WebView는 init 후 웹 버튼으로 광고를 부른다"
-                    } else if (result != null) {
-                        "${uiState.selectedFormat.title} 광고 뷰 연결 완료"
-                    } else {
-                        "${uiState.selectedFormat.title} 광고 연결 실패 또는 폴백"
-                    }
-                    viewModel.reportResult(message)
-                    println("NapSsp Android result: $result")
                 }
             )
         }
@@ -110,17 +136,37 @@ private fun SampleScreen(activity: MainActivity) {
                         .height(360.dp)
                 )
             } else {
-                if (adView != null) {
-                    AndroidView(
-                        factory = { adView!! },
+                val slot = adSlot
+                // Only show the ad slot if it belongs to the currently selected format
+                if (slot != null && slot.second == uiState.selectedFormat) {
+                    // Light-grey background makes the slot visible even before ad content fills
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(320.dp)
-                    )
+                            .background(Color(0xFFEAF0F6))
+                    ) {
+                        // key() recreates the AndroidView (and thus the SDK View) on every new slot
+                        key(slot) {
+                            AndroidView(
+                                factory = { _ ->
+                                    // View is created here, inside the Compose hierarchy
+                                    when (slot.second) {
+                                        SampleFormat.Banner -> NapSspSdkIntegration.bannerView(activity)
+                                        SampleFormat.Native -> NapSspSdkIntegration.nativeView(activity)
+                                        SampleFormat.Video  -> NapSspSdkIntegration.videoView(activity)
+                                        else -> null
+                                    } ?: android.view.View(activity)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(min = 50.dp, max = 400.dp)
+                            )
+                        }
+                    }
                 } else {
                     AdDemoScreen(
                         title = uiState.selectedFormat.title,
-                        subtitle = "NapSsp Android SDK 결과 화면"
+                        subtitle = "광고 띄우기 버튼을 눌러주세요"
                     )
                 }
             }
@@ -132,7 +178,10 @@ private fun SampleScreen(activity: MainActivity) {
 
         items(SampleFormat.entries.toList()) { format ->
             Button(
-                onClick = { viewModel.selectFormat(format) },
+                onClick = {
+                    adSlot = null  // clear ad slot when switching format
+                    viewModel.selectFormat(format)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {

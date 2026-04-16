@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NapSsp Hybrid Sample</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 20px; line-height: 1.6; color: #333; background-color: #f8f9fa; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid #e1e4e8; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h2 { margin-top: 0; color: #007aff; }
+        .section-title { font-size: 14px; color: #8e8e93; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
+        button { 
+            display: block; width: 100%; padding: 14px; margin: 8px 0; 
+            background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 16px; font-weight: 600;
+        }
+        button.secondary { background: #8e8e93; }
+        .log-container { background: #1c1c1e; color: #32d74b; padding: 12px; border-radius: 8px; font-family: Menlo, monospace; font-size: 11px; min-height: 200px; overflow-y: auto; }
+        .log-entry { margin-bottom: 4px; border-bottom: 1px solid #38383a; padding-bottom: 2px; }
+    </style>
+</head>
+<body>
+    <h2>NapSsp iOS Hybrid</h2>
+    
+    <div class="card">
+        <div class="section-title">1. Lifecycle</div>
+        <button onclick="callNative('init')">Initialize SDK</button>
+    </div>
+
+    <div class="card">
+        <div class="section-title">2. In-Layout Ads</div>
+        <button onclick="callNative('loadAd', {format: 'banner'})">Load Banner (320x100)</button>
+        <button onclick="callNative('loadAd', {format: 'native'})">Load Native Ad</button>
+        <button onclick="callNative('loadAd', {format: 'video'})">Load Outstream Video</button>
+    </div>
+
+    <div class="card">
+        <div class="section-title">3. Full-Screen Ads</div>
+        <button class="secondary" onclick="callNative('loadAd', {format: 'rewardVideo'})">Show Reward Video</button>
+        <button class="secondary" onclick="callNative('loadAd', {format: 'interstitialVideo'})">Show Interstitial Video</button>
+        <button class="secondary" onclick="callNative('loadAd', {format: 'interstitialBanner'})">Show Interstitial Banner (F)</button>
+    </div>
+
+    <div id="log" class="log-container"><div class="log-entry">Waiting for bridge...</div></div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        let isProcessing = false;
+
+        function log(msg, color = '#32d74b') {
+            const now = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div class="log-entry"><span style="color: #8e8e93">[${now}]</span> <span style="color: ${color}">${msg}</span></div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function callNative(action, params = {}) {
+            if (isProcessing) return;
+            isProcessing = true;
+            setTimeout(() => { isProcessing = false; }, 500);
+
+            const request = JSON.stringify({ action, params });
+            log(`REQ: ${action} ${params.format || ''}`, '#fff');
+            
+            if (window.webkit && window.webkit.messageHandlers.NapSspBridge) {
+                window.webkit.messageHandlers.NapSspBridge.postMessage(request);
+            } else {
+                log('Error: Bridge not found', '#ff453a');
+            }
+        }
+
+        window.onNapSspMessage = function(responseStr) {
+            const res = JSON.parse(responseStr);
+            const statusColor = res.status === 'success' ? '#32d74b' : '#ff453a';
+            log(`${res.action.toUpperCase()} ${res.status.toUpperCase()}: ${JSON.stringify(res.data)}`, statusColor);
+        };
+
+        log('Bridge ready. Please Initialize first.');
+    </script>
+</body>
+    <div class="card">
+        <div class="section-title">4. Cleanup</div>
+        <button class="secondary" onclick="callNative('clearAds')">Clear All Ads & Releases</button>
+    </div>
+</html>

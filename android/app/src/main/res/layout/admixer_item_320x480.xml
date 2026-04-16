@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f7f7f7">
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_alignParentStart="true"
+        android:layout_margin="12dp" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="19dp"
+        android:layout_toEndOf="@id/iv_icon"
+        android:lineSpacingExtra="2sp"
+        android:singleLine="false"
+        android:text="Title .. "
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_adv"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_below="@id/tv_title"
+        android:layout_marginStart="11dp"
+        android:layout_toEndOf="@id/iv_icon"
+        android:lineSpacingExtra="1sp"
+        android:text="Advertiser"
+        android:textColor="#c7c7c7"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_icon"
+        android:layout_marginStart="11dp"
+        android:minHeight="64dp"
+        android:singleLine="false"
+        android:text="Description"
+        android:textColor="#2a2a2a"
+        android:textSize="11sp" />
+
+    <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
+        android:id="@+id/iv_main"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@+id/tv_desc" >
+        <ImageView
+            android:id="@+id/imageView_ad"
+            android:layout_width="320dp"
+            android:layout_height="250dp"
+            android:layout_below="@+id/tv_desc"
+            android:visibility="visible" />
+    </com.nasmedia.admixerssp.common.nativeads.NativeMainAdView>
+
+    <Button
+        android:id="@+id/btn_cta"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_below="@+id/iv_main"
+        android:layout_marginTop="11dp"
+        android:layout_marginBottom="12dp"
+        android:background="#2a2a2a"
+        android:textColor="#ffffff" />
+
+</RelativeLayout>
