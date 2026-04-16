@@ -43,7 +43,58 @@ Xcode에서 `File > Add Packages...`를 선택하고 아래 URL을 입력하세�
 
 ---
 
-## 4. 네이티브 광고 호출 코드 (표준 방식)
+## 4. 한 눈에 보는 포맷별 짧은 코드 (Short Code)
+
+공식 가이드의 핵심 패턴을 압축한 코드입니다. 복사하여 `NapSspSdkIntegration` 등에 바로 활용하세요.
+
+### [Android - Kotlin]
+```kotlin
+// 1. 배너 (Banner)
+val adView = AdView(context).apply {
+    setAdInfo(AdInfo.Builder("AD_UNIT_ID").setIsUseMediation(true).build())
+    setAdListener(object : AdListener { /* 이벤트 처리 */ })
+    loadAd()
+}
+
+// 2. 전면 동영상 (Interstitial)
+val interstitial = InterstitialVideoAd(context).apply {
+    setAdInfo(AdInfo.Builder("AD_UNIT_ID").setIsUseMediation(true).build())
+    setAdListener(object : InterstitialVideoAdListener { /* 이벤트 처리 */ })
+    loadInterstitialVideoAd()
+}
+
+// 3. 리워드 동영상 (Reward)
+val rewardAd = RewardInterstitialVideoAd(context).apply {
+    setAdInfo(AdInfo.Builder("AD_UNIT_ID").setIsUseMediation(true).build())
+    setAdListener(object : RewardVideoAdListener { /* 보상 및 이벤트 처리 */ })
+    loadRewardVideoAd()
+}
+```
+
+### [iOS - Swift]
+```swift
+// 1. 배너 (Banner)
+let bannerView = AMMBannerView(adUnitId: "AD_UNIT_ID")
+bannerView.delegate = self
+bannerView.isUseMediation = true
+bannerView.loadAd()
+
+// 2. 전면 동영상 (Interstitial)
+let interstitial = AMMVideoInterstitial(adUnitId: "AD_UNIT_ID")
+interstitial.delegate = self
+interstitial.isUseMediation = true
+interstitial.loadAd()
+
+// 3. 리워드 동영상 (Reward)
+let rewardVideo = AMMRewardVideo(adUnitId: "AD_UNIT_ID")
+rewardVideo.delegate = self
+rewardVideo.isUseMediation = true
+rewardVideo.loadAd()
+```
+
+---
+
+## 5. 네이티브 광고 호출 코드 (표준 방식)
 
 ### Android
 `AdListener`를 달아주어야 광고가 실제 떴는지, 클릭되었는지 알 수 있습니다.
