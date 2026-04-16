@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,10 +21,10 @@ android {
         buildConfig = true
     }
 
-    val localProperties = java.util.Properties()
-    val localFile = project.rootProject.file("local.properties")
-    if (localFile.exists()) {
-        localFile.inputStream().use { localProperties.load(it) }
+    val localProperties = Properties()
+    val localPropertiesFile = project.rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
     }
 
     defaultConfig {
@@ -31,7 +34,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // 보안 키 주입
+        // 보안 키 주입 (local.properties에 없으면 기본값 사용)
         buildConfigField("String", "NAP_MEDIA_KEY", "\"${localProperties.getProperty("napssp.media_key") ?: "10771"}\"")
         buildConfigField("String", "NAP_ADUNIT_BANNER", "\"${localProperties.getProperty("napssp.adunit_banner") ?: "104704"}\"")
     }

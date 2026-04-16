@@ -202,10 +202,16 @@ fun HybridWebViewScreen(
                     modifier = Modifier.fillMaxWidth().height(h).background(Color.White),
                     factory = { factoryContext ->
                         FrameLayout(factoryContext).apply {
-                            layoutParams = ViewGroup.LayoutParams(-1, -1)
+                            layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
                             currentAdView?.let { adView ->
                                 (adView.parent as? ViewGroup)?.removeView(adView)
-                                adView.layoutParams = FrameLayout.LayoutParams(-1, -1)
+                                adView.layoutParams = FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    FrameLayout.LayoutParams.MATCH_PARENT
+                                )
                                 addView(adView)
                                 if (adView is AdView) adView.onResume()
                                 adView.requestLayout()
