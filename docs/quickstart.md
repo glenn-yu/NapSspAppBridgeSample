@@ -20,23 +20,29 @@ git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
 cd NapSspAppBridgeSample
 ```
 
+샘플 모드 안내 (초보자용)
+- 데모 모드: SDK 바이너리(AAR/.framework)가 없어도 앱이 동작하는 '데모 모드'를 제공합니다. 데모 모드는 기본 예제 데이터를 사용하여 UI/브리지 동작을 확인할 수 있게 해줍니다.
+- Configure Keys: 실제 벤더 키를 테스트하려면 앱 내 'Configure Keys' 에서 MEDIA_KEY와 AD_UNIT_ID를 입력하세요.(Android: Configure Keys dialog, iOS: Configure Keys 화면)
+
+빠른 실행 스크립트
+
+# Android
+```bash
+cd android
+# JDK가 설치되어 있으면 빌드
+./gradlew assembleDebug
+# 또는 에뮬레이터에 설치
+./gradlew installDebug
+```
+
+# iOS (Xcode)
+1. Xcode로 `ios/` 프로젝트 오픈
+2. Scheme에서 `NapSspIOSSample` 선택 후 Run
+
 샘플 설정
-1. 미디어 키와 광고 단위 ID 설정
-   - 파일: `android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspConfig.kt`
-   - 파일: `ios/Sources/NapSspIOSSample/NapSspConfig.swift`
-   - 기본 더미값이 있으면 그대로 두고, 실제 테스트하려면 벤더에서 받은 MEDIA_KEY와 AD_UNIT_ID를 각각 대체하세요.
-2. (선택) 샘플에서 바로 편집하려면 `FormatDetailScreen` 또는 앱 내 설정 화면에 키/ID를 넣을 수 있도록 수정하세요.
-
-Android 실행 (로컬)
-1. 터미널에서 앱 루트로 이동:
-   ```bash
-   cd android
-   ./gradlew assembleDebug
-   ```
-2. Android Studio로 열어 `app` 모듈을 실행하면 에뮬레이터 또는 연결된 기기에서 샘플 앱이 실행됩니다.
-
-iOS 실행 (로컬)
-1. 루트에서 `ios/` 패키지를 Xcode로 열고 `NapSspIOSSample`를 선택해 빌드 및 실행합니다.
+1. 미디어 키와 광고 단위 ID 설정 (앱내 설정 권장)
+   - Android: 앱 실행 후 Configure Keys 버튼으로 설정(또는 `android/.../NapSspConfig.kt` 하드코딩)
+   - iOS: 앱 실행 후 Configure Keys 화면에서 설정(또는 `ios/.../NapSspConfig.swift` 하드코딩)
 
 하이브리드 WebView 사용법 (샘플)
 - 앱의 `HybridWebViewScreen`에서 내장 HTML UI(버튼)를 통해 다음 메시지를 보낼 수 있습니다:
@@ -46,6 +52,12 @@ iOS 실행 (로컬)
   2. 네이티브 브리지(NapSspHybridBridge)에서 메시지 파싱 후 SDK 훅 실행
   3. 네이티브에서 광고 뷰를 만들어 웹뷰 아래의 네이티브 컨테이너에 추가
   4. 웹뷰에 상태 ack를 다시 보냄 (`window.__napSspAck` 호출)
+
+검증 체크리스트 (문제 발생시 순서대로 확인)
+1. 앱이 데모모드로 동작하는지 확인 (설정 없이 버튼 동작 및 로그 확인)
+2. Configure Keys로 MEDIA_KEY 입력 후 'initialize' 실행 → 로그에 initialize success 확인
+3. 광고 호출 후 status가 'loaded'가 뜨는지 확인
+4. 에러 발생 시 로그 확인 (Android Logcat / iOS Console)
 
 검증 포인트(문제가 있을 때 확인할 것)
 - Android: `Unable to locate a Java Runtime` → JDK 설치 및 JAVA_HOME 확인
