@@ -4,7 +4,7 @@
 
 ---
 
-## 快速 시작 (Quick Start)
+## 빠른 시작 (Quick Start)
 1. **환경 확인**: Android Studio(Gradle) 및 Xcode(SPM) 환경을 준비합니다.
 2. **SDK 설치**: `docs/guide.md`의 설치 섹션을 참고하여 의존성을 추가합니다.
 3. **샘플 실행**: 앱의 `HybridWebView` 메뉴에서 `init` -> `광고 호출` 순으로 버튼을 눌러 동작을 확인합니다.
