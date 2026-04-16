@@ -24,12 +24,15 @@ object NapSspSdkIntegration {
         onAdEventCallback?.invoke(event, format, id)
     }
 
-    // 기존 광고를 완벽하게 파괴하고 맵에서 제거
+    // [최종 해결책] 기존 광고를 완전히 파괴하고 제거 (사용자 제안 GONE 추가)
     private fun destroyAndRemoveAd(format: String) {
         activeAds[format]?.let { ad ->
+            // 1. 가시성 제거 (SDK 렌더링 중단 유도)
             if (ad is View) {
-                (ad.parent as? ViewGroup)?.removeView(ad)
+                ad.visibility = View.GONE
             }
+            
+            // 2. 파괴 호출 (리스너 강제 해제)
             when (ad) {
                 is AdView -> ad.onDestroy()
                 is NativeAdView -> ad.onDestroy()
@@ -38,7 +41,13 @@ object NapSspSdkIntegration {
                 is InterstitialVideoAd -> ad.stopInterstitialVideoAd()
                 is RewardInterstitialVideoAd -> ad.stopRewardVideoAd()
             }
+
+            // 3. 부모 레이아웃에서 제거
+            if (ad is View) {
+                (ad.parent as? ViewGroup)?.removeView(ad)
+            }
         }
+        // 4. 참조 제거
         activeAds.remove(format)
     }
 
@@ -50,12 +59,12 @@ object NapSspSdkIntegration {
         notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
     }
 
-    // 모든 포맷: 네이티브처럼 매번 새로 생성 (Redraw)
     fun bannerView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
-        destroyAndRemoveAd(format)
         
+        destroyAndRemoveAd(format) // 즉시 파괴 및 null화
+
         return runCatching {
             val adView = AdView(context)
             adView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())

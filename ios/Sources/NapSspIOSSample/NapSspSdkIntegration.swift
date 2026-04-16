@@ -7,8 +7,6 @@ class NapSspSdkIntegration: NSObject {
     static let shared = NapSspSdkIntegration()
     
     var onAdEventCallback: ((String, String, String) -> Void)?
-    
-    // 현재 활성화된 광고 객체들을 추적
     private var activeAds: [String: Any] = [:]
 
     private func notifyEvent(event: String, format: String, id: String) {
@@ -21,9 +19,15 @@ class NapSspSdkIntegration: NSObject {
         onAdEventCallback?(event, format, id)
     }
 
-    // [쌍둥이 로직] 기존 광고를 완전히 파괴하고 Dictionary에서 제거
+    // [최종 해결책] 기존 광고를 완전히 파괴하고 제거 (사용자 제안 기반)
     private func destroyAndRemoveAd(format: String) {
         if let ad = activeAds[format] {
+            // 1. 가시성 제거
+            if let view = ad as? UIView {
+                view.isHidden = true
+            }
+            
+            // 2. stop() 호출 (가이드 준수)
             if let b = ad as? AMMBannerView { b.stop() }
             else if let n = ad as? AMMNativeAdViewContainer { n.stop() }
             else if let v = ad as? AMMVideoAdView { v.stop() }
@@ -31,10 +35,12 @@ class NapSspSdkIntegration: NSObject {
             else if let r = ad as? AMMRewardVideo { r.stop() }
             else if let iv = ad as? AMMVideoInterstitial { iv.stop() }
             
+            // 3. 부모 뷰에서 제거
             if let view = ad as? UIView {
                 view.removeFromSuperview()
             }
         }
+        // 4. 참조 제거
         activeAds.removeValue(forKey: format)
     }
 
@@ -89,7 +95,6 @@ class NapSspSdkIntegration: NSObject {
         let adUnitId = NapSspConfig.adUnitIDs["interstitial_320x480_f"] ?? ""
         let format = "interstitialBanner"
         shared.destroyAndRemoveAd(format: format)
-        
         let config = AMMInterstitialConfig()
         config.viewType = .basic
         AMMInterstitial.load(withAdUnitID: adUnitId, config: config) { interstitial, error in
@@ -137,7 +142,7 @@ class NapSspSdkIntegration: NSObject {
     }
 
     static func clearAllAds() {
-        let keys = shared.activeAds.keys
+        let keys = Array(shared.activeAds.keys)
         for key in keys {
             shared.destroyAndRemoveAd(format: key)
         }

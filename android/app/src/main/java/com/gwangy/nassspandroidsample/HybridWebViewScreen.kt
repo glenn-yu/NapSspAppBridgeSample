@@ -24,14 +24,15 @@ import java.util.UUID
 
 class NapSspHybridBridge(
     private val webView: WebView,
-    private val onAdRequest: (String) -> Unit // 광고 요청 시 세션 갱신을 위한 콜백
+    private val onAdRequest: (String) -> Unit
 ) {
     private var lastActionTime = 0L
 
     @JavascriptInterface
     fun postMessage(jsonString: String) {
         val currentTime = System.currentTimeMillis()
-        if (currentTime - lastActionTime < 500) return
+        // [중복 방지] 호출 간격 1초로 강화
+        if (currentTime - lastActionTime < 1000) return
         lastActionTime = currentTime
 
         try {
@@ -46,6 +47,7 @@ class NapSspHybridBridge(
                 }
                 "loadAd" -> {
                     val format = params.optString("format")
+                    // 메인 스레드 호출 동기화
                     webView.post { onAdRequest(format) }
                 }
                 "clearAds" -> {
@@ -84,6 +86,9 @@ fun HybridWebViewScreen(
     var adHeight by remember { mutableStateOf(0.dp) }
     var adSessionId by remember { mutableStateOf(UUID.randomUUID().toString()) }
     
+    // [중복 방지] UI 레벨의 작업 중 플래그
+    var isRequestingAd by remember { mutableStateOf(false) }
+    
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = androidx.compose.ui.platform.LocalContext.current
 
@@ -113,11 +118,18 @@ fun HybridWebViewScreen(
                     webViewClient = WebViewClient()
                     
                     addJavascriptInterface(NapSspHybridBridge(this) { format ->
+                        // [중복 방지] 요청 중이면 무시
+                        if (isRequestingAd) return@NapSspHybridBridge
+                        isRequestingAd = true
+
                         if (format == "clear") {
                             currentAdView = null
                             adHeight = 0.dp
+                            isRequestingAd = false
                             return@NapSspHybridBridge
                         }
+                        
+                        // 세션 갱신 및 광고 생성
                         adSessionId = UUID.randomUUID().toString()
                         val adView = when (format) {
                             "banner" -> NapSspSdkIntegration.bannerView(context)
@@ -128,6 +140,7 @@ fun HybridWebViewScreen(
                             "interstitialBanner" -> { NapSspSdkIntegration.interstitialBannerView(context); null }
                             else -> null
                         }
+                        
                         currentAdView = adView
                         adHeight = when {
                             adView is AdView -> 100.dp
@@ -135,7 +148,11 @@ fun HybridWebViewScreen(
                             adView is VideoAdView -> 250.dp
                             else -> 0.dp
                         }
+                        
+                        // 작업 완료 후 락 해제
+                        isRequestingAd = false
                     }, "NapSspBridge")
+                    
                     loadUrl("file:///android_asset/index.html")
                 }
             }

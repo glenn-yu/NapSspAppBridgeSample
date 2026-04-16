@@ -135,18 +135,36 @@ class NapSspSdkIntegration: NSObject {
 *   **Android (Compose)**: `key(adSessionId) { AndroidView(...) }`
 *   **iOS (SwiftUI)**: `AdViewRepresentable(view).id(adViewId)`
 
-### 4.2 생명주기 연동
+---
+
+## 5. 핵심 관리 로직 (Best Practices)
+
+### 5.1 생명주기(Lifecycle) 연동
 앱이 백그라운드로 전환될 때 광고 활동을 중단하고, 화면이 닫힐 때 자원을 모두 해제해야 합니다.
-*   Android는 `LifecycleEventObserver`를 사용해 `ON_PAUSE`, `ON_RESUME`을 SDK에 전달합니다.
-*   iOS는 `.onDisappear`에서 `clearAllAds()`를 수행합니다.
+*   **Android**: `LifecycleEventObserver`를 사용해 `ON_PAUSE`, `ON_RESUME`을 SDK에 전달합니다. (가이드 필수)
+*   **iOS**: SwiftUI의 `.onDisappear` 시점에 모든 광고 인스턴스의 `stop()`을 호출합니다.
+
+### 5.2 광고 뷰 갱신 및 리스너 관리
+동일한 `AdUnit ID`로 광고를 계속 호출할 때 발생하는 `Already Exist` 오류를 방지하기 위한 두 가지 전략입니다.
+
+#### [전략 1] 광고 뷰를 새로 생성하는 경우 (가장 확실한 방법)
+기존 광고 뷰를 버리고 새 광고를 요청할 때입니다. 아래의 순서를 반드시 지켜야 SDK 내부 리스너가 정상적으로 정리됩니다.
+1.  **`destroy()` 호출**: 기존 뷰의 `onDestroy()` (Android) 또는 `stop()` (iOS)을 호출하여 리스너 점유를 강제 해제합니다.
+2.  **부모 뷰에서 제거**: 레이아웃에서 기존 뷰를 완전히 떼어냅니다 (`removeView`).
+3.  **새 객체 생성 및 로드**: 그 후에 새로운 인스턴스를 만들어 추가하고 `loadAd()`를 호출합니다.
+
+#### [전략 2] 기존 광고 뷰를 레이아웃에서 뗐다가 다시 붙이는 경우
+인스턴스를 유지하면서 재호출하고 싶을 때 유용한 팁입니다.
+*   SDK의 광고 뷰는 레이아웃에서 제거되는 시점(`onDetachedFromWindow`)에 내부적으로 리스너를 제거(`stopLoad`)하도록 설계되어 있습니다.
+*   따라서 `parent.removeView(myAdView)`를 수행한 후, 다시 `addView()` 하고 `loadAd()`를 하면 중복 에러 없이 로드됩니다.
 
 ---
 
-## 5. 자주 발생하는 오류 해결
+## 6. 자주 발생하는 오류 해결
 
 | 오류 현상 | 원인 및 해결책 |
 | :--- | :--- |
-| **Already Exist** | `onDestroy()` / `stop()` 호출 후 참조를 완전히 제거(Map에서 remove)했는지 확인하세요. |
+| **Already Exist** | 동일 인스턴스 재사용 시 반드시 `stopLoad()`를 호출하여 이전 리스너를 제거한 후 `loadAd()`를 하세요. 신규 생성 시에는 이전 객체의 `onDestroy()` 호출과 `Map`에서의 제거가 필수입니다. |
 | **빈 화면 (AOS)** | `usesCleartextTraffic="true"`가 누락되어 HTTP 소재가 차단되었을 수 있습니다. |
 | **클릭 무반응** | 광고 뷰가 `MATCH_PARENT`로 설정되어 실제 클릭 영역을 확보했는지 확인하세요. |
 | **두 번씩 호출됨** | JS 버튼 클릭 시 `setTimeout` 등을 이용해 데바운스 처리를 하세요. |
