@@ -159,7 +159,7 @@ object NapSspSdkIntegration {
 
             rewardAd.setAdInfo(adInfo, context)
             rewardAd.loadRewardVideoAd()
-            rewardAd as View
+            null // Reward video is an Activity overlay, not a View
         }.getOrElse {
             AdEventLogger.failed(format, adUnitId, it.message ?: "reward setup failed")
             null
@@ -192,7 +192,7 @@ object NapSspSdkIntegration {
 
             interstitialAd.setAdInfo(adInfo, context)
             interstitialAd.loadInterstitialVideoAd()
-            interstitialAd as View
+            null // Interstitial is an Activity overlay, not a View
         }.getOrElse {
             AdEventLogger.failed(format, adUnitId, it.message ?: "interstitial setup failed")
             null
