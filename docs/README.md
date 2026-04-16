@@ -10,8 +10,8 @@
 3. **샘플 실행**: 앱의 `HybridWebView` 메뉴에서 `init` -> `광고 호출` 순으로 버튼을 눌러 동작을 확인합니다.
 
 ## 문서 지도 (Documentation Map)
-- [🚀 마스터 가이드 (guide.md)](./guide.md): **필독.** 설치부터 광고 포맷별 호출 방법까지의 핵심 가이드
-- [🔗 하이브리드 브릿지 상세 (hybrid-webview.md)](./hybrid-webview.md): 웹-네이티브 통신(JS Bridge) 심화 가이드
+- [🚀 통합 개발 가이드 (guide.md)](./guide.md): **필독.** 설치부터 하이브리드 연동까지의 핵심 가이드
+- [🔗 하이브리드 브릿지 명세 (hybrid-webview.md)](./hybrid-webview.md): 웹-네이티브 통신(JS Bridge) JSON 규격 상세
 - [📡 미디에이션 및 네트워크 (mediation.md)](./mediation.md): 추가 광고 네트워크 및 상세 설정 참조
 
 ## 문제 해결 (Troubleshooting)
