@@ -11,14 +11,17 @@ android {
     namespace = "com.gwangy.nassspandroidsample"
     compileSdk = 35
 
+    // [최종 해결] JVM Toolchain을 사용하여 전체 컴파일 환경을 17로 강제 고정
+    kotlin {
+        jvmToolchain(17)
+    }
+
     compileOptions {
-        // Java 컴파일 타겟을 17로 설정
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        // Kotlin 컴파일 타겟을 17로 설정하여 Java와 일치시킴
         jvmTarget = "17"
     }
 
@@ -30,7 +33,7 @@ android {
     val localProperties = Properties()
     val localPropertiesFile = project.rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
-        localPropertiesFile.inputStream().use { localProperties.load(it) }
+        localProperties.load(FileInputStream(localPropertiesFile))
     }
 
     defaultConfig {
@@ -40,7 +43,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // 보안 키 주입
         buildConfigField("String", "NAP_MEDIA_KEY", "\"${localProperties.getProperty("napssp.media_key") ?: "10771"}\"")
         buildConfigField("String", "NAP_ADUNIT_BANNER", "\"${localProperties.getProperty("napssp.adunit_banner") ?: "104704"}\"")
     }
@@ -48,10 +50,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }
