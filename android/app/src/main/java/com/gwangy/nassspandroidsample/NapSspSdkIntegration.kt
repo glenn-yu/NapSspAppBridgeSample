@@ -11,7 +11,7 @@ import com.nasmedia.admixerssp.common.nativeads.NativeAdViewBinder
 object NapSspSdkIntegration {
 
     var onAdEventCallback: ((event: String, format: String, detail: String) -> Unit)? = null
-    
+
     private var isSdkInitialized = false
     private val activeAds = mutableMapOf<String, Any>()
 
@@ -24,19 +24,31 @@ object NapSspSdkIntegration {
         onAdEventCallback?.invoke(event, format, id)
     }
 
-    // [최종 해결책] 기존 광고를 완전히 파괴하고 제거 (사용자 제안 GONE 추가)
+    /**
+     * [최종 해결책] 가이드 및 기술 지원 기반의 정석 파괴 시퀀스
+     * GONE -> onPause -> onDestroy -> removeView -> null
+     */
     private fun destroyAndRemoveAd(format: String) {
         activeAds[format]?.let { ad ->
-            // 1. 가시성 제거 (SDK 렌더링 중단 유도)
+            // 1. 가시성 제거 (SDK 렌더링 중단 신호)
             if (ad is View) {
                 ad.visibility = View.GONE
             }
             
-            // 2. 파괴 호출 (리스너 강제 해제)
+            // 2. 파괴 호출 (onPause 후 onDestroy 호출이 정석)
             when (ad) {
-                is AdView -> ad.onDestroy()
-                is NativeAdView -> ad.onDestroy()
-                is VideoAdView -> ad.onDestroy()
+                is AdView -> {
+                    ad.onPause()
+                    ad.onDestroy()
+                }
+                is NativeAdView -> {
+                    ad.onPause()
+                    ad.onDestroy()
+                }
+                is VideoAdView -> {
+                    ad.onPause()
+                    ad.onDestroy()
+                }
                 is InterstitialAd -> ad.stopInterstitial()
                 is InterstitialVideoAd -> ad.stopInterstitialVideoAd()
                 is RewardInterstitialVideoAd -> ad.stopRewardVideoAd()
@@ -47,25 +59,41 @@ object NapSspSdkIntegration {
                 (ad.parent as? ViewGroup)?.removeView(ad)
             }
         }
-        // 4. 참조 제거
+        // 4. 참조 제거 (null화)
         activeAds.remove(format)
     }
 
     @Synchronized
     fun initialize(context: Context) {
         if (isSdkInitialized) return
-        AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
-        AdMixer.getInstance().initialize(context, NapSspConfig.MEDIA_KEY, ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList()))
-        isSdkInitialized = true
-        notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
+        
+        // AppConfig가 있는 경우 동적 키 사용, 없으면 NapSspConfig 사용
+        val mediaKey = NapSspConfig.MEDIA_KEY
+        
+        AdEventLogger.request("initialize", mediaKey)
+        runCatching {
+            AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
+            AdMixer.getInstance().initialize(
+                context, 
+                mediaKey, 
+                ArrayList(NapSspConfig.AD_UNIT_IDS.values.toList())
+            )
+            isSdkInitialized = true
+            notifyEvent("loaded", "initialize", mediaKey)
+        }.onFailure {
+            val reason = it.message ?: "sdk init failed"
+            AdEventLogger.failed("initialize", mediaKey, reason)
+            onAdEventCallback?.invoke("failed", "initialize", reason)
+        }
     }
 
     @Synchronized
     fun bannerView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
-        destroyAndRemoveAd(format)
         
+        destroyAndRemoveAd(format)
+
         return runCatching {
             val adView = AdView(context)
             adView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
