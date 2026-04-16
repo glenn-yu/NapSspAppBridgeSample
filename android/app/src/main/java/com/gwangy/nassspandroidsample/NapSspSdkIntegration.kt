@@ -51,6 +51,7 @@ object NapSspSdkIntegration {
         activeAds.remove(format)
     }
 
+    @Synchronized
     fun initialize(context: Context) {
         if (isSdkInitialized) return
         AdMixerLog.setLogLevel(AdMixerLog.LogLevel.DEBUG)
@@ -59,12 +60,12 @@ object NapSspSdkIntegration {
         notifyEvent("loaded", "initialize", NapSspConfig.MEDIA_KEY)
     }
 
+    @Synchronized
     fun bannerView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
+        destroyAndRemoveAd(format)
         
-        destroyAndRemoveAd(format) // 즉시 파괴 및 null화
-
         return runCatching {
             val adView = AdView(context)
             adView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
@@ -88,6 +89,7 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
+    @Synchronized
     fun nativeView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         val format = "native"
@@ -117,6 +119,7 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
+    @Synchronized
     fun videoView(context: Context): View? {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
         val format = "video"
@@ -140,6 +143,7 @@ object NapSspSdkIntegration {
         }.getOrNull()
     }
 
+    @Synchronized
     fun rewardVideoView(context: Context) {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
         val format = "rewardVideo"
@@ -170,6 +174,7 @@ object NapSspSdkIntegration {
         }
     }
 
+    @Synchronized
     fun interstitialVideoView(context: Context) {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
         val format = "interstitialVideo"
@@ -199,6 +204,7 @@ object NapSspSdkIntegration {
         }
     }
 
+    @Synchronized
     fun interstitialBannerView(context: Context) {
         val adUnitId = NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
         val format = "interstitialBanner"
