@@ -1,46 +1,94 @@
-# nap ssp 샘플 가이드
+# 🚀 Nap SSP 하이브리드 앱 브릿지 마스터 가이드
 
-이 문서는 처음 보는 사람이 바로 따라할 수 있게 만든 짧은 안내서다.
+이 가이드는 초보 개발자도 **Nap SSP(Nasmedia Ad Platform) SDK**를 하이브리드 앱(WebView)에 완벽하게 통합할 수 있도록 안내합니다.
 
-## 1. 이 샘플이 하는 일
+---
 
-- Android와 iOS에서 nap ssp 광고를 붙이는 방법을 보여준다
-- 일반 광고와 WebView 하이브리드 광고를 둘 다 보여준다
-- 실제 SDK를 넣을 위치를 보여준다
-- SDK가 없으면 폴백 화면과 상태 메시지가 보인다
-- 광고가 안 뜨면 SDK가 아직 연결되지 않은 것이다
+## 1. 하이브리드 앱 브릿지란? 🤔
+웹(JavaScript)에서 버튼을 눌렀을 때, 웹뷰가 직접 광고를 띄우는 것이 아니라 **네이티브(Android/iOS)의 강력한 광고 SDK 기능을 호출**하여 광고를 보여주는 방식입니다.
 
-## 2. 먼저 할 일
+### 왜 이 방식을 쓰나요?
+- **성능**: 네이티브 광고 SDK가 웹보다 훨씬 빠르고 안정적입니다.
+- **다양성**: 전면 광고, 리워드 비디오 등 웹에서 구현하기 힘든 포맷을 쉽게 사용합니다.
+- **수익**: 네이티브 미디에이션 기능을 통해 광고 수익을 극대화할 수 있습니다.
 
-1. 앱을 실행한다
-2. 포맷 하나를 고른다
-3. `광고 띄우기`를 누르거나, 하이브리드면 WebView 버튼을 누른다
-4. 화면에 결과가 뜨는지 본다
+---
 
-## 3. 어떤 포맷을 고를까
+## 2. 시작하기 전 준비물 (SDK 설치)
 
-- `banner` — 아래에 붙는 작은 광고
-- `native` — 화면에 자연스럽게 섞는 광고
-- `video` — 앱 안에서 재생되는 광고
-- `rewardVideo` — 보면 보상이 있는 광고
-- `interstitialVideo` — 화면 전체를 덮는 광고
-- `hybridWebView` — 웹 버튼으로 네이티브 광고를 여는 방식
+이 샘플 프로젝트는 **리플렉션 없이 직접 SDK를 호출하는 글로벌 표준 방식**을 사용합니다.
 
-## 4. 하이브리드 WebView는 이렇게 쓴다
+### Android (Gradle)
+`app/build.gradle.kts` 파일에 아래 내용을 추가하세요.
+```kotlin
+dependencies {
+    implementation("io.github.nasmedia-tech:admixer-ssp:1.0.21")
+    implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
+}
+```
 
-1. `init`을 누른다
-2. `loadBanner` 또는 다른 광고 버튼을 누른다
-3. 상태창에서 응답을 확인한다
+### iOS (SPM)
+Xcode에서 `File > Add Packages...`를 선택하고 아래 URL을 입력하세요.
+- `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`
 
-## 5. 준비물
+---
 
-- Android Studio 또는 Xcode
-- JDK / Android SDK 또는 iOS 빌드 환경
-- 미디어 키와 광고 단위 ID
+## 3. 핵심 동작 원리 (Flow)
 
-## 6. 막히면 볼 것
+웹과 네이티브는 아래와 같은 3단계로 대화합니다.
 
-- `quickstart.md` — 전체 흐름
-- `install.md` — 준비물
-- `hybrid-webview.md` — WebView 연결
-- `troubleshooting.md` — 문제 해결
+1.  **발신 (Web → Native)**: 웹에서 `postMessage`로 명령을 내립니다.
+2.  **실행 (Native)**: 네이티브가 명령을 받아 Nap SSP SDK 광고를 로드합니다.
+3.  **응답 (Native → Web)**: 광고 결과(성공, 클릭, 실패 등)를 웹의 `__napSspAck` 함수로 돌려줍니다.
+
+---
+
+## 4. 네이티브 광고 호출 코드 (표준 방식)
+
+### Android
+`AdListener`를 달아주어야 광고가 실제 떴는지, 클릭되었는지 알 수 있습니다.
+```kotlin
+val adView = AdView(context)
+adView.setAdListener(object : AdListener {
+    override fun onAdLoaded() { /* 웹으로 성공 알림 */ }
+    override fun onAdClicked() { /* 웹으로 클릭 알림 */ }
+    override fun onAdFailedToLoad(error: AdError) { /* 웹으로 실패 원인 전송 */ }
+})
+adView.loadAd()
+```
+
+### iOS
+`Delegate` 패턴을 사용하여 이벤트를 수신합니다.
+```swift
+let bannerView = AMMBannerView(adUnitId: "YOUR_ID")
+bannerView.delegate = self
+bannerView.loadAd()
+
+// Delegate 구현
+func bannerViewDidClick(_ bannerView: AMMBannerView) {
+    // 웹뷰 브릿지로 클릭 이벤트 전달
+}
+```
+
+---
+
+## 5. 하이브리드 연동 테스트 방법 🧪
+
+1.  **샘플 앱 실행**: 안드로이드 스튜디오나 Xcode에서 앱을 실행합니다.
+2.  **메뉴 선택**: 상단 탭에서 `HybridWebView`를 선택합니다.
+3.  **초기화**: 웹 화면의 `init` 버튼을 누릅니다. (네이티브 SDK가 초기화됩니다.)
+4.  **광고 호출**: `loadBanner` 또는 `loadVideo` 버튼을 누릅니다.
+5.  **상태 확인**: 하단 `status:` 영역에 **"SDK Event: loaded"** 또는 **"SDK Event: clicked"** 메시지가 실시간으로 뜨는지 확인합니다.
+
+---
+
+## 6. 자주 묻는 질문 (FAQ) ❓
+
+**Q: 광고 버튼을 눌렀는데 status가 'failed'로 떠요.**
+A: `NapSspConfig` 파일에 설정된 `MEDIA_KEY`와 `AD_UNIT_ID`가 본인의 발급 정보와 일치하는지 확인하세요.
+
+**Q: 클릭 이벤트가 웹으로 안 와요.**
+A: 네이티브 코드에서 광고 뷰에 리스너(AdListener/Delegate)가 제대로 설정되었는지 확인하세요. 이 샘플의 `NapSspSdkIntegration.kt` 코드를 참고하면 됩니다.
+
+---
+*도움이 필요하신가요? Nasmedia 기술지원 팀에 문의하거나 `docs/troubleshooting.md`를 확인하세요.*

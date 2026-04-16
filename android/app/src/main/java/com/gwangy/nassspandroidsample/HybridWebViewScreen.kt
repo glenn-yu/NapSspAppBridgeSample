@@ -76,6 +76,16 @@ private class NapSspHybridDispatcher {
 class NapSspHybridBridge(private val webView: WebView) {
     private val dispatcher = NapSspHybridDispatcher()
 
+    init {
+        // Register callback to notify WebView of asynchronous SDK events
+        NapSspSdkIntegration.onAdEventCallback = { event, format, detail ->
+            val jsMessage = "SDK Event: $event | Format: $format | Detail: $detail"
+            webView.post {
+                webView.evaluateJavascript("window.__napSspAck && window.__napSspAck('${jsMessage.replace("'", "\\'")}')", null)
+            }
+        }
+    }
+
     @JavascriptInterface
     fun postMessage(message: String) {
         println("NapSsp hybrid bridge message: $message")

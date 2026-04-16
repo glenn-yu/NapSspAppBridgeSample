@@ -70,6 +70,18 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
     private let dispatcher = NapSspHybridDispatcher()
 
+    override init() {
+        super.init()
+        // Register callback to notify WebView of asynchronous SDK events
+        NapSspSdkIntegration.shared.onAdEventCallback = { [weak self] event, format, detail in
+            let jsMessage = "SDK Event: \(event) | Format: \(format) | Detail: \(detail)"
+            let escapedMessage = jsMessage.replacingOccurrences(of: "'", with: "\\'")
+            DispatchQueue.main.async {
+                self?.webView?.evaluateJavaScript("window.__napSspAck && window.__napSspAck('" + escapedMessage + "')")
+            }
+        }
+    }
+
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         let rawMessage = String(describing: message.body)
         print("NapSsp hybrid bridge message: \(rawMessage)")
