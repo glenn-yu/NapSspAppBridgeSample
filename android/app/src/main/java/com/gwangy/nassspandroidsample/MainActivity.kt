@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -82,6 +86,51 @@ private fun SampleScreen(activity: MainActivity) {
         onDispose { NapSspSdkIntegration.onAdEventCallback = null }
     }
 
+    @Composable
+    fun ConfigureKeysDialog(
+        onDismiss: () -> Unit,
+        onSaved: (mediaKey: String, pairs: List<Pair<String,String>>) -> Unit
+    ) {
+        var mediaKey by remember { mutableStateOf(AppConfig.getMediaKey(activity) ?: "") }
+        var banner by remember { mutableStateOf(AppConfig.getAdUnit(activity, "banner_320x100") ?: "") }
+        var nativeId by remember { mutableStateOf(AppConfig.getAdUnit(activity, "native") ?: "") }
+        var videoId by remember { mutableStateOf(AppConfig.getAdUnit(activity, "outstream_video") ?: "") }
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onClick = { onSaved(mediaKey, listOf("banner_320x100" to banner, "native" to nativeId, "outstream_video" to videoId)) }) {
+                    Text("저장")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { Text("취소") }
+            },
+            title = { Text("Configure Keys") },
+            text = {
+                Column {
+                    OutlinedTextField(value = mediaKey, onValueChange = { mediaKey = it }, label = { Text("MEDIA_KEY") })
+                    OutlinedTextField(value = banner, onValueChange = { banner = it }, label = { Text("banner_320x100") })
+                    OutlinedTextField(value = nativeId, onValueChange = { nativeId = it }, label = { Text("native") })
+                    OutlinedTextField(value = videoId, onValueChange = { videoId = it }, label = { Text("outstream_video") })
+                }
+            },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        )
+    }
+
+    var showConfig by remember { mutableStateOf(false) }
+
+    if (showConfig) {
+        ConfigureKeysDialog(onDismiss = { showConfig = false }, onSaved = { mediaKey, pairs ->
+            // save media key and ad units
+            AppConfig.setMediaKey(activity, mediaKey)
+            pairs.forEach { (k,v) -> AppConfig.setAdUnit(activity, k, v) }
+            viewModel.reportResult("설정 저장됨")
+            showConfig = false
+        })
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -93,6 +142,9 @@ private fun SampleScreen(activity: MainActivity) {
                 title = "nap ssp Android 샘플",
                 subtitle = "포맷을 고르고 광고를 눌러보세요"
             )
+            Button(onClick = { showConfig = true }, modifier = Modifier.fillMaxWidth()) {
+                Text("Configure Keys")
+            }
         }
 
         item {
