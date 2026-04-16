@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:nasmob.atlassian.net)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(java -version)",
+      "Read(//c/Users/Administrator/.gradle/wrapper/dists//**)",
+      "Read(//c/Users/Administrator/.gradle/wrapper/dists/gradle-8.7-bin//**)",
+      "Bash(JAVA_HOME=\"/c/Users/Administrator/.jdks/corretto-21.0.2\" /c/Users/Administrator/.gradle/wrapper/dists/gradle-8.7-bin/bhs2wmbdwecv87pi65oeuq5iu/gradle-8.7/bin/gradle *)",
+      "Bash(jar tf *)",
+      "Bash(python3 /c/gyyoo/Devloper/android/NapSspAppBridgeSample/fix_sdk.py)",
+      "Bash(powershell.exe *)",
+      "Bash(node *)",
+      "Bash(mkdir -p /tmp/admixer-aar)",
+      "Bash(cp /c/Users/Administrator/.gradle/caches/modules-2/files-2.1/io.github.nasmedia-tech/admixer-ssp/1.0.21/67f10851b1a166b4243809a87da62f96ca6b057d/admixer-ssp-1.0.21.aar /tmp/admixer-aar/)",
+      "Read(//tmp/**)",
+      "Bash(jar xf *)",
+      "Bash(~/.gradle/wrapper/dists/gradle-8.7-bin/*/gradle-8.7/bin/gradle :app:compileDebugKotlin)",
+      "Bash(~/.gradle/wrapper/dists/gradle-8.7-bin/*/gradle-8.7/bin/gradle :app:assembleDebug)"
+    ]
+  }
+}
