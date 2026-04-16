@@ -124,5 +124,13 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
 *   **iOS**: `AdViewRepresentable(adView: view).id(UUID())`
 
 ---
+
+## 6. 공식 기술 지원 문서 (Reference)
+
+더 상세한 SDK 사양이나 최신 버전의 네이티브 연동 가이드는 아래 공식 문서를 참조하세요.
+
+*   **Android SDK 공식 가이드**: [https://nasmob.atlassian.net/wiki/x/HwAPLQ](https://nasmob.atlassian.net/wiki/x/HwAPLQ)
+*   **iOS SDK 공식 가이드**: [https://nasmob.atlassian.net/wiki/x/4QFiL](https://nasmob.atlassian.net/wiki/x/4QFiL)
+
+---
 *Nasmedia Technical Support (2026-04-16 Updated)*
-*이 문서는 웹 소스부터 네이티브 엔진까지의 전체 연동 과정을 포함합니다.*
