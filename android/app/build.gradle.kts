@@ -12,12 +12,14 @@ android {
     compileSdk = 35
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // Java 컴파일 타겟을 17로 설정
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        // Kotlin 컴파일 타겟을 17로 설정하여 Java와 일치시킴
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -28,7 +30,7 @@ android {
     val localProperties = Properties()
     val localPropertiesFile = project.rootProject.file("local.properties")
     if (localPropertiesFile.exists()) {
-        localProperties.load(FileInputStream(localPropertiesFile))
+        localPropertiesFile.inputStream().use { localProperties.load(it) }
     }
 
     defaultConfig {
@@ -38,11 +40,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // 보안 키 주입 (local.properties에 없으면 기본값 사용)
+        // 보안 키 주입
         buildConfigField("String", "NAP_MEDIA_KEY", "\"${localProperties.getProperty("napssp.media_key") ?: "10771"}\"")
         buildConfigField("String", "NAP_ADUNIT_BANNER", "\"${localProperties.getProperty("napssp.adunit_banner") ?: "104704"}\"")
     }
-
 
     buildTypes {
         release {
@@ -66,11 +67,4 @@ dependencies {
 
     implementation("io.github.nasmedia-tech:admixer-ssp:1.0.21")
     implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
-
-    // Optional mediations from the vendor guide:
-    // implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
-    // implementation("io.github.nasmedia-tech:admixer-adfit:1.0.10")
-    // implementation("io.github.nasmedia-tech:admixer-pangle:1.0.10")
-    // implementation("io.github.nasmedia-tech:admixer-applovin:1.0.8")
-    // implementation("io.github.nasmedia-tech:admixer-unity:1.0.6")
 }
