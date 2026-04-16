@@ -112,18 +112,13 @@ fun HybridWebViewScreen(
                     settings.domStorageEnabled = true
                     webViewClient = WebViewClient()
                     
-                    // 브릿지 생성: 광고 요청 시 세션을 새로 고침하여 UI 강제 갱신 유도
                     addJavascriptInterface(NapSspHybridBridge(this) { format ->
                         if (format == "clear") {
                             currentAdView = null
                             adHeight = 0.dp
                             return@NapSspHybridBridge
                         }
-                        
-                        // 1. 세션 아이디 변경 (UI 강제 리프레시 핵심)
                         adSessionId = UUID.randomUUID().toString()
-                        
-                        // 2. 광고 객체 가져오기
                         val adView = when (format) {
                             "banner" -> NapSspSdkIntegration.bannerView(context)
                             "native" -> NapSspSdkIntegration.nativeView(context)
@@ -133,7 +128,6 @@ fun HybridWebViewScreen(
                             "interstitialBanner" -> { NapSspSdkIntegration.interstitialBannerView(context); null }
                             else -> null
                         }
-                        
                         currentAdView = adView
                         adHeight = when {
                             adView is AdView -> 100.dp
@@ -142,13 +136,11 @@ fun HybridWebViewScreen(
                             else -> 0.dp
                         }
                     }, "NapSspBridge")
-                    
                     loadUrl("file:///android_asset/index.html")
                 }
             }
         )
 
-        // 하단 광고 영역: adSessionId가 바뀔 때마다 하위 AndroidView가 완전히 새로 생성됨
         key(adSessionId) {
             val currentAdHeight = adHeight
             if (currentAdView != null && currentAdHeight > 0.dp) {
