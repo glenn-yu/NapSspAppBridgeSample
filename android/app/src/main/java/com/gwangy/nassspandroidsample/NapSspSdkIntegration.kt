@@ -3,8 +3,8 @@ package com.gwangy.nassspandroidsample
 import android.content.Context
 import android.view.View
 import com.nasmedia.admixerssp.common.AdMixer
-import com.nasmedia.admixerssp.ads.*
-import com.nasmedia.admixerssp.listener.*
+import com.nasmedia.admixerssp.common.ads.*
+import com.nasmedia.admixerssp.common.listener.*
 
 object NapSspSdkIntegration {
     
@@ -24,7 +24,6 @@ object NapSspSdkIntegration {
     fun initialize(context: Context) {
         AdEventLogger.request("initialize", NapSspConfig.MEDIA_KEY)
         runCatching {
-            // AdMixer initialization
             AdMixer.getInstance().initialize(
                 context, 
                 NapSspConfig.MEDIA_KEY, 
