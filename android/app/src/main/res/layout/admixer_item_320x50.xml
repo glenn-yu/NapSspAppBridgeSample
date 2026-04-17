@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#f7f7f7">
 
     <ImageView
@@ -11,17 +10,37 @@
         android:layout_alignParentStart="true" />
 
     <TextView
-        android:id="@id/tv_title"
+        android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentEnd="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="12dp"
         android:layout_toEndOf="@id/iv_icon"
         android:gravity="center_vertical"
-        android:lineSpacingExtra="2sp"
-        android:text="Title .. "
+        android:paddingStart="12dp"
         android:textSize="15sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/tv_adv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
+        android:id="@+id/iv_main"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btn_cta"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 </RelativeLayout>

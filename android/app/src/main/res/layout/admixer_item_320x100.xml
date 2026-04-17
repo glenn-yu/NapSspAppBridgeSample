@@ -1,5 +1,4 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#f7f7f7">
@@ -19,8 +18,6 @@
         android:layout_marginTop="19dp"
         android:layout_toEndOf="@id/iv_icon"
         android:gravity="center_vertical"
-        android:lineSpacingExtra="2sp"
-        android:text="Title .. "
         android:textSize="15sp"
         android:textStyle="bold" />
 
@@ -32,10 +29,22 @@
         android:layout_marginStart="13dp"
         android:layout_toEndOf="@id/iv_icon"
         android:gravity="center_vertical"
-        android:lineSpacingExtra="1sp"
-        android:text="Advertiser"
         android:textColor="#c7c7c7"
         android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_icon"
+        android:textColor="#2a2a2a"
+        android:textSize="11sp" />
+
+    <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
+        android:id="@+id/iv_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_desc" />
 
     <Button
         android:id="@+id/btn_cta"
@@ -44,11 +53,8 @@
         android:layout_below="@id/tv_title"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="11dp"
-        android:layout_marginBottom="12dp"
         android:background="#2a2a2a"
         android:text="CTA"
         android:textColor="#ffffff"
         android:textSize="11sp" />
-
-
 </RelativeLayout>
