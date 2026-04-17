@@ -79,9 +79,9 @@ dependencies {
 
     // Mediation
     implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
-    implementation("io.github.nasmedia-tech:admixer-adfit:1.0.10")
-    implementation("io.github.nasmedia-tech:admixer-pangle:1.0.10")
-    implementation("com.pangle.global:pag-sdk:7.1.0.4")
+    implementation("io.github.nasmedia-tech:admixer-adfit:1.0.11")
+    implementation("io.github.nasmedia-tech:admixer-pangle:1.0.11")
+    implementation("com.pangle.global:pag-sdk:7.8.5.9")
     implementation("io.github.nasmedia-tech:admixer-applovin:1.0.8")
     implementation("io.github.nasmedia-tech:admixer-unity:1.0.6")
 }

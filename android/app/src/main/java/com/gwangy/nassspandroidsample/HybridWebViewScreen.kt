@@ -32,6 +32,7 @@ import com.gwangy.nassspandroidsample.bridge.NapSspConfig
 import com.gwangy.nassspandroidsample.bridge.NapSspSdkIntegration
 import com.nasmedia.admixerssp.ads.AdView
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID

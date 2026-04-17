@@ -137,6 +137,9 @@ object NapSspSdkIntegration {
             val nativeView = NativeAdView(context)
             val adInfoBuilder = AdInfo.Builder(adUnitId).setIsUseMediation(true)
             
+            // 공통 레이아웃 사용 (가이드 예제 기반)
+            val layoutId = R.layout.admixer_item_320x480
+            
             // 레이아웃 파일에 존재하는 ID만 동적으로 찾아서 매핑 (크래시 방지)
             val adViewIds = mutableMapOf<String, Int>()
             adViewIds["nativeLayout"] = layoutId // AdFit 어댑터가 요구하는 레이아웃 키 추가
