@@ -72,9 +72,7 @@ class NapSspSdkIntegration: NSObject {
         shared.destroyAndRemoveAd(format: format)
 
         var nativeAdView: AMMNativeAdView? = nil
-        let nibNames = ["AMMNativeAdView_320x480", "AMMNativeAdView_300x250", "AMMNativeAdView_320x100", "AMMNativeAdView_320x50"]
-        let selectedNib = nibNames.randomElement() ?? "AMMNativeAdView"
-        if let nibView = Bundle.main.loadNibNamed(selectedNib, owner: nil, options: nil)?.first as? AMMNativeAdView {
+        if let nibView = Bundle.main.loadNibNamed("AMMNativeAdView", owner: nil, options: nil)?.first as? AMMNativeAdView {
             nativeAdView = nibView
         }
 
