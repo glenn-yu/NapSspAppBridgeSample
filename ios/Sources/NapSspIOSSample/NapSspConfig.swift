@@ -30,6 +30,18 @@ enum NapSspConfig {
         return result
     }
 
+    static var mediaKeyInt: Int {
+        Int(mediaKey) ?? Int(defaultMediaKey) ?? 0
+    }
+
+    static func adUnitID(_ key: String) -> Int {
+        Int(adUnitIDs[key] ?? "") ?? Int(defaultAdUnitIDs[key] ?? "") ?? 0
+    }
+
+    static var adUnitIDInts: [String: Int] {
+        Dictionary(uniqueKeysWithValues: adUnitIDs.map { ($0.key, Int($0.value) ?? 0) })
+    }
+
     static let mediationHints: [(String, String)] = [
         ("GAM", "https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git"),
         ("AdFit", "https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git"),

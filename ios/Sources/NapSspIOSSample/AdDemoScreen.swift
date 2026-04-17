@@ -9,7 +9,7 @@ struct AdDemoScreen: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(title).font(.title2).bold()
-            Text(subtitle).foregroundStyle(.secondary)
+            Text(subtitle).foregroundColor(.secondary)
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color(red: 0.92, green: 0.94, blue: 0.97))
                 .frame(height: 140)
@@ -24,7 +24,11 @@ struct AdDemoScreen: View {
                 )
             if let onClose {
                 Button("닫기", action: onClose)
-                    .buttonStyle(.borderedProminent)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
         }
         .padding()

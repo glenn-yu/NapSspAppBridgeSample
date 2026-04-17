@@ -1,0 +1,11 @@
+framework module AdMixerMediation {
+  umbrella header "AdMixerMediation-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module AdMixerMediation.Swift {
+  header "AdMixerMediation-Swift.h"
+  requires objc
+}

@@ -2,6 +2,7 @@
 import SwiftUI
 import WebKit
 import AdMixer
+import AdMixerMediation
 
 // JSON 브릿지 데이터 구조
 struct HybridRequest: Codable {
@@ -34,7 +35,7 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
 
         switch request.action {
         case "init":
-            NapSspSdkIntegration.initialize()
+            NapSspSdkIntegration.initializeSdk()
             sendResponse(action: "init", status: "success", data: "Initialized")
         case "loadAd":
             if let format = request.params?["format"] {
@@ -127,6 +128,11 @@ struct HybridWebViewScreen: View {
                         self.adView = view
                         self.adHeight = height
                         self.adViewId = UUID()
+
+                        if let _ = view as? AMMBannerView { self.adHeight = 100 }
+                        else if let _ = view as? AMMNativeAdViewContainer { self.adHeight = 350 }
+                        else if let _ = view as? AMMVideoView { self.adHeight = 250 }
+                        else { self.adHeight = 0 }
                     }
                 }
 
