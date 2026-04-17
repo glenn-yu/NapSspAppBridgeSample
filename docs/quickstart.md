@@ -21,8 +21,10 @@ cd NapSspAppBridgeSample
 ```
 
 샘플 모드 안내 (초보자용)
-- 데모 모드: SDK 바이너리(AAR/.framework)가 없어도 앱이 동작하는 '데모 모드'를 제공합니다. 데모 모드는 기본 예제 데이터를 사용하여 UI/브리지 동작을 확인할 수 있게 해줍니다.
-- Configure Keys: 실제 벤더 키를 테스트하려면 앱 내 'Configure Keys' 에서 MEDIA_KEY와 AD_UNIT_ID를 입력하세요.(Android: Configure Keys dialog, iOS: Configure Keys 화면)
+- 데모 모드: 설정 없이 앱 UI, 화면 흐름, WebView 브리지 동작을 먼저 확인하는 모드입니다.
+- 실 SDK 모드: 실제 MEDIA_KEY / AD_UNIT_ID를 `Configure Keys`에 넣고 광고 응답까지 확인하는 모드입니다.
+- 권장 순서: 먼저 데모 모드로 화면과 버튼 흐름을 확인한 뒤, 그 다음 실 SDK 모드로 넘어가세요.
+- Configure Keys: 실제 벤더 키를 테스트하려면 앱 내 `Configure Keys`에서 MEDIA_KEY와 AD_UNIT_ID를 입력하세요. (Android: Configure Keys dialog, iOS: Configure Keys 화면)
 
 빠른 실행 스크립트
 
@@ -59,16 +61,17 @@ cd android
   4. 웹뷰에 상태 ack를 다시 보냄 (`window.onNapSspMessage` 호출)
 
 검증 체크리스트 (문제 발생시 순서대로 확인)
-1. 앱이 데모모드로 동작하는지 확인 (설정 없이 버튼 동작 및 로그 확인)
-2. Configure Keys로 MEDIA_KEY 입력 후 'initialize' 실행 → 로그에 initialize success 확인
-3. 광고 호출 후 status가 'loaded'가 뜨는지 확인
-4. 에러 발생 시 로그 확인 (Android Logcat / iOS Console)
+1. 앱이 데모 모드로 동작하는지 확인 (설정 없이 화면 진입, 버튼 동작, 브리지 응답 확인)
+2. Configure Keys로 MEDIA_KEY와 AD_UNIT_ID 입력
+3. 앱 재실행 또는 HybridWebView의 `init`으로 초기화 확인
+4. 배너 또는 네이티브부터 호출해서 status가 `loaded`로 바뀌는지 확인
+5. 에러 발생 시 로그 확인 (Android Logcat / iOS Console)
 
 검증 포인트(문제가 있을 때 확인할 것)
 - Android: `Unable to locate a Java Runtime` → JDK 설치 및 JAVA_HOME 확인
 - Android: `Class.forName` 실패 → 벤더 SDK(AAR)가 `libs/` 또는 Gradle 종속성으로 포함되었는지 확인
 - iOS: `NSClassFromString("AMMediation")` 실패 → Framework 링크가 제대로 되었는지 확인
-- WebView: `window.__napSspAck`가 호출되지 않으면 브리지가 등록되었는지( `addJavascriptInterface`)와 JS 콘솔 로그를 확인
+- WebView: `window.onNapSspMessage`가 호출되지 않으면 브리지가 등록되었는지(`addJavascriptInterface` / `WKScriptMessageHandler`)와 JS 콘솔 로그를 확인
 
 개발 팁 (초보자용)
 - 로그로 먼저 확인: Android `Logcat`, iOS `Console` 출력에 `NapSsp` 관련 로그가 있는지 확인

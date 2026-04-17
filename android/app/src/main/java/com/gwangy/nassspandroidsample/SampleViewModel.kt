@@ -11,7 +11,11 @@ class SampleViewModel {
     fun selectFormat(format: SampleFormat) {
         uiState = uiState.copy(
             selectedFormat = format,
-            message = "${format.title} 준비됨"
+            message = if (format == SampleFormat.HybridWebView) {
+                "HybridWebView에서는 먼저 init, 그 다음 광고 버튼을 눌러 주세요"
+            } else {
+                "${format.title} 준비됨, 처음이면 배너나 네이티브부터 확인해 주세요"
+            }
         )
     }
 

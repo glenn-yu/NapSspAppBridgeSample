@@ -12,6 +12,11 @@ examples/    - 포맷별 코드 예시
 
 ## 빠른 시작
 
+### 먼저 이해할 것
+- 데모 모드: 설정 없이 화면 흐름과 WebView 브리지를 먼저 확인하는 모드
+- 실 SDK 모드: `Configure Keys`에 실제 MEDIA_KEY / AD_UNIT_ID를 넣고 광고 응답까지 확인하는 모드
+- 권장 순서: 데모 모드 확인 → Configure Keys 입력 → 배너/네이티브 확인 → HybridWebView 확인
+
 ### Android
 
 ```bash
