@@ -192,6 +192,18 @@ extension NapSspSdkIntegration: AMMBannerViewDelegate, AMMNativeDelegate, AMMVid
         }
     }
 
+    func onSkipVideo() {
+        if let videoView = activeAds["video"] as? AMMVideoView {
+            notifyEvent(event: "skipped", format: "video", id: String(videoView.adUnitID))
+        }
+    }
+
+    func onCompleteVideo() {
+        if let videoView = activeAds["video"] as? AMMVideoView {
+            notifyEvent(event: "completed", format: "video", id: String(videoView.adUnitID))
+        }
+    }
+
     func onSuccessShowInterstitial() { notifyEvent(event: "displayed", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f"))) }
     func onFailShowInterstitial(error: (any Error)?) { NapSspAdEventBridge.post(event: "failed", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f")), detail: error?.localizedDescription ?? "show failed") }
     func onTapInterstitial() { notifyEvent(event: "clicked", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f"))) }

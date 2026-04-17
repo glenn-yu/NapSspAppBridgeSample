@@ -565,6 +565,7 @@ public class InterstitialActivity extends AppCompatActivity {
         });
 
         // [방법 2] 원하는 시점에 노출
+        Button btnInterstitialShow = findViewById(R.id.btn_interstitial_show);
         btnInterstitialShow.setOnClickListener(v -> {
             if (interstitialAd.hasInterstitial)
                 interstitialAd.showInterstitial();
@@ -709,7 +710,7 @@ public class NativeActivity extends AppCompatActivity {
 
         // View ID 매핑 (Google, Adfit, Pangle 공통)
         Map<String, Integer> adViewIds = new HashMap<>();
-        adViewIds.put("nativeLayout", nativeLayout);
+        adViewIds.put("nativeLayout", R.layout.item_320x480);
         adViewIds.put("iv_icon", R.id.iv_icon);
         adViewIds.put("tv_title", R.id.tv_title);
         adViewIds.put("tv_adv", R.id.tv_adv);
@@ -832,6 +833,7 @@ public class RewardInterstitialVideoActivity extends AppCompatActivity {
             }
         });
 
+        Button btnInterstitialVideoShow = findViewById(R.id.btn_interstitial_video_show);
         btnInterstitialVideoShow.setOnClickListener(v -> {
             if (rewardInterstitialVideoAd.hasInterstitial)
                 rewardInterstitialVideoAd.showRewardVideoAd();
@@ -1054,6 +1056,7 @@ public class InterstitialVideoActivity extends AppCompatActivity {
             }
         });
 
+        Button btnInterstitialVideoShow = findViewById(R.id.btn_interstitial_video_show);
         btnInterstitialVideoShow.setOnClickListener(v -> {
             if (interstitialVideoAdView.hasInterstitial)
                 interstitialVideoAdView.showInterstitialVideoAd();

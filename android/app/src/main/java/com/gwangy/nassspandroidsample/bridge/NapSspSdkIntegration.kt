@@ -165,7 +165,6 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         return runCatching {
             val videoView = VideoAdView(context)
-            // 가이드 누락: isRetry(false) 설정
             videoView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).isRetry(false).build())
             videoView.setAdViewListener(object : AdListener {
                 override fun onReceivedAd(adapterName: String?, view: Any?) = notifyEvent("loaded", format, adUnitId)
@@ -173,8 +172,13 @@ object NapSspSdkIntegration {
                     onAdEventCallback?.invoke("failed", format, "[$errorCode] $errorMsg")
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
-                    if (event == AdEvent.DISPLAYED) notifyEvent("displayed", format, adUnitId)
-                    if (event == AdEvent.CLICK) notifyEvent("clicked", format, adUnitId)
+                    when (event) {
+                        AdEvent.DISPLAYED  -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK      -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.SKIPPED    -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION -> notifyEvent("completed", format, adUnitId)
+                        else -> {}
+                    }
                 }
             })
             activeAds[format] = videoView
@@ -190,7 +194,6 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val rewardAd = RewardInterstitialVideoAd(context)
-            // 가이드 누락: S2S Reward Callback 파라미터 및 음소거 옵션 추가
             val params = mapOf(
                 "useid" to "nas",
                 "name" to "hdragon",
@@ -213,10 +216,12 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.DISPLAYED    -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK        -> notifyEvent("clicked", format, adUnitId)
                         AdEvent.EARNEDREWARD -> onAdEventCallback?.invoke("rewarded", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.CLOSE        -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.SKIPPED      -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION   -> notifyEvent("completed", format, adUnitId)
                         else -> {}
                     }
                 }
@@ -233,7 +238,6 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val interstitialAd = InterstitialVideoAd(context)
-            // 가이드 누락: 타임아웃 및 재요청 카운트 설정
             interstitialAd.setAdInfo(
                 AdInfo.Builder(adUnitId)
                     .interstitialTimeout(0)
@@ -251,9 +255,11 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.DISPLAYED  -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK      -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE      -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.SKIPPED    -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION -> notifyEvent("completed", format, adUnitId)
                         else -> {}
                     }
                 }
@@ -270,7 +276,6 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val interstitialAd = InterstitialAd(context)
-            // 가이드 누락: Popup 형태 및 카운트다운 설정
             val adConfig = PopupInterstitialAdOption().apply {
                 setDisableBackKey(false)
                 setButtonLeft("광고종료", "#234234")
@@ -294,9 +299,11 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK, AdEvent.LEFT_CLICK, AdEvent.RIGHT_CLICK -> notifyEvent("clicked", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.DISPLAYED   -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK       -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE       -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.LEFT_CLICK  -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.RIGHT_CLICK -> notifyEvent("clicked", format, adUnitId)
                         else -> {}
                     }
                 }
