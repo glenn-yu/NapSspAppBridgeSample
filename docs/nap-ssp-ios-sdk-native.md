@@ -109,11 +109,23 @@ target 'MyApp' do
 end
 ```
 
+> 포맷별로 바이너리를 더 가볍게 가져가야 하는 경우, 벤더가 제공하는 subspec / 모듈 분리를 우선 사용하세요.
+> 예: `AdMixerMediation/Interstitial`, `AdMixerMediation/RewardVideo`처럼 필요한 포맷만 포함.
+> 실제 이름은 배포되는 podspec 기준으로 맞추면 됩니다.
+
 3. pod 업데이트:
 
 ```bash
 $ pod update
 ```
+
+#### 시뮬레이터 빠른 검증
+
+1. Xcode에서 `.xcworkspace`를 열고 iPhone Simulator 대상으로 실행합니다.
+2. 테스트용 Media Key / AdUnit ID를 넣고, `setDebugEnabled(isEnabled: true)`를 켭니다.
+3. 인터스티셜은 `load` 후 `show(rootViewController:)`, 리워드는 `load` 후 `show(rootViewController:)` 순서로 확인합니다.
+4. Xcode Console에서 loaded / displayed / clicked / rewarded / closed 이벤트가 찍히는지 봅니다.
+5. 시뮬레이터에서 응답이 없으면 실제 광고 지면이 아닌 테스트 지면으로 다시 확인합니다.
 
 #### 1-2. SPM을 통한 설치
 

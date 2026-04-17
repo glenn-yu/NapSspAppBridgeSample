@@ -23,9 +23,20 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
 
     override init() {
         super.init()
-        NapSspSdkIntegration.shared.onAdEventCallback = { [weak self] event, format, detail in
-            self?.sendResponse(action: "event", status: "success", data: "SDK: \(event) | \(format)")
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(handleAdEvent(_:)), name: .napSspAdEvent, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .napSspAdEvent, object: nil)
+    }
+
+    @objc private func handleAdEvent(_ notification: Notification) {
+        let event = notification.userInfo?["event"] as? String ?? "unknown"
+        let format = notification.userInfo?["format"] as? String ?? "unknown"
+        let id = notification.userInfo?["id"] as? String ?? ""
+        let detail = notification.userInfo?["detail"] as? String
+        let payload = [event, format, id, detail ?? ""].filter { !$0.isEmpty }.joined(separator: " | ")
+        sendResponse(action: "event", status: "success", data: "SDK: \(payload)")
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

@@ -16,7 +16,7 @@ class NapSspSdkIntegration: NSObject {
     // 현재 활성화된 광고 객체들을 추적
     private var activeAds: [String: Any] = [:]
 
-    private func notifyEvent(event: String, format: String, id: String) {
+    private func notifyEvent(event: String, format: String, id: String, detail: String? = nil) {
         switch event {
         case "loaded": AdEventLogger.loaded(format: format, id: id)
         case "displayed": AdEventLogger.displayed(format: format, id: id)
@@ -24,6 +24,7 @@ class NapSspSdkIntegration: NSObject {
         default: break
         }
         onAdEventCallback?(event, format, id)
+        NapSspAdEventBridge.post(event: event, format: format, id: id, detail: detail)
     }
 
     private func destroyAndRemoveAd(format: String) {
@@ -103,16 +104,13 @@ class NapSspSdkIntegration: NSObject {
         let adUnitId = NapSspConfig.adUnitID("interstitial_320x480_f")
         let format = "interstitialBanner"
         shared.destroyAndRemoveAd(format: format)
-        let config = AMMInterstitialConfig()
-        config.viewType = .basic
-        AMMInterstitial.load(adUnitID: adUnitId, config: config) { interstitial, error in
+        InterstitialModule.shared.load(adUnitId: adUnitId) { interstitial, error in
             if let interstitial = interstitial {
-                interstitial.delegate = shared
                 shared.activeAds[format] = interstitial
                 shared.notifyEvent(event: "loaded", format: format, id: String(adUnitId))
-                interstitial.show(rootViewController: rootVC)
+                InterstitialModule.shared.show(interstitial, rootViewController: rootVC)
             } else if let error = error {
-                shared.onAdEventCallback?("failed", format, error.localizedDescription)
+                shared.notifyEvent(event: "failed", format: format, id: String(adUnitId), detail: error.localizedDescription)
             }
         }
     }
@@ -121,14 +119,13 @@ class NapSspSdkIntegration: NSObject {
         let adUnitId = NapSspConfig.adUnitID("reward_video")
         let format = "rewardVideo"
         shared.destroyAndRemoveAd(format: format)
-        AMMRewardVideo.load(adUnitID: adUnitId) { reward, error in
+        RewardedModule.shared.load(adUnitId: adUnitId) { reward, error in
             if let reward = reward {
-                reward.delegate = shared
                 shared.activeAds[format] = reward
                 shared.notifyEvent(event: "loaded", format: format, id: String(adUnitId))
-                reward.show(rootViewController: rootVC)
+                RewardedModule.shared.show(reward, rootViewController: rootVC)
             } else if let error = error {
-                shared.onAdEventCallback?("failed", format, error.localizedDescription)
+                shared.notifyEvent(event: "failed", format: format, id: String(adUnitId), detail: error.localizedDescription)
             }
         }
     }
@@ -164,7 +161,7 @@ extension NapSspSdkIntegration: AMMBannerViewDelegate, AMMNativeDelegate, AMMVid
         }
     }
 
-    func onFailBanner() { onAdEventCallback?("failed", "banner", "load failed") }
+    func onFailBanner() { NapSspAdEventBridge.post(event: "failed", format: "banner", id: String(NapSspConfig.adUnitID("banner_320x100")), detail: "load failed") }
     func onTapBanner() {
         if let bannerView = activeAds["banner"] as? AMMBannerView {
             notifyEvent(event: "clicked", format: "banner", id: String(bannerView.adUnitID))
@@ -177,7 +174,7 @@ extension NapSspSdkIntegration: AMMBannerViewDelegate, AMMNativeDelegate, AMMVid
         }
     }
 
-    func onFailNative() { onAdEventCallback?("failed", "native", "load failed") }
+    func onFailNative() { NapSspAdEventBridge.post(event: "failed", format: "native", id: String(NapSspConfig.adUnitID("native")), detail: "load failed") }
     func onTapNative() {
         if let nativeView = activeAds["native"] as? AMMNativeAdViewContainer {
             notifyEvent(event: "clicked", format: "native", id: String(nativeView.adUnitID))
@@ -190,7 +187,7 @@ extension NapSspSdkIntegration: AMMBannerViewDelegate, AMMNativeDelegate, AMMVid
         }
     }
 
-    func onFailVideo() { onAdEventCallback?("failed", "video", "load failed") }
+    func onFailVideo() { NapSspAdEventBridge.post(event: "failed", format: "video", id: String(NapSspConfig.adUnitID("outstream_video")), detail: "load failed") }
     func onTapVideoViewMore() {
         if let videoView = activeAds["video"] as? AMMVideoView {
             notifyEvent(event: "clicked", format: "video", id: String(videoView.adUnitID))
@@ -198,19 +195,19 @@ extension NapSspSdkIntegration: AMMBannerViewDelegate, AMMNativeDelegate, AMMVid
     }
 
     func onSuccessShowInterstitial() { notifyEvent(event: "displayed", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f"))) }
-    func onFailShowInterstitial(error: (any Error)?) { onAdEventCallback?("failed", "interstitialBanner", error?.localizedDescription ?? "show failed") }
+    func onFailShowInterstitial(error: (any Error)?) { NapSspAdEventBridge.post(event: "failed", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f")), detail: error?.localizedDescription ?? "show failed") }
     func onTapInterstitial() { notifyEvent(event: "clicked", format: "interstitialBanner", id: String(NapSspConfig.adUnitID("interstitial_320x480_f"))) }
     func onCloseInterstitial() {}
 
     func onSuccessShowReward() { notifyEvent(event: "displayed", format: "rewardVideo", id: String(NapSspConfig.adUnitID("reward_video"))) }
-    func onFailShowReward(error: (any Error)?) { onAdEventCallback?("failed", "rewardVideo", error?.localizedDescription ?? "show failed") }
+    func onFailShowReward(error: (any Error)?) { NapSspAdEventBridge.post(event: "failed", format: "rewardVideo", id: String(NapSspConfig.adUnitID("reward_video")), detail: error?.localizedDescription ?? "show failed") }
     func onTapRewardVideo() { notifyEvent(event: "clicked", format: "rewardVideo", id: String(NapSspConfig.adUnitID("reward_video"))) }
     func onCloseRewardVideo() {}
     func onRewardVideoComplete() {}
-    func onRewardVideoEarned() { onAdEventCallback?("rewarded", "rewardVideo", "success") }
+    func onRewardVideoEarned() { NapSspAdEventBridge.post(event: "rewarded", format: "rewardVideo", id: String(NapSspConfig.adUnitID("reward_video")), detail: "success") }
 
     func onSuccessShowVideoInterstitial() { notifyEvent(event: "displayed", format: "interstitialVideo", id: String(NapSspConfig.adUnitID("interstitial_320x480"))) }
-    func onFailShowVideoInterstitial(error: (any Error)?) { onAdEventCallback?("failed", "interstitialVideo", error?.localizedDescription ?? "show failed") }
+    func onFailShowVideoInterstitial(error: (any Error)?) { NapSspAdEventBridge.post(event: "failed", format: "interstitialVideo", id: String(NapSspConfig.adUnitID("interstitial_320x480")), detail: error?.localizedDescription ?? "show failed") }
     func onCloseVideoInterstitial() {}
     func onTapVideoInterstitialViewMore() { notifyEvent(event: "clicked", format: "interstitialVideo", id: String(NapSspConfig.adUnitID("interstitial_320x480"))) }
     func onCompleteVideoInterstitial() {}
