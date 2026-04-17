@@ -84,6 +84,11 @@ cd android
 
 추가 자료
 - 레포 내 `docs/guide.md` — 전체 흐름과 상세 설명
+- `docs/mediation.md` — 네트워크와 저장소/패키지 정리
 - 벤더 SDK 설치 가이드(프로젝트별): Android AAR / iOS Framework 위치 설명
 
-끝.
+릴리즈 전 마지막 체크
+- Android: `./gradlew assembleDebug` 가 실제로 통과하는지 확인
+- iOS: SPM dependency resolve 후 Xcode build가 통과하는지 확인
+- Configure Keys 입력값이 실제 광고 응답으로 이어지는지 확인
+- HybridWebView에서 `init` 후 배너/네이티브가 정상 호출되는지 확인
