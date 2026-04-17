@@ -3,7 +3,7 @@
 이 페이지는 처음 보는 개발자도 샘플 앱을 바로 실행해볼 수 있도록 최소한의 단계만 적어놓은 빠른 안내서입니다.
 
 요약(한 줄)
-- 필수 설치: JDK, Android Studio (또는 Xcode for iOS)
+- 필수 설치: JDK, Android Studio, Xcode
 - 레포 클론 → 샘플 설정(미디어 키/AD_UNIT_ID) → 앱 실행 → 포맷 선택 → 광고 호출
 
 사전 준비
@@ -12,6 +12,7 @@
    - macOS 예: /usr/libexec/java_home -v 11
    - Linux/Windows: JDK 설치 경로를 JAVA_HOME으로 설정
 3. Android Studio (권장) 또는 Xcode (iOS 빌드용)
+4. iOS 샘플은 현재 `ios/Vendor/` 아래의 로컬 xcframework를 포함하므로, 원격 패키지 fetch 없이도 동일한 상태로 재현 빌드가 가능합니다.
 
 레포 클론
 
@@ -37,9 +38,14 @@ cd android
 ./gradlew installDebug
 ```
 
-# iOS (Xcode)
-1. Xcode로 `ios/` 프로젝트 오픈
-2. Scheme에서 `NapSspIOSSample` 선택 후 Run
+# iOS (Xcode / xcodebuild)
+1. Xcode로 `ios/` 패키지를 열거나
+2. 터미널에서 아래처럼 빌드합니다.
+
+```bash
+cd ios
+xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
+```
 
 샘플 설정
 1. 미디어 키와 광고 단위 ID 설정 (앱내 설정 권장)
@@ -70,7 +76,7 @@ cd android
 검증 포인트(문제가 있을 때 확인할 것)
 - Android: `Unable to locate a Java Runtime` → JDK 설치 및 JAVA_HOME 확인
 - Android: `Class.forName` 실패 → 벤더 SDK(AAR)가 `libs/` 또는 Gradle 종속성으로 포함되었는지 확인
-- iOS: `NSClassFromString("AMMediation")` 실패 → Framework 링크가 제대로 되었는지 확인
+- iOS: `NSClassFromString("AMMediation")` 실패 → vendored framework 포함 상태와 링크 구성을 확인
 - WebView: `window.onNapSspMessage`가 호출되지 않으면 브리지가 등록되었는지(`addJavascriptInterface` / `WKScriptMessageHandler`)와 JS 콘솔 로그를 확인
 
 개발 팁 (초보자용)
@@ -89,6 +95,6 @@ cd android
 
 릴리즈 전 마지막 체크
 - Android: `./gradlew assembleDebug` 가 실제로 통과하는지 확인
-- iOS: SPM dependency resolve 후 Xcode build가 통과하는지 확인
+- iOS: vendored xcframework 기준으로 Xcode build가 통과하는지 확인
 - Configure Keys 입력값이 실제 광고 응답으로 이어지는지 확인
 - HybridWebView에서 `init` 후 배너/네이티브가 정상 호출되는지 확인

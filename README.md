@@ -25,6 +25,14 @@ cd android
 ./gradlew assembleDebug
 ```
 
+### iOS
+
+```bash
+cd ios
+# Xcode 또는 xcodebuild로 빌드
+xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
+```
+
 ### 문서 요약
 
 | 파일 | 내용 |
@@ -59,6 +67,8 @@ cd android
 참고:
 - Android는 `AppConfig` + `NapSspConfig`를 통해 저장된 키를 우선 사용합니다.
 - iOS는 `UserDefaults` + `NapSspConfig`를 통해 저장된 키를 우선 사용합니다.
+- iOS 샘플은 현재 재현 가능한 빌드를 위해 `ios/Vendor/` 아래의 로컬 xcframework를 사용합니다.
+- 즉, 이 샘플의 iOS 빌드는 원격 SPM fetch 상태에 덜 의존하도록 고정되어 있습니다.
 
 ## 문의
 
