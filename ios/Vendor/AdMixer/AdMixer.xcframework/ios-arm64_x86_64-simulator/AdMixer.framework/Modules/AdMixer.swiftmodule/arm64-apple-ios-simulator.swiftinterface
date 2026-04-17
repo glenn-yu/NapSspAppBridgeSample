@@ -1,0 +1,682 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.2.1 effective-5.10 (swiftlang-6.2.1.4.8 clang-1700.4.4.1)
+// swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name AdMixer
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.1
+import AVFoundation
+@_exported import AdMixer
+import AdSupport
+import CoreTelephony
+import Foundation
+import Swift
+import SystemConfiguration
+import UIKit
+import WebKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import os.log
+import os
+@_inheritsConvenienceInitializers @objc open class AdMixerSDK : ObjectiveC.NSObject {
+  @objc public static let shared: AdMixer.AdMixerSDK
+  @objc public func debug(isEnabled: Swift.Bool)
+  @objc public func dismissAnimation(isAnimated: Swift.Bool)
+  @objc public func closeButtonDelay(isEnabled: Swift.Bool)
+  @objc public func setTimeoutIntervalForRequest(time: Foundation.TimeInterval, code: Swift.Int)
+  @objc public func setURLSession(urlSession: Foundation.URLSession, code: Swift.Int)
+  @objc public func setTestMode(isTestMode: Swift.Bool, code: Swift.Int)
+  @objc public func setVideo(isMute: Swift.Bool)
+  @objc public func setRewardVideo(isMute: Swift.Bool)
+  @objc public func setVideoInterstitial(isMute: Swift.Bool)
+  @objc public func setCloseButtonTouchArea(ratio: Swift.Float)
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc public class AMAdInfo : ObjectiveC.NSObject {
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc public class AMBannerAdInfo : AdMixer.AMAdInfo {
+  public init(mediaKey: Swift.String, adUnitId: Swift.Int, size: CoreFoundation.CGSize = .zero)
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc public class AMFullBannerAdInfo : AdMixer.AMAdInfo {
+  public var popupOption: AdMixer.AMFullBannerPopupOption
+  public var countDownOption: AdMixer.AMFullBannerCountDownOption
+  public init(mediaKey: Swift.String, adUnitId: Swift.Int, type: AdMixer.AMFullBannerType = .basic, popupOption: AdMixer.AMFullBannerPopupOption = AMFullBannerPopupOption(), countDownOption: AdMixer.AMFullBannerCountDownOption = AMFullBannerCountDownOption())
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers public class AMVideoAdInfo : AdMixer.AMAdInfo {
+  public init(mediaKey: Swift.String, adUnitId: Swift.Int)
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers public class AMNativeAdInfo : AdMixer.AMAdInfo {
+  public init(mediaKey: Swift.String, adUnitId: Swift.Int)
+  @objc deinit
+}
+@objc public protocol AMBannerAdDelegate {
+  @objc optional func didLoadBannerAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadBannerAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didTapBannerAd()
+  @objc optional func didLoadInterstitialSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadInterstitialFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didShowInterstitialSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didShowInterstitialFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didCloseInterstitial()
+  @objc optional func didTapInterstitial()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMBannerAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any AdMixer.AMBannerAdDelegate)?
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMBannerAdInfo)
+  @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @_Concurrency.MainActor @preconcurrency public func loadHouseAd()
+  @_Concurrency.MainActor @preconcurrency public func showAd()
+  @objc deinit
+}
+extension AdMixer.AMBannerAdView : WebKit.WKNavigationDelegate, WebKit.WKUIDelegate {
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  #endif
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMBannerAdViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any AdMixer.AMBannerAdDelegate)?
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMFullBannerAdInfo)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var supportedInterfaceOrientations: UIKit.UIInterfaceOrientationMask {
+    @objc get
+  }
+  @_Concurrency.MainActor @preconcurrency public func loadAd(isHouseAd: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func showAd(from rootVC: UIKit.UIViewController)
+  @available(*, deprecated, message: "rootViewController is no longer needed in init. Use showAd(from:) to present.")
+  @_Concurrency.MainActor @preconcurrency convenience public init(adInfo: AdMixer.AMFullBannerAdInfo, rootViewController: UIKit.UIViewController)
+  @available(*, deprecated, message: "Use showAd(from:) instead.")
+  @_Concurrency.MainActor @preconcurrency public func showAd(animated: Swift.Bool)
+  @objc deinit
+}
+extension AdMixer.AMBannerAdViewController : WebKit.WKNavigationDelegate, WebKit.WKUIDelegate {
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFail navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  #endif
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMBaseVideoViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any AdMixer.AMVideoAdDelegate)?
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMVideoAdInfo, videoType: AdMixer.VideoType)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var supportedInterfaceOrientations: UIKit.UIInterfaceOrientationMask {
+    @objc get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency public func loadAd(success: (() -> ())?, fail: (((any Swift.Error)?) -> ())?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency public func showAd(rootVC: UIKit.UIViewController, animated: Swift.Bool, success: (() -> ())?, fail: ((Foundation.NSError?) -> ())? = nil)
+  #endif
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMCountDownView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var onCloseButtonTapped: (() -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public init(option: AdMixer.AMFullBannerCountDownOption)
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency public func startCount()
+  @_Concurrency.MainActor @preconcurrency public func startTimer()
+  @_Concurrency.MainActor @preconcurrency public func stopTimer()
+}
+@objc @objcMembers public class AMFullBannerCountDownOption : ObjectiveC.NSObject {
+  @objc public init(countDownType: AdMixer.AMCountDownType = .gauge, countDownTime: Swift.Int = 5)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class AMFullBannerPopupOption : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public func setButton(title: Swift.String?, textColor color: UIKit.UIColor?)
+  #endif
+  @objc public func setButtonBackgroundColor(color: UIKit.UIColor)
+  @objc deinit
+}
+@objc public enum AMFullBannerType : Swift.Int {
+  case basic = 0
+  case popup = 1
+  case countdown = 2
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum AMCountDownType : Swift.Int {
+  case gauge = 0
+  case text = 1
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMLimitedHitAreaButton : UIKit.UIButton {
+  @_Concurrency.MainActor @preconcurrency public init(ratio: Swift.Float)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func layoutSubviews()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func point(inside point: CoreFoundation.CGPoint, with event: UIKit.UIEvent?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMMediaView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
+  @_Concurrency.MainActor @preconcurrency public var image: Swift.String? {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency public var video: Swift.String? {
+    get
+    set
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @objcMembers public class AMNative : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let icon: Swift.String
+  @objc final public let title: Swift.String
+  @objc final public let image: Swift.String
+  @objc final public let video: Swift.String
+  @objc final public let advertiser: Swift.String
+  @objc final public let descriptionText: Swift.String
+  @objc final public let cta: Swift.String
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+@objc public protocol AMNativeAdDelegate {
+  @objc optional func didLoadNativeAdSuccess(amNative: AdMixer.AMNative)
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadNativeAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didTapNativeAd()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMNativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var adInfo: AdMixer.AMNativeAdInfo?
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any AdMixer.AMNativeAdDelegate)?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var iv_icon: UIKit.UIImageView?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var l_headline: UIKit.UILabel?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var l_advertiser: UIKit.UILabel?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var l_description: UIKit.UILabel?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var amv_media: AdMixer.AMMediaView?
+  @IBOutlet @objc @_Concurrency.MainActor @preconcurrency weak public var b_cta: UIKit.UIButton?
+  @_Concurrency.MainActor @preconcurrency public var iconImage: Swift.String? {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
+  @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMRewardAdViewController : AdMixer.AMBaseVideoViewController {
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMVideoAdInfo)
+  @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @_Concurrency.MainActor @preconcurrency public func showAd(from rootVC: UIKit.UIViewController, animated: Swift.Bool)
+  @objc deinit
+}
+@objc public protocol AMVideoAdDelegate {
+  @objc optional func didLoadAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didShowAdSuccess()
+  @objc optional func didSkipAd()
+  @objc optional func didTapAdViewMore()
+  @objc optional func didAdComplete()
+  @objc optional func didLoadFullAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadFullAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didShowFullAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didShowFullAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didCloseFullAd()
+  @objc optional func didTapFullAdViewMore()
+  @objc optional func didFullAdComplete()
+  @objc optional func didLoadRewardAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didLoadRewardAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didShowRewardAdSuccess()
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc optional func didShowRewardAdFail(with error: Foundation.NSError?)
+  #endif
+  @objc optional func didCloseRewardAd()
+  @objc optional func didTapRewardAdViewMore()
+  @objc optional func didRewardVideoComplete()
+  @objc optional func didRewardVideoEarned()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMVideoAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any AdMixer.AMVideoAdDelegate)?
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMVideoAdInfo)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func removeFromSuperview()
+  @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @_Concurrency.MainActor @preconcurrency public func showAd()
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class AMVideoAdViewController : AdMixer.AMBaseVideoViewController {
+  @_Concurrency.MainActor @preconcurrency public init(adInfo: AdMixer.AMVideoAdInfo)
+  @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @_Concurrency.MainActor @preconcurrency public func showAd(from rootVC: UIKit.UIViewController, animated: Swift.Bool)
+  @objc deinit
+}
+public enum NasTrackingEventType : Swift.String, Swift.Codable {
+  case VideoFirstQuartileCallback
+  case VideoMidpointCallback
+  case VideoThirdQuartileCallback
+  case VideoCompleteCallback
+  case VideoStartCallback
+  case VideoImpressionCallback
+  case unknown
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct NasTrackingEvent : Swift.Codable {
+  public var type: AdMixer.NasTrackingEventType
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.NasTrackingEvent : Swift.Equatable {
+  public static func == (a: AdMixer.NasTrackingEvent, b: AdMixer.NasTrackingEvent) -> Swift.Bool
+}
+extension Swift.String {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var toSeconds: Swift.Double? {
+    get
+  }
+  #endif
+}
+public enum AdType : Swift.String, Swift.Codable {
+  case inline
+  case wrapper
+  case unknown
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct VastAd : Swift.Codable {
+  public var type: AdMixer.AdType
+  public let id: Swift.String
+  public var impressions: [AdMixer.VastImpression]
+  public var errors: [Foundation.URL]
+  public var creatives: [AdMixer.VastCreative]
+  public var adTitle: Swift.String?
+  public var description: Swift.String?
+  public var wrapper: AdMixer.VastWrapper?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastAd {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastAd : Swift.Equatable {
+  public static func == (a: AdMixer.VastAd, b: AdMixer.VastAd) -> Swift.Bool
+}
+public struct VastClientOptions {
+  public let wrapperLimit: Swift.Int
+  public let singleWrapperTimeLimit: Foundation.TimeInterval
+  public let timeLimit: Foundation.TimeInterval
+  public init(wrapperLimit: Swift.Int = 5, singleWrapperTimeLimit: Foundation.TimeInterval = 5, timeLimit: Foundation.TimeInterval = 10)
+}
+public class VastClient {
+  public static var trackingLogOutput: ((Swift.String, [Foundation.URL]) -> ())?
+  public init(options: AdMixer.VastClientOptions = VastClientOptions())
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func parseVast(withContentsOf url: Foundation.URL, completion: @escaping (AdMixer.VastModel?, (any Swift.Error)?) -> ())
+  #endif
+  @objc deinit
+}
+public enum CompanionsRequirement : Swift.String, Swift.Codable {
+  case all
+  case any
+  case none
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct VastCompanionAds : Swift.Codable {
+  public let required: AdMixer.CompanionsRequirement
+  public var companions: [AdMixer.VastCompanionCreative]
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastCompanionAds {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastCompanionAds : Swift.Equatable {
+  public static func == (a: AdMixer.VastCompanionAds, b: AdMixer.VastCompanionAds) -> Swift.Bool
+}
+public struct VastCompanionClickTracking {
+  public let id: Swift.String?
+}
+public struct VastCompanionCreative : Swift.Codable {
+  public let width: Swift.Int
+  public let height: Swift.Int
+  public let id: Swift.String?
+  public let adSlotId: Swift.String?
+  public var altText: Swift.String?
+  public var companionClickTracking: [Foundation.URL]
+  public var companionClickThrough: Foundation.URL?
+  public var trackingEvents: [AdMixer.VastTrackingEvent]
+  public var staticResource: [AdMixer.VastStaticResource]
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastCompanionCreative {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastCompanionCreative : Swift.Equatable {
+  public static func == (a: AdMixer.VastCompanionCreative, b: AdMixer.VastCompanionCreative) -> Swift.Bool
+}
+public struct VastCreative : Swift.Codable {
+  public let id: Swift.String?
+  public let adId: Swift.String?
+  public var linear: AdMixer.VastLinearCreative?
+  public var nonLinearAds: AdMixer.VastNonLinearAdsCreative?
+  public var companionAds: AdMixer.VastCompanionAds?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastCreative {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastCreative : Swift.Equatable {
+  public static func == (a: AdMixer.VastCreative, b: AdMixer.VastCreative) -> Swift.Bool
+}
+public enum VastError : Swift.Error {
+  case invalidXMLDocument
+  case invalidVASTDocument
+  case unableToParseDocument
+  case unableToCreateXMLParser
+  case wrapperLimitReached
+  case singleRequestTimeLimitReached
+  case wrapperTimeLimitReached
+  case internalError
+  public static func == (a: AdMixer.VastError, b: AdMixer.VastError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum VastErrorCodes : Swift.Int {
+  case xmlParsingError
+  case vastSchemaValidationError
+  case vastVersionOfResponseNotSupported
+  case traffickingError
+  case videoPlayerExpectingDifferentLinearity
+  case videoPlayerExpectingDifferentDuration
+  case videoPlayerExpectingDifferentSize
+  case adCategoryNotProvided
+  case generalWrapperError
+  case timeoutOfVastURI
+  case wrapperLimitReached
+  case noAdsVastResponse
+  case inlineResponseFailedToDisplayInTime
+  case generalLinearError
+  case fileNotFound
+  case timeoutOfMediaFile
+  case mediaFileNotSupported
+  case problemDisplayingMediaFile
+  case conditionalAdRejected
+  case interactiveUnitInNodeNotExecuted
+  case verificationUnitInNodeNotExecuted
+  case generalNonLinearAdsError
+  case creativeDimensionTooLarge
+  case unableToFetchResource
+  case nonLinearResourceNotSupported
+  case generalCompanionAdsError
+  case noAvailableSpace
+  case unableToDisplayCompanion
+  case unableToFetchCompanionResource
+  case companionResourceNotSupported
+  case undefinedError
+  case generalVPAIDError
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+public struct VastImpression : Swift.Codable {
+  public let id: Swift.String?
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastImpression {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastImpression : Swift.Equatable {
+  public static func == (a: AdMixer.VastImpression, b: AdMixer.VastImpression) -> Swift.Bool
+}
+public struct VastLinearCreative : Swift.Codable {
+  public let skipOffset: Swift.String?
+  public var duration: Swift.Double?
+  public var videoClicks: [AdMixer.VastVideoClick]
+  public var trackingEvents: [AdMixer.VastTrackingEvent]
+  public var nasTrackingEvents: [AdMixer.NasTrackingEvent]
+  public var files: AdMixer.VastMediaFiles
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastLinearCreative {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastLinearCreative : Swift.Equatable {
+  public static func == (a: AdMixer.VastLinearCreative, b: AdMixer.VastLinearCreative) -> Swift.Bool
+}
+public struct VastMediaFile : Swift.Codable {
+  public let delivery: Swift.String
+  public let type: Swift.String
+  public let width: Swift.String
+  public let height: Swift.String
+  public let id: Swift.String?
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastMediaFile {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastMediaFile : Swift.Equatable {
+  public static func == (a: AdMixer.VastMediaFile, b: AdMixer.VastMediaFile) -> Swift.Bool
+}
+public struct VastMediaFiles : Swift.Codable {
+  public var mediaFiles: [AdMixer.VastMediaFile]
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastMediaFiles : Swift.Equatable {
+  public static func == (a: AdMixer.VastMediaFiles, b: AdMixer.VastMediaFiles) -> Swift.Bool
+}
+public struct VastModel : Swift.Codable {
+  public let version: Swift.String
+  public var ads: [AdMixer.VastAd]
+  public var errors: [Foundation.URL]
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastModel {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastModel : Swift.Equatable {
+  public static func == (a: AdMixer.VastModel, b: AdMixer.VastModel) -> Swift.Bool
+}
+public struct VastNonLinear : Swift.Codable {
+  public var height: Swift.String
+  public var id: Swift.String
+  public var width: Swift.String
+  public var nonLinearClickTracking: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastNonLinear {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastNonLinear : Swift.Equatable {
+  public static func == (a: AdMixer.VastNonLinear, b: AdMixer.VastNonLinear) -> Swift.Bool
+}
+public struct VastNonLinearAdsCreative : Swift.Codable {
+  public var trackingEvents: [AdMixer.VastTrackingEvent]
+  public var nonLinear: [AdMixer.VastNonLinear]
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastNonLinearAdsCreative : Swift.Equatable {
+  public static func == (a: AdMixer.VastNonLinearAdsCreative, b: AdMixer.VastNonLinearAdsCreative) -> Swift.Bool
+}
+public struct VastStaticResource : Swift.Codable {
+  public let creativeType: Swift.String
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastStaticResource : Swift.Equatable {
+  public static func == (a: AdMixer.VastStaticResource, b: AdMixer.VastStaticResource) -> Swift.Bool
+}
+public enum TrackingEventType : Swift.String, Swift.Codable {
+  case start
+  case firstQuartile
+  case midpoint
+  case thirdQuartile
+  case complete
+  case creativeView
+  case mute
+  case unmute
+  case pause
+  case fullscreen
+  case closeLinear
+  case progress
+  case skip
+  case unknown
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct VastTrackingEvent : Swift.Codable {
+  public let type: AdMixer.TrackingEventType
+  public let offset: Swift.Double?
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastTrackingEvent {
+  public init(attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastTrackingEvent : Swift.Equatable {
+  public static func == (a: AdMixer.VastTrackingEvent, b: AdMixer.VastTrackingEvent) -> Swift.Bool
+}
+public enum ClickType : Swift.String, Swift.Codable {
+  case clickTracking
+  case ClickThrough
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct VastVideoClick : Swift.Codable {
+  public let id: Swift.String?
+  public let type: AdMixer.ClickType
+  public var url: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastVideoClick {
+  public init(type: AdMixer.ClickType, attrDict: [Swift.String : Swift.String])
+}
+extension AdMixer.VastVideoClick : Swift.Equatable {
+  public static func == (a: AdMixer.VastVideoClick, b: AdMixer.VastVideoClick) -> Swift.Bool
+}
+public struct VastWrapper : Swift.Codable {
+  public let followAdditionalWrappers: Swift.Bool?
+  public let allowMultipleAds: Swift.Bool?
+  public let fallbackOnNoAd: Swift.Bool?
+  public var adTagUri: Foundation.URL?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+extension AdMixer.VastWrapper : Swift.Equatable {
+  public static func == (a: AdMixer.VastWrapper, b: AdMixer.VastWrapper) -> Swift.Bool
+}
+public enum VideoType {
+  case instream
+  case outstreamInterstitial
+  case rewardInterstitial
+  public static func == (a: AdMixer.VideoType, b: AdMixer.VideoType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension AdMixer.AMFullBannerType : Swift.Equatable {}
+extension AdMixer.AMFullBannerType : Swift.Hashable {}
+extension AdMixer.AMFullBannerType : Swift.RawRepresentable {}
+extension AdMixer.AMCountDownType : Swift.Equatable {}
+extension AdMixer.AMCountDownType : Swift.Hashable {}
+extension AdMixer.AMCountDownType : Swift.RawRepresentable {}
+extension AdMixer.NasTrackingEventType : Swift.Equatable {}
+extension AdMixer.NasTrackingEventType : Swift.Hashable {}
+extension AdMixer.NasTrackingEventType : Swift.RawRepresentable {}
+extension AdMixer.AdType : Swift.Equatable {}
+extension AdMixer.AdType : Swift.Hashable {}
+extension AdMixer.AdType : Swift.RawRepresentable {}
+extension AdMixer.CompanionsRequirement : Swift.Equatable {}
+extension AdMixer.CompanionsRequirement : Swift.Hashable {}
+extension AdMixer.CompanionsRequirement : Swift.RawRepresentable {}
+extension AdMixer.VastError : Swift.Equatable {}
+extension AdMixer.VastError : Swift.Hashable {}
+extension AdMixer.VastErrorCodes : Swift.Equatable {}
+extension AdMixer.VastErrorCodes : Swift.Hashable {}
+extension AdMixer.VastErrorCodes : Swift.RawRepresentable {}
+extension AdMixer.TrackingEventType : Swift.Equatable {}
+extension AdMixer.TrackingEventType : Swift.Hashable {}
+extension AdMixer.TrackingEventType : Swift.RawRepresentable {}
+extension AdMixer.ClickType : Swift.Equatable {}
+extension AdMixer.ClickType : Swift.Hashable {}
+extension AdMixer.ClickType : Swift.RawRepresentable {}
+extension AdMixer.VideoType : Swift.Equatable {}
+extension AdMixer.VideoType : Swift.Hashable {}

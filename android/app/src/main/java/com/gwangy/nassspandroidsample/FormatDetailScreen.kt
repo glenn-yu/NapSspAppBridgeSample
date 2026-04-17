@@ -36,8 +36,15 @@ fun FormatDetailScreen(
                     SampleFormat.HybridWebView -> "웹 버튼으로 여는 광고"
                 }
             )
+            Text(
+                text = if (format == SampleFormat.HybridWebView) {
+                    "하이브리드 화면에서는 아래 웹뷰에서 init 후 광고 버튼을 누르세요."
+                } else {
+                    "처음 테스트라면 배너 또는 네이티브부터 확인하는 것을 권장합니다."
+                }
+            )
             Button(onClick = onExecuteSdk, modifier = Modifier.fillMaxWidth()) {
-                Text("광고 띄우기")
+                Text(if (format == SampleFormat.HybridWebView) "하이브리드 화면 열기" else "광고 띄우기")
             }
         }
     }

@@ -30,7 +30,14 @@
 
 ## iOS
 
-### 핵심 SPM 패키지
+### 현재 샘플의 핵심 의존성 방식
+
+- 이 샘플은 현재 `ios/Vendor/AdMixer/AdMixer.xcframework`
+- 그리고 `ios/Vendor/AdMixerMediation/AdMixerMediation.xcframework`
+- 두 로컬 binary target을 `ios/Package.swift`에서 직접 참조합니다.
+- 이유: 원격 SPM binary fetch 지연이나 실패와 무관하게, 샘플을 같은 상태로 재현 가능하게 유지하기 위해서입니다.
+
+### 원본 패키지 출처
 
 - `https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM.git`
 - `https://github.com/Nasmedia-Tech/iOS-SSP-SPM.git`
@@ -48,6 +55,7 @@
 - Google 계열은 SDK 입찰 광고 소스 설정이 필요할 수 있다.
 - Unity Ads는 nap ssp Mediation과 Google 입찰 광고 소스에서 중복 적용을 피해야 한다.
 - 운영팀과 맞지 않는 네트워크 구성이 있으면 광고가 안 붙을 수 있다.
+- 선택 네트워크를 추가할 때는 이 샘플의 vendored 방식과 별도로, 각 네트워크 패키지의 배포 방식을 프로젝트 정책에 맞게 결정해야 한다.
 
 ## 공통
 

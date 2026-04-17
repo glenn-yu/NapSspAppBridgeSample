@@ -6,6 +6,7 @@ local.properties
 # Xcode / Swift Package Manager
 DerivedData/
 .swiftpm/
+**/.build/
 Package.resolved
 xcuserdata/
 

@@ -12,12 +12,25 @@ examples/    - 포맷별 코드 예시
 
 ## 빠른 시작
 
+### 먼저 이해할 것
+- 데모 모드: 설정 없이 화면 흐름과 WebView 브리지를 먼저 확인하는 모드
+- 실 SDK 모드: `Configure Keys`에 실제 MEDIA_KEY / AD_UNIT_ID를 넣고 광고 응답까지 확인하는 모드
+- 권장 순서: 데모 모드 확인 → Configure Keys 입력 → 배너/네이티브 확인 → HybridWebView 확인
+
 ### Android
 
 ```bash
 cd android
 # Gradle 빌드 (JDK 11 이상 필요)
 ./gradlew assembleDebug
+```
+
+### iOS
+
+```bash
+cd ios
+# Xcode 또는 xcodebuild로 빌드
+xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
 ```
 
 ### 문서 요약
@@ -39,14 +52,23 @@ cd android
 
 1. `docs/quickstart.md` — 바로 따라하기(5분)
 2. `docs/guide.md` — 전체 흐름 및 상세
-3. `docs/start-here.md`
-4. `docs/install.md`
-5. `docs/format-matrix.md`
-6. `docs/hybrid-webview.md`
+3. `docs/hybrid-webview.md` — WebView 브리지 규격
+4. `docs/nap-ssp-android-sdk-native.md` — Android 공식 연동 가이드
+5. `docs/nap-ssp-ios-sdk-native.md` — iOS 공식 연동 가이드
 
-## 설정 파일
+## 설정 방법
 
-`android/app/src/main/java/.../NapSspConfig.kt` 에서 Media Key와 AdUnit ID를 교체하세요.
+하드코딩 수정 없이 앱에서 바로 테스트할 수 있습니다.
+
+- Android: 앱 실행 후 `Configure Keys` 버튼에서 MEDIA_KEY / AdUnit ID 입력
+- iOS: 우상단 `Configure Keys` 버튼에서 MEDIA_KEY / AdUnit ID 입력
+- 입력하지 않으면 샘플 기본값으로 동작합니다.
+
+참고:
+- Android는 `AppConfig` + `NapSspConfig`를 통해 저장된 키를 우선 사용합니다.
+- iOS는 `UserDefaults` + `NapSspConfig`를 통해 저장된 키를 우선 사용합니다.
+- iOS 샘플은 현재 재현 가능한 빌드를 위해 `ios/Vendor/` 아래의 로컬 xcframework를 사용합니다.
+- 즉, 이 샘플의 iOS 빌드는 원격 SPM fetch 상태에 덜 의존하도록 고정되어 있습니다.
 
 ## 문의
 

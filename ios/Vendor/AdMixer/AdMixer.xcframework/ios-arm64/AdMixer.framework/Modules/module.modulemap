@@ -1,0 +1,11 @@
+framework module AdMixer {
+  umbrella header "AdMixer-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module AdMixer.Swift {
+  header "AdMixer-Swift.h"
+  requires objc
+}
