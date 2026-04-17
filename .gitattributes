@@ -1,0 +1,4 @@
+# Treat xcframeworks and zip as binary; recommend Git LFS for large files
+ios/Vendor/** binary
+*.xcframework binary
+*.zip binary

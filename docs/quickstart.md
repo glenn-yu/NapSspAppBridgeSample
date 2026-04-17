@@ -8,9 +8,10 @@
 
 사전 준비
 1. Git이 설치되어 있어야 합니다.
-2. Android: JDK 11 이상 설치 및 JAVA_HOME 설정
-   - macOS 예: /usr/libexec/java_home -v 11
-   - Linux/Windows: JDK 설치 경로를 JAVA_HOME으로 설정
+2. Android: JDK 17 설치 및 JAVA_HOME 설정 (Gradle toolchain 요구)
+   - macOS 예: /usr/libexec/java_home -v 17
+     - 예: export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+   - 또는 Gradle 자동 Java 프로비저닝을 허용하면 JDK 설치 없이도 빌드가 가능합니다 (프로젝트에 설정 포함).
 3. Android Studio (권장) 또는 Xcode (iOS 빌드용)
 4. iOS 샘플은 현재 `ios/Vendor/` 아래의 로컬 xcframework를 포함하므로, 원격 패키지 fetch 없이도 동일한 상태로 재현 빌드가 가능합니다.
 

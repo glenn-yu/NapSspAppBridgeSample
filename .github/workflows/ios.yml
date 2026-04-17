@@ -1,0 +1,20 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ruby gems (cocoapods if needed)
+        run: |
+          gem install cocoapods -v 1.12.0 || true
+      - name: Build (xcodebuild)
+        run: |
+          cd ios
+          xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
