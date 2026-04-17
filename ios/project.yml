@@ -1,0 +1,41 @@
+name: NapSspIOSSample
+options:
+  bundleIdPrefix: com.nasmedia
+  deploymentTarget:
+    iOS: "14.0"
+  xcodeVersion: "15.0"
+
+packages:
+  AdMixer:
+    url: https://github.com/Nasmedia-Tech/iOS-SSP-SPM
+    from: 1.1.6
+  AdMixerMediation:
+    url: https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM
+    from: 2.3.1
+
+targets:
+  NapSspIOSSample:
+    type: application
+    platform: iOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/NapSspIOSSample
+    dependencies:
+      - package: AdMixer
+      - package: AdMixerMediation
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.nasmedia.NapSspIOSSample
+        XCCONFIG_FILE: Config.xcconfig
+      configs:
+        Debug:
+          XCCONFIG_FILE: Config.xcconfig
+        Release:
+          XCCONFIG_FILE: Config.xcconfig
+    configFiles:
+      Debug: Config.xcconfig
+      Release: Config.xcconfig
