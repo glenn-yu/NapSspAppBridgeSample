@@ -140,53 +140,38 @@ fun HybridWebViewScreen(
                         isRequestingAd = true
 
                         coroutineScope.launch {
-                            // 1. 기존 광고 즉시 파괴
-                            if (format == "clear") {
-                                currentAdView = null
-                                adHeight = 0.dp
+                            try {
+                                // 1. 기존 광고 즉시 파괴
+                                if (format == "clear") {
+                                    currentAdView = null
+                                    adHeight = 0.dp
+                                    NapSspSdkIntegration.clearAllAds()
+                                    return@launch
+                                }
+
+                                // 2. 기존 광고 파괴 및 대기
+                                currentAdView = null 
                                 NapSspSdkIntegration.clearAllAds()
-                                isRequestingAd = false
-                                return@launch
-                            }
+                                delay(200)
 
-                            // 2. 🎯 [핵심] 기존 광고를 먼저 파괴하고 아주 짧은 대기 시간을 가짐
-                            // SDK 내부 레지스트리가 비워질 시간을 벌어줌
-                            currentAdView = null 
-                            NapSspSdkIntegration.clearAllAds()
-                            delay(200) // 200ms 대기 (Already Exist 방지 최후의 보루)
-
-                            // 3. 새로운 세션으로 광고 생성
-                            adSessionId = UUID.randomUUID().toString()
-                            val adView = when (format) {
-                                "banner" -> {
-                                    adHeight = 100.dp
-                                    NapSspSdkIntegration.bannerView(context)
+                                // 3. 세션 ID 갱신 및 새로운 광고 생성
+                                adSessionId = UUID.randomUUID().toString()
+                                val adView = when (format) {
+                                    "banner" -> { adHeight = 100.dp; NapSspSdkIntegration.bannerView(context) }
+                                    "native" -> { adHeight = 400.dp; NapSspSdkIntegration.nativeView(context) }
+                                    "video" -> { adHeight = 250.dp; NapSspSdkIntegration.videoView(context) }
+                                    "rewardVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.rewardVideoView(context); null }
+                                    "interstitialVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialVideoView(context); null }
+                                    "interstitialBanner" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialBannerView(context); null }
+                                    else -> { adHeight = 0.dp; null }
                                 }
-                                "native" -> {
-                                    adHeight = 400.dp 
-                                    NapSspSdkIntegration.nativeView(context)
+                                
+                                if (isActive) { // 코루틴이 여전히 활성화 상태인지 확인
+                                    currentAdView = adView
                                 }
-                                "video" -> {
-                                    adHeight = 250.dp
-                                    NapSspSdkIntegration.videoView(context)
-                                }
-                                "rewardVideo" -> { 
-                                    adHeight = 0.dp
-                                    NapSspSdkIntegration.rewardVideoView(context); null 
-                                }
-                                "interstitialVideo" -> { 
-                                    adHeight = 0.dp
-                                    NapSspSdkIntegration.interstitialVideoView(context); null 
-                                }
-                                "interstitialBanner" -> { 
-                                    adHeight = 0.dp
-                                    NapSspSdkIntegration.interstitialBannerView(context); null 
-                                }
-                                else -> { adHeight = 0.dp; null }
+                            } finally {
+                                isRequestingAd = false // 항상 상태 해제
                             }
-                            
-                            currentAdView = adView
-                            isRequestingAd = false
                         }
                     }, "NapSspBridge")
                     loadUrl("file:///android_asset/index.html")
