@@ -7,6 +7,15 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val vendorSdkEnabled = providers.gradleProperty("vendorSdkEnabled")
+    .orElse(providers.environmentVariable("NAPSSP_VENDOR_SDK_ENABLED"))
+    .map { value ->
+        value.equals("true", ignoreCase = true) ||
+            value == "1" ||
+            value.equals("yes", ignoreCase = true)
+    }
+    .getOrElse(false)
+
 android {
     namespace = "com.gwangy.nassspandroidsample"
     compileSdk = 35
@@ -45,6 +54,7 @@ android {
 
         buildConfigField("String", "NAP_MEDIA_KEY", "\"${localProperties.getProperty("napssp.media_key") ?: "10771"}\"")
         buildConfigField("String", "NAP_ADUNIT_BANNER", "\"${localProperties.getProperty("napssp.adunit_banner") ?: "104704"}\"")
+        buildConfigField("boolean", "VENDOR_SDK_ENABLED", vendorSdkEnabled.toString())
     }
 
     buildTypes {

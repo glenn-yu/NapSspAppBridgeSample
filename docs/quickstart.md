@@ -33,10 +33,13 @@ cd NapSspAppBridgeSample
 # Android
 ```bash
 cd android
-# JDK가 설치되어 있으면 빌드
+# 기본 데모 모드 빌드
 ./gradlew assembleDebug
-# 또는 에뮬레이터에 설치
-./gradlew installDebug
+
+# 벤더 SDK 경로를 켜서 빌드/실행하려면
+./gradlew assembleDebug -PvendorSdkEnabled=true
+# 또는 환경 변수 사용
+NAPSSP_VENDOR_SDK_ENABLED=true ./gradlew installDebug
 ```
 
 # iOS (Xcode / xcodebuild)
@@ -68,16 +71,16 @@ xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator'
   4. 웹뷰에 상태 ack를 다시 보냄 (`window.onNapSspMessage` 호출)
 
 검증 체크리스트 (문제 발생시 순서대로 확인)
-1. 앱이 데모 모드로 동작하는지 확인 (설정 없이 화면 진입, 버튼 동작, 브리지 응답 확인)
-2. Configure Keys로 MEDIA_KEY와 AD_UNIT_ID 입력
-3. 앱 재실행 또는 HybridWebView의 `init`으로 초기화 확인
-4. 배너 또는 네이티브부터 호출해서 status가 `loaded`로 바뀌는지 확인
+1. 앱이 데모모드로 동작하는지 확인 (설정 없이 버튼 동작 및 로그 확인)
+2. 벤더 SDK 경로를 쓰는 경우 `-PvendorSdkEnabled=true` 또는 `NAPSSP_VENDOR_SDK_ENABLED=true`를 붙여 빌드했는지 확인
+3. Configure Keys로 MEDIA_KEY 입력 후 'initialize' 실행 → 로그에 initialize success 확인
+4. 광고 호출 후 status가 'loaded'가 뜨는지 확인
 5. 에러 발생 시 로그 확인 (Android Logcat / iOS Console)
 
 검증 포인트(문제가 있을 때 확인할 것)
 - Android: `Unable to locate a Java Runtime` → JDK 설치 및 JAVA_HOME 확인
 - Android: `Class.forName` 실패 → 벤더 SDK(AAR)가 `libs/` 또는 Gradle 종속성으로 포함되었는지 확인
-- iOS: `NSClassFromString("AMMediation")` 실패 → vendored framework 포함 상태와 링크 구성을 확인
+- iOS: `NSClassFromString("AMMediation")` 실패 → Framework 링크가 제대로 되었는지 확인
 - WebView: `window.onNapSspMessage`가 호출되지 않으면 브리지가 등록되었는지(`addJavascriptInterface` / `WKScriptMessageHandler`)와 JS 콘솔 로그를 확인
 
 개발 팁 (초보자용)

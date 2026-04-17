@@ -23,6 +23,9 @@ examples/    - 포맷별 코드 예시
 cd android
 # Gradle 빌드 (JDK 11 이상 필요)
 ./gradlew assembleDebug
+
+# 벤더 SDK 경로를 켜서 빌드
+./gradlew assembleDebug -PvendorSdkEnabled=true
 ```
 
 ### iOS
@@ -45,7 +48,8 @@ xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator'
 ## 핵심 포인트 (요약)
 
 - SDK 초기화: AdMixer.getInstance().initialize(context, MEDIA_KEY, ArrayList(...))
-- 포맷별 호출: AdView / NativeAdView / VideoAdView / RewardInterstitialVideoAd / InterstitialVideoAd
+- 포맷별 호출: AdView / NativeAdView / VideoAdView / RewardInterstitialVideoAd / InterstitialAd / InterstitialVideoAd
+- 벤더 SDK 전환: `-PvendorSdkEnabled=true` 또는 `NAPSSP_VENDOR_SDK_ENABLED=true`
 - 이벤트 수신: 콜백에서 loaded/displayed/clicked 등의 이벤트를 받아 웹에 전달
 
 ## 먼저 읽을 것 (초보자 빠른 시작)
