@@ -1,0 +1,490 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01D9ECF02C538F8AA5832EEB /* SampleState.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED37ECD20486CD2259D55518 /* SampleState.swift */; };
+		04DD8BB39A106AA342A93613 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB299A7DAF19B61F16F6CED8 /* App.swift */; };
+		06026D234EFB79BDCFCFD576 /* RewardedModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F9FC4C81D567CBB09AACFC /* RewardedModule.swift */; };
+		0DBAF255C2CA20F090A572A5 /* AMMNativeAdView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6ECAAFE168FD0330D616C7CC /* AMMNativeAdView.xib */; };
+		16E146B670BC10867864C415 /* AdEventLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8925FFC0E2E47CCEDCDF172 /* AdEventLogger.swift */; };
+		1A0B6E92315983766B3C53ED /* SampleSDKMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41C1CB47A19DF84742121993 /* SampleSDKMode.swift */; };
+		1E24207221EF11F208EB19BD /* HybridWebViewScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7085866CC4FB759337EFED /* HybridWebViewScreen.swift */; };
+		2861953ED77B421A126F169F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579EA850BDCBB6C97F1B29DE /* AppDelegate.swift */; };
+		2BB76C116E26CB5C485ED3A6 /* NapSspConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B6323E7568F803C44A84C3B /* NapSspConfig.swift */; };
+		3687B924EB531DE64D71B686 /* HybridEventBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25CF4D8C0F462CE22CF118BD /* HybridEventBridge.swift */; };
+		3A94FBC7C448F611EBFDE1BF /* ConfigureKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A01B7455F76B2AAF4BD79EC6 /* ConfigureKeys.swift */; };
+		465E465B5CBAA163D7EE4892 /* NapSspSdkIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E131F0956AC6CB66ACA16417 /* NapSspSdkIntegration.swift */; };
+		549031616BECB8E4C2ED2C90 /* NapSspInitializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158F87482391630A4D2D8724 /* NapSspInitializer.swift */; };
+		59B746D365A4748050FE3FEE /* NapSspAdEventBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06F0900591244DDEC69CDF4 /* NapSspAdEventBridge.swift */; };
+		94423E1F70957FF0C2AB7C61 /* AdMixerMediation in Frameworks */ = {isa = PBXBuildFile; productRef = 833F7639A09A4F4FA29C5A14 /* AdMixerMediation */; };
+		B4B3F6AFF189D88C1AC5F54F /* SampleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B38F1E6D7F35265C142FBD /* SampleViewModel.swift */; };
+		BB6474996B1079C03052CCC9 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = AF71C16E482DB31546F25B63 /* index.html */; };
+		C1F1E1786AA739BF0E0A7824 /* AdMixerMediationAdFit in Frameworks */ = {isa = PBXBuildFile; productRef = 08942053741241E6C7549401 /* AdMixerMediationAdFit */; };
+		C5E3357DE8680735D0E97C7C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94203FEF85CCEB68FDA554DB /* ContentView.swift */; };
+		CD8CE40001590652E0EEE459 /* SdkHooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EDD270F77F4C2C7671C60D /* SdkHooks.swift */; };
+		D63D9F0233ADA38B3171D462 /* InterstitialModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D41EA06CB63568D1DD636303 /* InterstitialModule.swift */; };
+		D6ECEB190D415358D1DFEF91 /* AdMixer in Frameworks */ = {isa = PBXBuildFile; productRef = EE2A8C353397D083399B68A0 /* AdMixer */; };
+		D944726AF4BDA8A1C661228C /* AdMixerMediationGAM in Frameworks */ = {isa = PBXBuildFile; productRef = E1A153C7427B551748C71034 /* AdMixerMediationGAM */; };
+		E39071FB2942CF9A485293A7 /* SampleFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19575B47D00890752DDBB98 /* SampleFormat.swift */; };
+		EB6A8471F7061450258A1025 /* AdDemoScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5395976AA180B14F2357744A /* AdDemoScreen.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		10F9FC4C81D567CBB09AACFC /* RewardedModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardedModule.swift; sourceTree = "<group>"; };
+		158F87482391630A4D2D8724 /* NapSspInitializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NapSspInitializer.swift; sourceTree = "<group>"; };
+		25CF4D8C0F462CE22CF118BD /* HybridEventBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridEventBridge.swift; sourceTree = "<group>"; };
+		2B6323E7568F803C44A84C3B /* NapSspConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NapSspConfig.swift; sourceTree = "<group>"; };
+		41C1CB47A19DF84742121993 /* SampleSDKMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleSDKMode.swift; sourceTree = "<group>"; };
+		4B7085866CC4FB759337EFED /* HybridWebViewScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridWebViewScreen.swift; sourceTree = "<group>"; };
+		50B38F1E6D7F35265C142FBD /* SampleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleViewModel.swift; sourceTree = "<group>"; };
+		5395976AA180B14F2357744A /* AdDemoScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdDemoScreen.swift; sourceTree = "<group>"; };
+		579EA850BDCBB6C97F1B29DE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		654A589D8763AFEB324C3F8B /* AdMixerMediationGAM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AdMixerMediationGAM; path = Vendor/Packages/AdMixerMediationGAM; sourceTree = SOURCE_ROOT; };
+		6ECAAFE168FD0330D616C7CC /* AMMNativeAdView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AMMNativeAdView.xib; sourceTree = "<group>"; };
+		7EAB6756802EBDF74153D8AF /* AdMixerMediation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AdMixerMediation; path = Vendor/Packages/AdMixerMediation; sourceTree = SOURCE_ROOT; };
+		94203FEF85CCEB68FDA554DB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A01B7455F76B2AAF4BD79EC6 /* ConfigureKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigureKeys.swift; sourceTree = "<group>"; };
+		AF71C16E482DB31546F25B63 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		B19575B47D00890752DDBB98 /* SampleFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleFormat.swift; sourceTree = "<group>"; };
+		BB299A7DAF19B61F16F6CED8 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		C36C0870D209C3F99726D3F4 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		D41EA06CB63568D1DD636303 /* InterstitialModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialModule.swift; sourceTree = "<group>"; };
+		D8925FFC0E2E47CCEDCDF172 /* AdEventLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdEventLogger.swift; sourceTree = "<group>"; };
+		D8EDD270F77F4C2C7671C60D /* SdkHooks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SdkHooks.swift; sourceTree = "<group>"; };
+		E123C992D5AEE73CEFB1D898 /* AdMixer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AdMixer; path = Vendor/Packages/AdMixer; sourceTree = SOURCE_ROOT; };
+		E131F0956AC6CB66ACA16417 /* NapSspSdkIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NapSspSdkIntegration.swift; sourceTree = "<group>"; };
+		E43C060632A1ECA9B9788021 /* AdMixerMediationAdFit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = AdMixerMediationAdFit; path = Vendor/Packages/AdMixerMediationAdFit; sourceTree = SOURCE_ROOT; };
+		EAD4EA90A3F9EBE779D492EC /* NapSspIOSSample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NapSspIOSSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ED37ECD20486CD2259D55518 /* SampleState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleState.swift; sourceTree = "<group>"; };
+		F06F0900591244DDEC69CDF4 /* NapSspAdEventBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NapSspAdEventBridge.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		275532205B9BEB82814C4B8C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D6ECEB190D415358D1DFEF91 /* AdMixer in Frameworks */,
+				94423E1F70957FF0C2AB7C61 /* AdMixerMediation in Frameworks */,
+				D944726AF4BDA8A1C661228C /* AdMixerMediationGAM in Frameworks */,
+				C1F1E1786AA739BF0E0A7824 /* AdMixerMediationAdFit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		139AD0EFB20449F9A9C7EA79 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				C36C0870D209C3F99726D3F4 /* Config.xcconfig */,
+			);
+			name = ios;
+			path = .;
+			sourceTree = "<group>";
+		};
+		3AB41012D5517CA39E8A37BE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EAD4EA90A3F9EBE779D492EC /* NapSspIOSSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5FF80FF922DDEBCF79B789CA /* NapSspIOSSample */ = {
+			isa = PBXGroup;
+			children = (
+				5395976AA180B14F2357744A /* AdDemoScreen.swift */,
+				D8925FFC0E2E47CCEDCDF172 /* AdEventLogger.swift */,
+				6ECAAFE168FD0330D616C7CC /* AMMNativeAdView.xib */,
+				BB299A7DAF19B61F16F6CED8 /* App.swift */,
+				579EA850BDCBB6C97F1B29DE /* AppDelegate.swift */,
+				A01B7455F76B2AAF4BD79EC6 /* ConfigureKeys.swift */,
+				94203FEF85CCEB68FDA554DB /* ContentView.swift */,
+				25CF4D8C0F462CE22CF118BD /* HybridEventBridge.swift */,
+				4B7085866CC4FB759337EFED /* HybridWebViewScreen.swift */,
+				AF71C16E482DB31546F25B63 /* index.html */,
+				2B6323E7568F803C44A84C3B /* NapSspConfig.swift */,
+				158F87482391630A4D2D8724 /* NapSspInitializer.swift */,
+				B19575B47D00890752DDBB98 /* SampleFormat.swift */,
+				41C1CB47A19DF84742121993 /* SampleSDKMode.swift */,
+				ED37ECD20486CD2259D55518 /* SampleState.swift */,
+				50B38F1E6D7F35265C142FBD /* SampleViewModel.swift */,
+				D8EDD270F77F4C2C7671C60D /* SdkHooks.swift */,
+				FDE0257BEEE09C4DCC0056FF /* Bridge */,
+			);
+			name = NapSspIOSSample;
+			path = Sources/NapSspIOSSample;
+			sourceTree = "<group>";
+		};
+		A41C194AAB76361744F6C6C3 = {
+			isa = PBXGroup;
+			children = (
+				139AD0EFB20449F9A9C7EA79 /* ios */,
+				5FF80FF922DDEBCF79B789CA /* NapSspIOSSample */,
+				BE07C4C5FC10074DBB23FA2F /* Packages */,
+				3AB41012D5517CA39E8A37BE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BE07C4C5FC10074DBB23FA2F /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				E123C992D5AEE73CEFB1D898 /* AdMixer */,
+				7EAB6756802EBDF74153D8AF /* AdMixerMediation */,
+				E43C060632A1ECA9B9788021 /* AdMixerMediationAdFit */,
+				654A589D8763AFEB324C3F8B /* AdMixerMediationGAM */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		FDE0257BEEE09C4DCC0056FF /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				D41EA06CB63568D1DD636303 /* InterstitialModule.swift */,
+				F06F0900591244DDEC69CDF4 /* NapSspAdEventBridge.swift */,
+				E131F0956AC6CB66ACA16417 /* NapSspSdkIntegration.swift */,
+				10F9FC4C81D567CBB09AACFC /* RewardedModule.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B00F0DF2C0B82D5CC1D06884 /* NapSspIOSSample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79E5B04986E22019A249749F /* Build configuration list for PBXNativeTarget "NapSspIOSSample" */;
+			buildPhases = (
+				7B8FA5359BFFDD11B23C03FD /* Sources */,
+				DB7148E4A1123DB812FD7647 /* Resources */,
+				275532205B9BEB82814C4B8C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NapSspIOSSample;
+			packageProductDependencies = (
+				EE2A8C353397D083399B68A0 /* AdMixer */,
+				833F7639A09A4F4FA29C5A14 /* AdMixerMediation */,
+				E1A153C7427B551748C71034 /* AdMixerMediationGAM */,
+				08942053741241E6C7549401 /* AdMixerMediationAdFit */,
+			);
+			productName = NapSspIOSSample;
+			productReference = EAD4EA90A3F9EBE779D492EC /* NapSspIOSSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8F4778BE75F270F0C039E72E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 5CCD2AEE35B5CCF90436D824 /* Build configuration list for PBXProject "NapSspIOSSample" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = A41C194AAB76361744F6C6C3;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D4FC7E73524853F6047F296C /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixer" */,
+				1641535D591B4E50684FED38 /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediation" */,
+				8C12874E86628F3877EA54F5 /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediationAdFit" */,
+				08C319C9C6A24CCB22418C1E /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediationGAM" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3AB41012D5517CA39E8A37BE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B00F0DF2C0B82D5CC1D06884 /* NapSspIOSSample */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DB7148E4A1123DB812FD7647 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0DBAF255C2CA20F090A572A5 /* AMMNativeAdView.xib in Resources */,
+				BB6474996B1079C03052CCC9 /* index.html in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B8FA5359BFFDD11B23C03FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB6A8471F7061450258A1025 /* AdDemoScreen.swift in Sources */,
+				16E146B670BC10867864C415 /* AdEventLogger.swift in Sources */,
+				04DD8BB39A106AA342A93613 /* App.swift in Sources */,
+				2861953ED77B421A126F169F /* AppDelegate.swift in Sources */,
+				3A94FBC7C448F611EBFDE1BF /* ConfigureKeys.swift in Sources */,
+				C5E3357DE8680735D0E97C7C /* ContentView.swift in Sources */,
+				3687B924EB531DE64D71B686 /* HybridEventBridge.swift in Sources */,
+				1E24207221EF11F208EB19BD /* HybridWebViewScreen.swift in Sources */,
+				D63D9F0233ADA38B3171D462 /* InterstitialModule.swift in Sources */,
+				59B746D365A4748050FE3FEE /* NapSspAdEventBridge.swift in Sources */,
+				2BB76C116E26CB5C485ED3A6 /* NapSspConfig.swift in Sources */,
+				549031616BECB8E4C2ED2C90 /* NapSspInitializer.swift in Sources */,
+				465E465B5CBAA163D7EE4892 /* NapSspSdkIntegration.swift in Sources */,
+				06026D234EFB79BDCFCFD576 /* RewardedModule.swift in Sources */,
+				E39071FB2942CF9A485293A7 /* SampleFormat.swift in Sources */,
+				1A0B6E92315983766B3C53ED /* SampleSDKMode.swift in Sources */,
+				01D9ECF02C538F8AA5832EEB /* SampleState.swift in Sources */,
+				B4B3F6AFF189D88C1AC5F54F /* SampleViewModel.swift in Sources */,
+				CD8CE40001590652E0EEE459 /* SdkHooks.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		280DA12AEA7C60B5849D82DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C36C0870D209C3F99726D3F4 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-3839806749171044~7545408326";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "맞춤형 광고 제공을 위해 기기 식별자를 사용합니다.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nasmedia.NapSspIOSSample;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XCCONFIG_FILE = Config.xcconfig;
+			};
+			name = Debug;
+		};
+		2E278BB5F6EB6367911A71BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9CE509F01955BE63BF452172 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		B0AE466358274B64DC5AB0F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C36C0870D209C3F99726D3F4 /* Config.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_GADApplicationIdentifier = "ca-app-pub-3839806749171044~7545408326";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "맞춤형 광고 제공을 위해 기기 식별자를 사용합니다.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.nasmedia.NapSspIOSSample;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				XCCONFIG_FILE = Config.xcconfig;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5CCD2AEE35B5CCF90436D824 /* Build configuration list for PBXProject "NapSspIOSSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CE509F01955BE63BF452172 /* Debug */,
+				2E278BB5F6EB6367911A71BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		79E5B04986E22019A249749F /* Build configuration list for PBXNativeTarget "NapSspIOSSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				280DA12AEA7C60B5849D82DB /* Debug */,
+				B0AE466358274B64DC5AB0F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		08C319C9C6A24CCB22418C1E /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediationGAM" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/Packages/AdMixerMediationGAM;
+		};
+		1641535D591B4E50684FED38 /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediation" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/Packages/AdMixerMediation;
+		};
+		8C12874E86628F3877EA54F5 /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixerMediationAdFit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/Packages/AdMixerMediationAdFit;
+		};
+		D4FC7E73524853F6047F296C /* XCLocalSwiftPackageReference "Vendor/Packages/AdMixer" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Vendor/Packages/AdMixer;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		08942053741241E6C7549401 /* AdMixerMediationAdFit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AdMixerMediationAdFit;
+		};
+		833F7639A09A4F4FA29C5A14 /* AdMixerMediation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AdMixerMediation;
+		};
+		E1A153C7427B551748C71034 /* AdMixerMediationGAM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AdMixerMediationGAM;
+		};
+		EE2A8C353397D083399B68A0 /* AdMixer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AdMixer;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8F4778BE75F270F0C039E72E /* Project object */;
+}

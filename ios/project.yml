@@ -7,20 +7,13 @@ options:
 
 packages:
   AdMixer:
-    url: https://github.com/Nasmedia-Tech/iOS-SSP-SPM
-    from: 1.1.6
+    path: Vendor/Packages/AdMixer
   AdMixerMediation:
-    url: https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM
-    from: 2.3.1
+    path: Vendor/Packages/AdMixerMediation
   AdMixerMediationGAM:
-    url: https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git
-    from: 2.3.1
+    path: Vendor/Packages/AdMixerMediationGAM
   AdMixerMediationAdFit:
-    url: https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git
-    from: 2.3.1
-  AdMixerMediationPangle:
-    url: https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git
-    from: 2.3.1
+    path: Vendor/Packages/AdMixerMediationAdFit
 
 targets:
   NapSspIOSSample:
@@ -34,7 +27,6 @@ targets:
       - package: AdMixerMediation
       - package: AdMixerMediationGAM
       - package: AdMixerMediationAdFit
-      - package: AdMixerMediationPangle
     settings:
       base:
         SWIFT_VERSION: "5.9"
