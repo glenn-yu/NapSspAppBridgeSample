@@ -11,10 +11,19 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Cache Xcode build products
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/.derivedData
+            ios/.swiftpm
+          key: ${{ runner.os }}-xcode-${{ hashFiles('ios/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-
       - name: Install Ruby gems (cocoapods if needed)
         run: |
           gem install cocoapods -v 1.12.0 || true
       - name: Build (xcodebuild)
         run: |
           cd ios
-          xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
+          xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' -derivedDataPath .derivedData build
