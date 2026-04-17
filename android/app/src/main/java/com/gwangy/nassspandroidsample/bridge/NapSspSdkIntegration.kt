@@ -139,21 +139,23 @@ object NapSspSdkIntegration {
             
             // 레이아웃 파일에 존재하는 ID만 동적으로 찾아서 매핑 (크래시 방지)
             val adViewIds = mutableMapOf<String, Int>()
+            adViewIds["nativeLayout"] = layoutId // AdFit 어댑터가 요구하는 레이아웃 키 추가
             val viewFields = listOf("iv_icon", "tv_title", "tv_adv", "tv_desc", "iv_main", "btn_cta")
             viewFields.forEach { name ->
                 val id = context.resources.getIdentifier(name, "id", context.packageName)
                 if (id != 0) adViewIds[name] = id
             }
-
+            
             adInfoBuilder.setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
             adInfoBuilder.setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
             adInfoBuilder.setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
             val adInfo = adInfoBuilder.build()
 
-            val viewBinder = NativeAdViewBinder.Builder(selectedLayout)
+            val viewBinder = NativeAdViewBinder.Builder(layoutId)
                 .setIconImageId(R.id.iv_icon).setTitleId(R.id.tv_title)
                 .setAdvertiserId(R.id.tv_adv).setDescriptionId(R.id.tv_desc)
                 .setMainViewId(R.id.iv_main).setCtaId(R.id.btn_cta).build()
+            
             nativeView.setAdInfo(adInfo)
             nativeView.setViewBinder(viewBinder)
             nativeView.setAdViewListener(object : AdListener {
