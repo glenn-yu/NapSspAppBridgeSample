@@ -40,7 +40,7 @@ class NapSspSdkIntegration: NSObject {
             else if let iv = ad as? AMMVideoInterstitial { iv.stop() }
 
             if let view = ad as? UIView {
-                (view.parent as? UIView)?.removeFromSuperview()
+                view.removeFromSuperview()
             }
         }
         activeAds.removeValue(forKey: format)
