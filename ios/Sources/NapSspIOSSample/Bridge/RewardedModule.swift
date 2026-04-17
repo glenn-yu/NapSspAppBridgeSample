@@ -9,7 +9,12 @@ final class RewardedModule: NSObject {
 
     func load(adUnitId: Int, completion: @escaping (AMMRewardVideo?, Error?) -> Void) {
         currentAdUnitId = adUnitId
-        AMMRewardVideo.load(adUnitID: adUnitId) { reward, error in
+        let params: [String: String] = [
+            "useid": "nas",
+            "name": "hdragon",
+            "phone": "010-1111-1111"
+        ]
+        AMMRewardVideo.load(adUnitID: adUnitId, customParam: params) { reward, error in
             if let reward = reward {
                 reward.delegate = self
                 completion(reward, nil)

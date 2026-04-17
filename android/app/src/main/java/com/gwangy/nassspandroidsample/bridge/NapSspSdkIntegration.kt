@@ -1,8 +1,11 @@
 package com.gwangy.nassspandroidsample.bridge
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import com.bytedance.sdk.openadsdk.api.init.PAGConfig
+import com.bytedance.sdk.openadsdk.api.init.PAGSdk
 import com.gwangy.nassspandroidsample.AdEventLogger
 import com.gwangy.nassspandroidsample.AppConfig
 import com.gwangy.nassspandroidsample.R
@@ -63,6 +66,29 @@ object NapSspSdkIntegration {
                 mediaKey,
                 ArrayList(adUnitIds.values.toList())
             )
+            
+            // 가이드에 명시된 미디에이션 어댑터 전수 등록
+            AdMixer.registerAdapter(AdMixer.ADAPTER_ADMANAGER)
+            AdMixer.registerAdapter(AdMixer.ADAPTER_ADFIT)
+            AdMixer.registerAdapter(AdMixer.ADAPTER_PANGLE)
+            AdMixer.registerAdapter(AdMixer.ADAPTER_APPLOVIN)
+            AdMixer.registerAdapter(AdMixer.ADAPTER_UNITY)
+
+            // Pangle 초기화 (Pangle 사용 시 필수)
+            val pAGInitConfig = PAGConfig.Builder()
+                .appId("8245842") // 테스트용 발급 앱 ID (필요 시 수정)
+                .debugLog(true)
+                .supportMultiProcess(false)
+                .build()
+            PAGSdk.init(context, pAGInitConfig, object : PAGSdk.PAGInitCallback {
+                override fun success() {
+                    Log.i("Pangle", "pangle init success")
+                }
+                override fun fail(code: Int, msg: String) {
+                    Log.i("Pangle", "pangle init fail: $code")
+                }
+            })
+
             isSdkInitialized = true
             notifyEvent("loaded", "initialize", mediaKey)
         }.onFailure {
@@ -139,7 +165,8 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         return runCatching {
             val videoView = VideoAdView(context)
-            videoView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            // 가이드 누락: isRetry(false) 설정
+            videoView.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).isRetry(false).build())
             videoView.setAdViewListener(object : AdListener {
                 override fun onReceivedAd(adapterName: String?, view: Any?) = notifyEvent("loaded", format, adUnitId)
                 override fun onFailedToReceiveAd(view: Any?, adapterName: String?, errorCode: Int, errorMsg: String?) {
@@ -163,7 +190,19 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val rewardAd = RewardInterstitialVideoAd(context)
-            rewardAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            // 가이드 누락: S2S Reward Callback 파라미터 및 음소거 옵션 추가
+            val params = mapOf(
+                "useid" to "nas",
+                "name" to "hdragon",
+                "phone" to "010-1111-1111"
+            )
+            rewardAd.setAdInfo(
+                AdInfo.Builder(adUnitId)
+                    .setCustomParams(params)
+                    .setMute(true)
+                    .setIsUseMediation(true)
+                    .build()
+            )
             rewardAd.setListener(object : AdListener {
                 override fun onReceivedAd(adapterName: String?, view: Any?) {
                     notifyEvent("loaded", format, adUnitId)
@@ -194,7 +233,14 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val interstitialAd = InterstitialVideoAd(context)
-            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).setIsUseMediation(true).build())
+            // 가이드 누락: 타임아웃 및 재요청 카운트 설정
+            interstitialAd.setAdInfo(
+                AdInfo.Builder(adUnitId)
+                    .interstitialTimeout(0)
+                    .maxRetryCountInSlot(-1)
+                    .setIsUseMediation(true)
+                    .build()
+            )
             interstitialAd.setListener(object : AdListener {
                 override fun onReceivedAd(adapterName: String?, view: Any?) {
                     notifyEvent("loaded", format, adUnitId)
@@ -224,7 +270,20 @@ object NapSspSdkIntegration {
         destroyAndRemoveAd(format)
         runCatching {
             val interstitialAd = InterstitialAd(context)
-            interstitialAd.setAdInfo(AdInfo.Builder(adUnitId).interstitialAdType(AdInfo.InterstitialAdType.Basic).build())
+            // 가이드 누락: Popup 형태 및 카운트다운 설정
+            val adConfig = PopupInterstitialAdOption().apply {
+                setDisableBackKey(false)
+                setButtonLeft("광고종료", "#234234")
+                setCountDown(0, 5) // gauge 타입, 5초
+            }
+            interstitialAd.setAdInfo(
+                AdInfo.Builder(adUnitId)
+                    .isUseBackgroundAlpha(true)
+                    .popupAdOption(adConfig)
+                    .interstitialAdType(AdInfo.InterstitialAdType.Popup)
+                    .setIsUseMediation(true)
+                    .build()
+            )
             interstitialAd.setAdListener(object : AdListener {
                 override fun onReceivedAd(adapterName: String?, view: Any?) {
                     notifyEvent("loaded", format, adUnitId)
@@ -236,7 +295,7 @@ object NapSspSdkIntegration {
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
                         AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLICK, AdEvent.LEFT_CLICK, AdEvent.RIGHT_CLICK -> notifyEvent("clicked", format, adUnitId)
                         AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
                         else -> {}
                     }

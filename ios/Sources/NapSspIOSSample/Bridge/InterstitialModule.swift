@@ -10,7 +10,16 @@ final class InterstitialModule: NSObject {
     func load(adUnitId: Int, completion: @escaping (AMMInterstitial?, Error?) -> Void) {
         currentAdUnitId = adUnitId
         let config = AMMInterstitialConfig()
-        config.viewType = .basic
+        config.viewType = .popup
+        config.popupOption = AMMInterstitialPopupOption(
+            buttonTitle: "광고종료",
+            buttonTextColor: .white,
+            buttonBackgroundColor: "#234234"
+        )
+        config.countDownOption = AMMInterstitialCountDownOption(
+            countDownTime: 5,
+            countDownType: .gauge
+        )
         AMMInterstitial.load(adUnitID: adUnitId, config: config) { interstitial, error in
             if let interstitial = interstitial {
                 interstitial.delegate = self

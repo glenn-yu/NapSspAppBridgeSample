@@ -12,6 +12,15 @@ packages:
   AdMixerMediation:
     url: https://github.com/Nasmedia-Tech/iOS-SSP-Mediation-SPM
     from: 2.3.1
+  AdMixerMediationGAM:
+    url: https://github.com/Nasmedia-Tech/iOS-SSP-GAM-SPM.git
+    from: 2.3.1
+  AdMixerMediationAdFit:
+    url: https://github.com/Nasmedia-Tech/iOS-SSP-AdFit-SPM.git
+    from: 2.3.1
+  AdMixerMediationPangle:
+    url: https://github.com/Nasmedia-Tech/iOS-SSP-Pangle-SPM.git
+    from: 2.3.1
 
 targets:
   NapSspIOSSample:
@@ -23,6 +32,9 @@ targets:
     dependencies:
       - package: AdMixer
       - package: AdMixerMediation
+      - package: AdMixerMediationGAM
+      - package: AdMixerMediationAdFit
+      - package: AdMixerMediationPangle
     settings:
       base:
         SWIFT_VERSION: "5.9"
@@ -31,6 +43,8 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.nasmedia.NapSspIOSSample
         XCCONFIG_FILE: Config.xcconfig
+        INFOPLIST_KEY_NSUserTrackingUsageDescription: "맞춤형 광고 제공을 위해 기기 식별자를 사용합니다."
+        INFOPLIST_KEY_GADApplicationIdentifier: "ca-app-pub-3839806749171044~7545408326"
       configs:
         Debug:
           XCCONFIG_FILE: Config.xcconfig
