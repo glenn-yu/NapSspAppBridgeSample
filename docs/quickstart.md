@@ -41,17 +41,22 @@ cd android
 
 샘플 설정
 1. 미디어 키와 광고 단위 ID 설정 (앱내 설정 권장)
-   - Android: 앱 실행 후 Configure Keys 버튼으로 설정(또는 `android/.../NapSspConfig.kt` 하드코딩)
-   - iOS: 앱 실행 후 Configure Keys 화면에서 설정(또는 `ios/.../NapSspConfig.swift` 하드코딩)
+   - Android: 앱 실행 후 `Configure Keys` 버튼으로 설정
+   - iOS: 우상단 `Configure Keys` 버튼으로 설정
+   - 입력하지 않으면 샘플 기본값으로 동작합니다.
+2. 저장한 키는 런타임 설정으로 우선 반영됩니다. 하드코딩을 수정하지 않아도 바로 테스트할 수 있습니다.
 
 하이브리드 WebView 사용법 (샘플)
 - 앱의 `HybridWebViewScreen`에서 내장 HTML UI(버튼)를 통해 다음 메시지를 보낼 수 있습니다:
   - init, loadBanner, loadNative, loadVideo, loadRewardVideo, loadInterstitialVideo
+- 주의:
+  - 앱은 시작 시 한 번 자동 초기화를 시도합니다.
+  - WebView 안의 `init` 버튼은 브리지 동작과 재초기화 확인용으로 이해하면 됩니다.
 - 동작 원리(간단)
   1. 웹뷰 버튼 → `window.NapSspBridge.postMessage('init')`
   2. 네이티브 브리지(NapSspHybridBridge)에서 메시지 파싱 후 SDK 훅 실행
   3. 네이티브에서 광고 뷰를 만들어 웹뷰 아래의 네이티브 컨테이너에 추가
-  4. 웹뷰에 상태 ack를 다시 보냄 (`window.__napSspAck` 호출)
+  4. 웹뷰에 상태 ack를 다시 보냄 (`window.onNapSspMessage` 호출)
 
 검증 체크리스트 (문제 발생시 순서대로 확인)
 1. 앱이 데모모드로 동작하는지 확인 (설정 없이 버튼 동작 및 로그 확인)
