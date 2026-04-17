@@ -146,8 +146,13 @@ object NapSspSdkIntegration {
                     onAdEventCallback?.invoke("failed", format, "[$errorCode] $errorMsg")
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
-                    if (event == AdEvent.DISPLAYED) notifyEvent("displayed", format, adUnitId)
-                    if (event == AdEvent.CLICK) notifyEvent("clicked", format, adUnitId)
+                    when (event) {
+                        AdEvent.DISPLAYED  -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK      -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.SKIPPED    -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION -> notifyEvent("completed", format, adUnitId)
+                        else -> {}
+                    }
                 }
             })
             activeAds[format] = videoView
@@ -174,10 +179,12 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.DISPLAYED    -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK        -> notifyEvent("clicked", format, adUnitId)
                         AdEvent.EARNEDREWARD -> onAdEventCallback?.invoke("rewarded", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.CLOSE        -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.SKIPPED      -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION   -> notifyEvent("completed", format, adUnitId)
                         else -> {}
                     }
                 }
@@ -205,9 +212,11 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.DISPLAYED  -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK      -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE      -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.SKIPPED    -> notifyEvent("skipped", format, adUnitId)
+                        AdEvent.COMPLETION -> notifyEvent("completed", format, adUnitId)
                         else -> {}
                     }
                 }
@@ -235,9 +244,11 @@ object NapSspSdkIntegration {
                 }
                 override fun onEventAd(view: Any?, event: AdEvent?) {
                     when (event) {
-                        AdEvent.DISPLAYED -> notifyEvent("displayed", format, adUnitId)
-                        AdEvent.CLICK -> notifyEvent("clicked", format, adUnitId)
-                        AdEvent.CLOSE -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.DISPLAYED   -> notifyEvent("displayed", format, adUnitId)
+                        AdEvent.CLICK       -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.CLOSE       -> notifyEvent("closed", format, adUnitId)
+                        AdEvent.LEFT_CLICK  -> notifyEvent("clicked", format, adUnitId)
+                        AdEvent.RIGHT_CLICK -> notifyEvent("clicked", format, adUnitId)
                         else -> {}
                     }
                 }

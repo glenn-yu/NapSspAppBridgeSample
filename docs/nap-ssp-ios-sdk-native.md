@@ -413,7 +413,7 @@ extension ViewController: AMMBannerViewDelegate {
 
 ```swift
 class ViewController: UIViewController {
-    var interstitial: AMMInterstital?
+    var interstitial: AMMInterstitial?
 
     override func viewDidLoad() {
         let config = AMMInterstitialConfig()
@@ -723,7 +723,7 @@ rewardVideo.customParam = [
 
 ```swift
 class ViewController: UIViewController {
-    var ammVideoView: AMMVideoAdView!
+    var ammVideoView: AMMVideoView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -780,7 +780,7 @@ extension ViewController: AMMVideoViewDelegate {
     func onSkipVideo() {
         // 동영상 skip 버튼 클릭
     }
-    func onTapAdViewMore() {
+    func onTapVideoViewMore() {
         // 동영상 더보기 버튼 클릭
     }
     func onCompleteVideo() {
