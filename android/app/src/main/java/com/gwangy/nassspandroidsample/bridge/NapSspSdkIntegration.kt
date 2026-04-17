@@ -52,8 +52,8 @@ object NapSspSdkIntegration {
     fun initialize(context: Context) {
         if (isSdkInitialized) return
 
-        val mediaKey = NapSspConfig.mediaKey(context)
-        val adUnitIds = NapSspConfig.adUnitIds(context)
+        val mediaKey = AppConfig.getMediaKey(context) ?: NapSspConfig.MEDIA_KEY
+        val adUnitIds = NapSspConfig.AD_UNIT_IDS
 
         AdEventLogger.request("initialize", mediaKey)
         runCatching {
@@ -74,11 +74,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun bannerView(context: Context): View? {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "banner_320x100") ?: NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["banner_320x100"] ?: return null
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "banner"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -106,11 +102,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun nativeView(context: Context): View? {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "native") ?: NapSspConfig.AD_UNIT_IDS["native"] ?: return null
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["native"] ?: return null
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "native"
         destroyAndRemoveAd(format)
         val layouts = listOf(R.layout.admixer_item_320x480, R.layout.admixer_item_300x250, R.layout.admixer_item_320x100, R.layout.admixer_item_320x50)
@@ -142,11 +134,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun videoView(context: Context): View? {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "outstream_video") ?: NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["outstream_video"] ?: return null
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "video"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -170,11 +158,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun rewardVideoView(context: Context) {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "reward_video") ?: NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["reward_video"] ?: return
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "rewardVideo"
         destroyAndRemoveAd(format)
         runCatching {
@@ -205,11 +189,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun interstitialVideoView(context: Context) {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["interstitial_320x480"] ?: return
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "interstitialVideo"
         destroyAndRemoveAd(format)
         runCatching {
@@ -239,11 +219,7 @@ object NapSspSdkIntegration {
 
     @Synchronized
     fun interstitialBannerView(context: Context) {
-<<<<<<< HEAD:android/app/src/main/java/com/gwangy/nassspandroidsample/bridge/NapSspSdkIntegration.kt
         val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480_f") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
-=======
-        val adUnitId = NapSspConfig.adUnitIds(context)["interstitial_320x480_f"] ?: return
->>>>>>> 9e7a30c (fix: make sample beginner-friendly config flow):android/app/src/main/java/com/gwangy/nassspandroidsample/NapSspSdkIntegration.kt
         val format = "interstitialBanner"
         destroyAndRemoveAd(format)
         runCatching {

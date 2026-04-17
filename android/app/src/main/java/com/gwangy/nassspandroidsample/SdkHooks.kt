@@ -1,5 +1,7 @@
 package com.gwangy.nassspandroidsample
 
+import com.gwangy.nassspandroidsample.bridge.NapSspSdkIntegration
+
 object SdkHooks {
     fun describe(format: SampleFormat): String = when (format) {
         SampleFormat.Banner -> banner()

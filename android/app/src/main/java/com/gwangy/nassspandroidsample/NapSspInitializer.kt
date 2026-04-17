@@ -1,11 +1,12 @@
 package com.gwangy.nassspandroidsample
 
+import com.gwangy.nassspandroidsample.bridge.NapSspConfig
+import com.gwangy.nassspandroidsample.bridge.NapSspSdkIntegration
+
 object NapSspInitializer {
     fun initialize() {
         val context = AppContextHolder.appContext ?: return
         NapSspSdkIntegration.initialize(context)
-        val adUnitIds = NapSspConfig.adUnitIds(context)
-        println("NapSsp Android init mediaKey=${NapSspConfig.mediaKey(context)} adUnitIds=${adUnitIds.values.joinToString(",")}")
-        println("NapSsp Android mediation hints=${NapSspConfig.MEDITATION_HINTS.joinToString { "${it.first}:${it.second}" }}")
+        println("NapSsp Android init mediaKey=${NapSspConfig.MEDIA_KEY} adUnitIds=${NapSspConfig.AD_UNIT_IDS.values.joinToString(",")}")
     }
 }
