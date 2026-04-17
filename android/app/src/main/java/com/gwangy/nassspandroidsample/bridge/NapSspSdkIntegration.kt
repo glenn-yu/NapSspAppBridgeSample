@@ -135,7 +135,22 @@ object NapSspSdkIntegration {
         val selectedLayout = layouts[Random.nextInt(layouts.size)]
         return runCatching {
             val nativeView = NativeAdView(context)
-            val adInfo = AdInfo.Builder(adUnitId).setIsUseMediation(true).build()
+            val adInfoBuilder = AdInfo.Builder(adUnitId).setIsUseMediation(true)
+            
+            // 가이드에 명시된 레이아웃 ID 매핑 추가
+            val adViewIds = mapOf(
+                "iv_icon" to R.id.iv_icon,
+                "tv_title" to R.id.tv_title,
+                "tv_adv" to R.id.tv_adv,
+                "tv_desc" to R.id.tv_desc,
+                "iv_main" to R.id.iv_main,
+                "btn_cta" to R.id.btn_cta
+            )
+            adInfoBuilder.setViewIds(AdMixer.ADAPTER_ADFIT, adViewIds)
+            adInfoBuilder.setViewIds(AdMixer.ADAPTER_PANGLE, adViewIds)
+            adInfoBuilder.setViewIds(AdMixer.ADAPTER_ADMANAGER, adViewIds)
+            val adInfo = adInfoBuilder.build()
+
             val viewBinder = NativeAdViewBinder.Builder(selectedLayout)
                 .setIconImageId(R.id.iv_icon).setTitleId(R.id.tv_title)
                 .setAdvertiserId(R.id.tv_adv).setDescriptionId(R.id.tv_desc)
