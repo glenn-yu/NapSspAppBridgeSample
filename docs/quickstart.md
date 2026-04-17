@@ -1,104 +1,76 @@
-# Quickstart — NapSsp Native SDK 샘플 (초보자용, 5분 안내)
+# Quickstart — NapSsp AppBridge Sample
 
-이 페이지는 처음 보는 개발자도 샘플 앱을 바로 실행해볼 수 있도록 최소한의 단계만 적어놓은 빠른 안내서입니다.
+The shortest path to “app opens, keys are configured, ads load.”
 
-요약(한 줄)
-- 필수 설치: JDK, Android Studio, Xcode
-- 레포 클론 → 샘플 설정(미디어 키/AD_UNIT_ID) → 앱 실행 → 포맷 선택 → 광고 호출
+## 0) What you need
+- Git
+- Android: JDK 17 + Android Studio or just the Gradle wrapper
+- iOS: macOS + Xcode 15.3+
+- Optional: real `MEDIA_KEY` / `AD_UNIT_ID` values
 
-사전 준비
-1. Git이 설치되어 있어야 합니다.
-2. Android: JDK 17 설치 및 JAVA_HOME 설정 (Gradle toolchain 요구)
-   - macOS 예: /usr/libexec/java_home -v 17
-     - 예: export JAVA_HOME=$(/usr/libexec/java_home -v 17)
-   - 또는 Gradle 자동 Java 프로비저닝을 허용하면 JDK 설치 없이도 빌드가 가능합니다 (프로젝트에 설정 포함).
-3. Android Studio (권장) 또는 Xcode (iOS 빌드용)
-4. iOS 샘플은 현재 `ios/Vendor/` 아래의 로컬 xcframework를 포함하므로, 원격 패키지 fetch 없이도 동일한 상태로 재현 빌드가 가능합니다.
+## 1) Clone
 
-레포 클론
-
+### macOS / Linux
 ```bash
 git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
 cd NapSspAppBridgeSample
 ```
 
-샘플 모드 안내 (초보자용)
-- 데모 모드: 설정 없이 앱 UI, 화면 흐름, WebView 브리지 동작을 먼저 확인하는 모드입니다.
-- 실 SDK 모드: 실제 MEDIA_KEY / AD_UNIT_ID를 `Configure Keys`에 넣고 광고 응답까지 확인하는 모드입니다.
-- 권장 순서: 먼저 데모 모드로 화면과 버튼 흐름을 확인한 뒤, 그 다음 실 SDK 모드로 넘어가세요.
-- Configure Keys: 실제 벤더 키를 테스트하려면 앱 내 `Configure Keys`에서 MEDIA_KEY와 AD_UNIT_ID를 입력하세요. (Android: Configure Keys dialog, iOS: Configure Keys 화면)
-
-빠른 실행 스크립트
-
-# Android
-```bash
-cd android
-# 기본 데모 모드 빌드
-./gradlew assembleDebug
-
-# 벤더 SDK 경로를 켜서 빌드/실행하려면
-./gradlew assembleDebug -PvendorSdkEnabled=true
-# 또는 환경 변수 사용
-NAPSSP_VENDOR_SDK_ENABLED=true ./gradlew installDebug
+### Windows PowerShell
+```powershell
+git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
+cd NapSspAppBridgeSample
 ```
 
-# iOS (Xcode / xcodebuild)
-1. Xcode로 `ios/` 패키지를 열거나
-2. 터미널에서 아래처럼 빌드합니다.
+## 2) Run Android
+
+### macOS / Linux
+```bash
+cd android
+./gradlew assembleDebug
+./gradlew assembleDebug -PvendorSdkEnabled=true   # optional vendor path
+```
+
+### Windows PowerShell
+```powershell
+cd android
+.\gradlew.bat assembleDebug
+.\gradlew.bat assembleDebug -PvendorSdkEnabled=true   # optional vendor path
+```
+
+After the app launches:
+1. Tap **Configure Keys**.
+2. Keep the sample defaults or paste your real `MEDIA_KEY` / ad unit ID values.
+3. Try **Banner** first, then **Native**.
+4. Use **HybridWebView** only after the basic flow works.
+
+## 3) Run iOS (macOS only)
 
 ```bash
 cd ios
 xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
 ```
 
-샘플 설정
-1. 미디어 키와 광고 단위 ID 설정 (앱내 설정 권장)
-   - Android: 앱 실행 후 `Configure Keys` 버튼으로 설정
-   - iOS: 우상단 `Configure Keys` 버튼으로 설정
-   - 입력하지 않으면 샘플 기본값으로 동작합니다.
-2. 저장한 키는 런타임 설정으로 우선 반영됩니다. 하드코딩을 수정하지 않아도 바로 테스트할 수 있습니다.
+If you prefer Xcode:
+```bash
+open ios
+```
 
-하이브리드 WebView 사용법 (샘플)
-- 앱의 `HybridWebViewScreen`에서 내장 HTML UI(버튼)를 통해 다음 메시지를 보낼 수 있습니다:
-  - init, loadBanner, loadNative, loadVideo, loadRewardVideo, loadInterstitialVideo
-- 주의:
-  - 앱은 시작 시 한 번 자동 초기화를 시도합니다.
-  - WebView 안의 `init` 버튼은 브리지 동작과 재초기화 확인용으로 이해하면 됩니다.
-- 동작 원리(간단)
-  1. 웹뷰 버튼 → `window.NapSspBridge.postMessage('init')`
-  2. 네이티브 브리지(NapSspHybridBridge)에서 메시지 파싱 후 SDK 훅 실행
-  3. 네이티브에서 광고 뷰를 만들어 웹뷰 아래의 네이티브 컨테이너에 추가
-  4. 웹뷰에 상태 ack를 다시 보냄 (`window.onNapSspMessage` 호출)
+After the app launches:
+1. Tap **Configure Keys**.
+2. Verify the sample defaults or enter real values.
+3. Try **Banner**, **Native**, **Rewarded**, then **Interstitial**.
 
-검증 체크리스트 (문제 발생시 순서대로 확인)
-1. 앱이 데모모드로 동작하는지 확인 (설정 없이 버튼 동작 및 로그 확인)
-2. 벤더 SDK 경로를 쓰는 경우 `-PvendorSdkEnabled=true` 또는 `NAPSSP_VENDOR_SDK_ENABLED=true`를 붙여 빌드했는지 확인
-3. Configure Keys로 MEDIA_KEY 입력 후 'initialize' 실행 → 로그에 initialize success 확인
-4. 광고 호출 후 status가 'loaded'가 뜨는지 확인
-5. 에러 발생 시 로그 확인 (Android Logcat / iOS Console)
+## 4) Troubleshooting
+- `Unable to locate a Java Runtime` → install JDK 17 and set `JAVA_HOME`.
+- `./gradlew: not found` or a missing wrapper error → run commands from `android/`, not repo root.
+- `xcodebuild: command not found` → install Xcode and accept the license.
+- Ads do not load → confirm the `MEDIA_KEY` / `AD_UNIT_ID` values and that the vendor SDK path is enabled when needed.
+- Windows cannot build iOS → use a Mac for the iOS target.
 
-검증 포인트(문제가 있을 때 확인할 것)
-- Android: `Unable to locate a Java Runtime` → JDK 설치 및 JAVA_HOME 확인
-- Android: `Class.forName` 실패 → 벤더 SDK(AAR)가 `libs/` 또는 Gradle 종속성으로 포함되었는지 확인
-- iOS: `NSClassFromString("AMMediation")` 실패 → Framework 링크가 제대로 되었는지 확인
-- WebView: `window.onNapSspMessage`가 호출되지 않으면 브리지가 등록되었는지(`addJavascriptInterface` / `WKScriptMessageHandler`)와 JS 콘솔 로그를 확인
-
-개발 팁 (초보자용)
-- 로그로 먼저 확인: Android `Logcat`, iOS `Console` 출력에 `NapSsp` 관련 로그가 있는지 확인
-- 샘플에서 문제가 있으면 벤더 SDK가 실제로 프로젝트에 포함되어 있지 않은 경우가 많음 — 샘플은 "SDK 없음" 상황의 폴백 화면을 보여주도록 설계되어 있음
-- 빠르게 확인하려면 샘플의 `NapSspSdkIntegration` 파일에서 `AdEventLogger` 호출을 보고 어떤 분기가 호출되는지 확인
-
-문제 해결(자주 묻는 질문)
-- 광고가 보이지 않아요 → 미디어 키/AD_UNIT_ID가 올바른지, 그리고 벤더 SDK가 포함되었는지 확인하세요.
-- WebView에서 브리지 응답이 없어요 → 브리지 이름(`NapSspBridge`)이 맞는지, HTML 버튼의 `postMessage` 문자열이 올바른지 확인하세요.
-
-추가 자료
-- 레포 내 `docs/guide.md` — 전체 흐름과 상세 설명
-- `docs/mediation.md` — 네트워크와 저장소/패키지 정리
-- 벤더 SDK 설치 가이드(프로젝트별): Android AAR / iOS Framework 위치 설명
-
-릴리즈 전 마지막 체크
-- Android: `./gradlew assembleDebug` 가 실제로 통과하는지 확인
-- iOS: vendored xcframework 기준으로 Xcode build가 통과하는지 확인
-- Configure Keys 입력값이 실제 광고 응답으로 이어지는지 확인
-- HybridWebView에서 `init` 후 배너/네이티브가 정상 호출되는지 확인
+## 5) Sanity check order
+- Demo mode / sample defaults
+- Banner
+- Native
+- Rewarded / Interstitial
+- HybridWebView bridge

@@ -2,12 +2,20 @@
 
 ## Unreleased
 
+### Added
+- Beginner quickstart with exact macOS, Linux, and Windows commands plus troubleshooting.
+- Git LFS migration plan for `ios/Vendor/`.
+- Release notes draft for the next tag.
+
 ### Changed
-- Make NapSspAppBridgeSample beginner-friendly and buildable for Android and iOS.
-- iOS: Vendored AdMixer and AdMixerMediation xcframeworks under `ios/Vendor/` to ensure reproducible builds.
-- Runtime config: `Configure Keys` UI (Android/iOS) now persists and feeds `NapSspConfig` at runtime — no hardcoded keys required for testing.
-- Docs: README and docs/* updated to reflect current build flow and iOS vendored SDK note.
+- Android CI now sets up JDK 17 with Gradle caching and runs from the real `android/` working directory.
+- iOS CI now caches Xcode/SwiftPM build products and writes derived data into a predictable path.
+- Docs now point new contributors to the shorter quickstart and the new vendor/release notes pages.
+
+### Fixed
+- Android and iOS sample wiring now covers rewarded and interstitial flows end to end.
+- The iOS build story remains reproducible through the vendored local binary targets in `ios/Vendor/`.
 
 ### Notes
-- Consider migrating large binary files in `ios/Vendor/` to Git LFS or an artifact repository for long-term maintenance.
-- Recommended next steps: add iOS CI job on macOS runner; create PR checklist and release notes before merging.
+- Android still requires a valid JDK 17 locally; this repo does not bundle a Java runtime.
+- If the team later migrates `ios/Vendor/` to Git LFS, update the quickstart and CI docs together.

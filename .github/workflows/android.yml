@@ -12,18 +12,27 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
     steps:
       - uses: actions/checkout@v4
-      - name: Debug: show java and gradle
-        run: |
-          java -version || true
-          ./gradlew --version || true
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew
+          check-latest: true
+          cache: gradle
+          cache-dependency-path: |
+            android/build.gradle.kts
+            android/settings.gradle.kts
+            android/app/build.gradle.kts
+            android/gradle.properties
+            android/gradle/wrapper/gradle-wrapper.properties
+      - name: Show Java and Gradle versions
+        run: |
+          java -version
+          ./gradlew --version
       - name: Build (assembleDebug)
         run: ./gradlew :app:assembleDebug --no-daemon
