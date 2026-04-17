@@ -42,8 +42,10 @@ fun AdDemoScreen(title: String, subtitle: String, onClose: (() -> Unit)? = null)
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("광고 자리", fontWeight = FontWeight.Bold)
-                Text("실제 nap ssp SDK가 연결되면 여기에 광고 뷰가 표시된다.")
+                Text("처음 보는 분을 위한 순서", fontWeight = FontWeight.Bold)
+                Text("1. Configure Keys에서 MEDIA_KEY와 광고 키를 입력한다.")
+                Text("2. 배너 또는 네이티브를 먼저 눌러 기본 동작을 확인한다.")
+                Text("3. Hybrid WebView에서는 init 후 광고 버튼을 누른다.")
             }
             onClose?.let {
                 Button(onClick = it, modifier = Modifier.fillMaxWidth()) {
