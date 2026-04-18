@@ -14,7 +14,7 @@ final class InterstitialModule: NSObject {
         config.popupOption = AMMInterstitialPopupOption(
             buttonTitle: "광고종료",
             buttonTextColor: .white,
-            buttonBackgroundColor: "#234234"
+            buttonBackgroundColor: UIColor(red: 35.0/255.0, green: 66.0/255.0, blue: 52.0/255.0, alpha: 1.0)
         )
         config.countDownOption = AMMInterstitialCountDownOption(
             countDownTime: 5,

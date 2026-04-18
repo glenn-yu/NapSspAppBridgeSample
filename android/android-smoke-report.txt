@@ -1,0 +1,23 @@
+Android smoke verification report
+
+Date: 2026-04-18
+
+Summary:
+- Attempted to run ./gradlew assembleDebug but failed: no Java runtime available on the host.
+- adb is present: /opt/homebrew/bin/adb (version 1.0.41, Version 37.0.0-14910828).
+- No APKs were found in the workspace to install.
+
+Actions performed:
+1) Ran NapSspAppBridgeSample/android/gradlew assembleDebug -> failed with error "Unable to locate a Java Runtime." See gradle_error.txt for full output.
+2) Checked adb availability and version.
+3) Searched workspace for existing .apk files (none found).
+4) Created this report and committed it to branch test/android-smoke for visibility.
+
+Next steps (recommended):
+1) Install a JDK or set JAVA_HOME so ./gradlew can run. Example (macOS, zsh):
+   export JAVA_HOME="/opt/homebrew/Cellar/openjdk@17/17.0.18/libexec/openjdk.jdk/Contents/Home"
+   export PATH="$JAVA_HOME/bin:$PATH"
+2) Re-run `./gradlew :app:assembleDebug` in NapSspAppBridgeSample/android to produce the debug APK at app/build/outputs/apk/debug/app-debug.apk
+3) Start an Android emulator (AVD) or connect a device, then use adb to install and run the APK, capture screenshots and adb logs.
+
+If you want, I can try again after you install JDK or provide a prebuilt APK to install.

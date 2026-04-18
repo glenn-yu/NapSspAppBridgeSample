@@ -34,5 +34,12 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3839806749171044~7545408326" />
 
+        <!-- Test-only broadcast receiver to trigger SDK actions from adb -->
+        <receiver android:name=".IntentBridgeReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.gwangy.nassspandroidsample.INTENT_BRIDGE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>
