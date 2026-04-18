@@ -1,0 +1,6 @@
+Attempt to run: NapSspAppBridgeSample/android/gradlew assembleDebug --no-daemon
+
+Result: The operation couldn't be completed. Unable to locate a Java Runtime.
+Please visit http://www.java.com for information on installing Java.
+
+(Command exited with code 1)
