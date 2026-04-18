@@ -15,7 +15,7 @@ enum NapSspInitializer {
         print("NapSsp iOS mediation hints=\(NapSspConfig.mediationHints.map { $0.0 + ":" + $0.1 }.joined(separator: ","))")
 
         #if canImport(GoogleMobileAds)
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        GADMobileAds.sharedInstance().start()
         #endif
 
         #if canImport(PAGAdSDK)
