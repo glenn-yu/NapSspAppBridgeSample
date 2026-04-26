@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <h2>NapSsp Android Hybrid</h2>
+    <h2>NapSsp Hybrid Sample</h2>
     
     <div class="card">
         <div class="section-title">1. Lifecycle</div>
@@ -41,6 +41,14 @@
         <button class="secondary" onclick="callNative('loadAd', {format: 'interstitialBanner'})">Show Interstitial Banner (F)</button>
     </div>
 
+    <div class="card">
+        <div class="section-title">4. Custom AdUnit (Advanced)</div>
+        <div style="display: flex; gap: 8px;">
+            <input type="text" id="customId" placeholder="AdUnit ID" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <button style="width: auto; padding: 8px 16px; margin: 0;" onclick="loadCustomAd()">Load</button>
+        </div>
+    </div>
+
     <div id="log" class="log-container"><div class="log-entry">Waiting for bridge...</div></div>
 
     <script>
@@ -53,17 +61,29 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
+        function loadCustomAd() {
+            const id = document.getElementById('customId').value;
+            if (!id) return alert('Enter AdUnit ID');
+            callNative('loadAd', {format: 'banner', adUnitId: id});
+        }
+
         function callNative(action, params = {}) {
             if (isProcessing) return;
             isProcessing = true;
             setTimeout(() => { isProcessing = false; }, 500);
 
             const request = JSON.stringify({ action, params });
-            log(`REQ: ${action} ${params.format || ''}`, '#fff');
+            log(`REQ: ${action} ${params.format || ''} ${params.adUnitId || ''}`, '#fff');
             
+            // Android 브릿지 체크
             if (window.NapSspBridge) {
                 window.NapSspBridge.postMessage(request);
-            } else {
+            } 
+            // iOS WKWebView 브릿지 체크
+            else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.NapSspBridge) {
+                window.webkit.messageHandlers.NapSspBridge.postMessage(request);
+            }
+            else {
                 log('Error: Bridge not found', '#ea4335');
             }
         }
@@ -77,7 +97,7 @@
         log('Bridge ready. Please Initialize first.');
     </script>
     <div class="card">
-        <div class="section-title">4. Cleanup</div>
+        <div class="section-title">5. Cleanup</div>
         <button class="secondary" onclick="callNative('clearAds')">Clear All Ads & Releases</button>
     </div>
-</html>
+</body>

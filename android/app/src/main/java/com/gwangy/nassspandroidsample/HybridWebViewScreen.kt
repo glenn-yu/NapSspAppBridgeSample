@@ -39,14 +39,14 @@ import java.util.UUID
 
 class NapSspHybridBridge(
     private val webView: WebView,
-    private val onAdRequest: (String) -> Unit
+    private val onAdRequest: (String, String?) -> Unit
 ) {
     private var lastActionTime = 0L
 
     @JavascriptInterface
     fun postMessage(jsonString: String) {
         val currentTime = System.currentTimeMillis()
-        if (currentTime - lastActionTime < 1200) return // 락 시간을 1.2초로 늘림
+        if (currentTime - lastActionTime < 500) return // JS와 동일하게 0.5초로 조정
         lastActionTime = currentTime
 
         try {
@@ -61,11 +61,12 @@ class NapSspHybridBridge(
                 }
                 "loadAd" -> {
                     val format = params.optString("format")
-                    webView.post { onAdRequest(format) }
+                    val adUnitId = params.optString("adUnitId").takeIf { it.isNotEmpty() }
+                    webView.post { onAdRequest(format, adUnitId) }
                 }
                 "clearAds" -> {
                     webView.post {
-                        onAdRequest("clear")
+                        onAdRequest("clear", null)
                         NapSspSdkIntegration.clearAllAds()
                         sendResponse("clearAds", "success", "All ads cleared")
                     }
@@ -77,7 +78,7 @@ class NapSspHybridBridge(
         }
     }
 
-    private fun sendResponse(action: String, status: String, data: Any) {
+    fun sendResponse(action: String, status: String, data: Any) {
         val response = JSONObject().apply {
             put("action", action)
             put("status", status)
@@ -124,7 +125,50 @@ fun HybridWebViewScreen(
         AndroidView(
             modifier = Modifier.weight(1f).fillMaxWidth(),
             factory = { factoryContext ->
-                WebView(factoryContext).apply {
+                val webView = WebView(factoryContext)
+                val bridge = NapSspHybridBridge(webView) { format, customAdUnitId ->
+                    if (isRequestingAd) return@NapSspHybridBridge
+                    isRequestingAd = true
+
+                    coroutineScope.launch {
+                        try {
+                            if (format == "clear") {
+                                currentAdView = null
+                                adHeight = 0.dp
+                                NapSspSdkIntegration.clearAllAds()
+                                return@launch
+                            }
+
+                            currentAdView = null 
+                            NapSspSdkIntegration.clearAllAds()
+                            delay(200)
+
+                            adSessionId = UUID.randomUUID().toString()
+                            val adView = when (format) {
+                                "banner" -> { adHeight = 100.dp; NapSspSdkIntegration.bannerView(context, customAdUnitId) }
+                                "native" -> { adHeight = 400.dp; NapSspSdkIntegration.nativeView(context, customAdUnitId) }
+                                "video" -> { adHeight = 250.dp; NapSspSdkIntegration.videoView(context, customAdUnitId) }
+                                "rewardVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.rewardVideoView(context, customAdUnitId); null }
+                                "interstitialVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialVideoView(context, customAdUnitId); null }
+                                "interstitialBanner" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialBannerView(context, customAdUnitId); null }
+                                else -> { adHeight = 0.dp; null }
+                            }
+                            
+                            if (isActive) {
+                                currentAdView = adView
+                            }
+                        } finally {
+                            isRequestingAd = false
+                        }
+                    }
+                }
+
+                // SDK 이벤트를 웹뷰 브릿지로 연결
+                NapSspSdkIntegration.onAdEventCallback = { event, format, detail ->
+                    bridge.sendResponse("event", "success", "[$format] $event: $detail")
+                }
+
+                webView.apply {
                     settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
@@ -135,46 +179,7 @@ fun HybridWebViewScreen(
                         userAgentString = "$originalUA NapSspHybridBridge"
                     }
                     webViewClient = WebViewClient()
-                    
-                    addJavascriptInterface(NapSspHybridBridge(this) { format ->
-                        if (isRequestingAd) return@NapSspHybridBridge
-                        isRequestingAd = true
-
-                        coroutineScope.launch {
-                            try {
-                                // 1. 기존 광고 즉시 파괴
-                                if (format == "clear") {
-                                    currentAdView = null
-                                    adHeight = 0.dp
-                                    NapSspSdkIntegration.clearAllAds()
-                                    return@launch
-                                }
-
-                                // 2. 기존 광고 파괴 및 대기
-                                currentAdView = null 
-                                NapSspSdkIntegration.clearAllAds()
-                                delay(200)
-
-                                // 3. 세션 ID 갱신 및 새로운 광고 생성
-                                adSessionId = UUID.randomUUID().toString()
-                                val adView = when (format) {
-                                    "banner" -> { adHeight = 100.dp; NapSspSdkIntegration.bannerView(context) }
-                                    "native" -> { adHeight = 400.dp; NapSspSdkIntegration.nativeView(context) }
-                                    "video" -> { adHeight = 250.dp; NapSspSdkIntegration.videoView(context) }
-                                    "rewardVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.rewardVideoView(context); null }
-                                    "interstitialVideo" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialVideoView(context); null }
-                                    "interstitialBanner" -> { adHeight = 0.dp; NapSspSdkIntegration.interstitialBannerView(context); null }
-                                    else -> { adHeight = 0.dp; null }
-                                }
-                                
-                                if (isActive) { // 코루틴이 여전히 활성화 상태인지 확인
-                                    currentAdView = adView
-                                }
-                            } finally {
-                                isRequestingAd = false // 항상 상태 해제
-                            }
-                        }
-                    }, "NapSspBridge")
+                    addJavascriptInterface(bridge, "NapSspBridge")
                     loadUrl("file:///android_asset/index.html")
                 }
             }

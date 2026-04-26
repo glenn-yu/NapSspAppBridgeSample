@@ -99,8 +99,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun bannerView(context: Context): View? {
-        val adUnitId = AppConfig.getAdUnit(context, "banner_320x100") ?: NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
+    fun bannerView(context: Context, customAdUnitId: String? = null): View? {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "banner_320x100") ?: NapSspConfig.AD_UNIT_IDS["banner_320x100"] ?: return null
         val format = "banner"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -127,8 +127,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun nativeView(context: Context): View? {
-        val adUnitId = AppConfig.getAdUnit(context, "native") ?: NapSspConfig.AD_UNIT_IDS["native"] ?: return null
+    fun nativeView(context: Context, customAdUnitId: String? = null): View? {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "native") ?: NapSspConfig.AD_UNIT_IDS["native"] ?: return null
         val format = "native"
         destroyAndRemoveAd(format)
         val layouts = listOf(R.layout.admixer_item_320x480, R.layout.admixer_item_300x250, R.layout.admixer_item_320x100, R.layout.admixer_item_320x50)
@@ -178,8 +178,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun videoView(context: Context): View? {
-        val adUnitId = AppConfig.getAdUnit(context, "outstream_video") ?: NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
+    fun videoView(context: Context, customAdUnitId: String? = null): View? {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "outstream_video") ?: NapSspConfig.AD_UNIT_IDS["outstream_video"] ?: return null
         val format = "video"
         destroyAndRemoveAd(format)
         return runCatching {
@@ -207,8 +207,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun rewardVideoView(context: Context) {
-        val adUnitId = AppConfig.getAdUnit(context, "reward_video") ?: NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
+    fun rewardVideoView(context: Context, customAdUnitId: String? = null) {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "reward_video") ?: NapSspConfig.AD_UNIT_IDS["reward_video"] ?: return
         val format = "rewardVideo"
         destroyAndRemoveAd(format)
         runCatching {
@@ -251,8 +251,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun interstitialVideoView(context: Context) {
-        val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
+    fun interstitialVideoView(context: Context, customAdUnitId: String? = null) {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "interstitial_320x480") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480"] ?: return
         val format = "interstitialVideo"
         destroyAndRemoveAd(format)
         runCatching {
@@ -289,8 +289,8 @@ object NapSspSdkIntegration {
     }
 
     @Synchronized
-    fun interstitialBannerView(context: Context) {
-        val adUnitId = AppConfig.getAdUnit(context, "interstitial_320x480_f") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
+    fun interstitialBannerView(context: Context, customAdUnitId: String? = null) {
+        val adUnitId = customAdUnitId ?: AppConfig.getAdUnit(context, "interstitial_320x480_f") ?: NapSspConfig.AD_UNIT_IDS["interstitial_320x480_f"] ?: return
         val format = "interstitialBanner"
         destroyAndRemoveAd(format)
         runCatching {

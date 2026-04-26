@@ -6,9 +6,10 @@
 1. **`quickstart.md`** — 한 화면 빠른 시작
 2. **`guide.md`** — 전체 흐름과 상세 예시
 3. **`hybrid-webview.md`** — 웹-네이티브 브릿지 JSON 규격
-4. **`ios-vendor-lfs-migration-plan.md`** — `ios/Vendor/` Git LFS 이전 계획
-5. **`release-notes-draft.md`** — 다음 릴리즈 초안
-6. **플랫폼 공식 가이드** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
+4. **`hybrid-bridge-advanced.md`** — 🆕 고급 연동 및 트러블슈팅 가이드
+5. **`ios-vendor-lfs-migration-plan.md`** — `ios/Vendor/` Git LFS 이전 계획
+6. **`release-notes-draft.md`** — 다음 릴리즈 초안
+7. **플랫폼 공식 가이드** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
 
 ## 빌드 전 확인
 - Android: JDK 17, `JAVA_HOME`, Android Studio 또는 Gradle 실행 환경

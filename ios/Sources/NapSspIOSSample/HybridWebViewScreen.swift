@@ -13,30 +13,20 @@ struct HybridRequest: Codable {
 struct HybridResponse: Codable {
     let action: String
     let status: String
-    let data: String
+    let data: String // JS에서 JSON.parse를 일관되게 쓸 수 있도록 문자열로 전달하거나 구조화된 데이터를 담습니다.
 }
 
 // 웹뷰 브릿지 핸들러
 final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
-    var onAdLoaded: ((UIView?, CGFloat) -> Void)? // 높이 정보 추가
+    var onAdLoaded: ((UIView?, CGFloat) -> Void)?
 
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAdEvent(_:)), name: .napSspAdEvent, object: nil)
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: .napSspAdEvent, object: nil)
-    }
-
-    @objc private func handleAdEvent(_ notification: Notification) {
-        let event = notification.userInfo?["event"] as? String ?? "unknown"
-        let format = notification.userInfo?["format"] as? String ?? "unknown"
-        let id = notification.userInfo?["id"] as? String ?? ""
-        let detail = notification.userInfo?["detail"] as? String
-        let payload = [event, format, id, detail ?? ""].filter { !$0.isEmpty }.joined(separator: " | ")
-        sendResponse(action: "event", status: "success", data: "SDK: \(payload)")
+        // SDK 통합 모듈의 콜백 연결
+        NapSspSdkIntegration.onAdEventCallback = { [weak self] event, format, detail in
+            self?.sendResponse(action: "event", status: "success", data: "[\(format)] \(event): \(detail)")
+        }
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -47,10 +37,12 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         switch request.action {
         case "init":
             NapSspSdkIntegration.initializeSdk()
-            sendResponse(action: "init", status: "success", data: "Initialized")
+            sendResponse(action: "init", status: "success", data: "SDK Initialized")
         case "loadAd":
-            if let format = request.params?["format"] {
-                handleLoadAd(format: format)
+            let format = request.params?["format"]
+            let adUnitId = request.params?["adUnitId"]
+            if let format = format {
+                handleLoadAd(format: format, adUnitId: adUnitId)
             }
         case "clearAds":
             DispatchQueue.main.async {
@@ -59,11 +51,13 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
                 self.sendResponse(action: "clearAds", status: "success", data: "All ads cleared")
             }
         default:
-            sendResponse(action: request.action, status: "error", data: "Unknown")
+            sendResponse(action: request.action, status: "error", data: "Unknown action")
         }
     }
 
-    private func handleLoadAd(format: String) {
+    private func handleLoadAd(format: String, adUnitId: String? = nil) {
+        let customId = adUnitId.flatMap { Int($0) }
+        
         DispatchQueue.main.async {
             guard let rootVC = UIApplication.shared.windows.first?.rootViewController else { return }
             var view: UIView? = nil
@@ -71,34 +65,52 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             
             switch format {
             case "banner": 
-                view = NapSspSdkIntegration.banner(rootVC: rootVC)
+                view = NapSspSdkIntegration.banner(rootVC: rootVC, customAdUnitId: customId)
                 height = 100
             case "native": 
-                view = NapSspSdkIntegration.native(rootVC: rootVC)
-                height = 400 // 네이티브 넉넉한 높이
+                view = NapSspSdkIntegration.native(rootVC: rootVC, customAdUnitId: customId)
+                height = 400
             case "video": 
-                view = NapSspSdkIntegration.video(rootVC: rootVC)
+                view = NapSspSdkIntegration.video(rootVC: rootVC, customAdUnitId: customId)
                 height = 250
-            case "rewardVideo": NapSspSdkIntegration.rewardVideo(rootVC: rootVC)
-            case "interstitialVideo": NapSspSdkIntegration.interstitialVideo(rootVC: rootVC)
-            case "interstitialBanner": NapSspSdkIntegration.interstitialBanner(rootVC: rootVC)
+            case "rewardVideo": NapSspSdkIntegration.rewardVideo(rootVC: rootVC, customAdUnitId: customId)
+            case "interstitialVideo": NapSspSdkIntegration.interstitialVideo(rootVC: rootVC, customAdUnitId: customId)
+            case "interstitialBanner": NapSspSdkIntegration.interstitialBanner(rootVC: rootVC, customAdUnitId: customId)
             default: break
             }
             
             self.onAdLoaded?(view, height)
+            // loadAd에 대한 즉시 응답 (이벤트는 나중에 event 액션으로 별도 전달됨)
             self.sendResponse(action: "loadAd", status: "success", data: "Triggered \(format)")
         }
     }
 
     private func sendResponse(action: String, status: String, data: String) {
-        let response = HybridResponse(action: action, status: status, data: data)
-        if let jsonData = try? JSONEncoder().encode(response),
-           let jsonStr = String(data: jsonData, encoding: .utf8) {
-            let escaped = jsonStr.replacingOccurrences(of: "'", with: "\\'")
-            DispatchQueue.main.async {
-                self.webView?.evaluateJavaScript("window.onNapSspMessage && window.onNapSspMessage('\(escaped)')")
-            }
+        let responseDict: [String: Any] = [
+            "action": action,
+            "status": status,
+            "data": data
+        ]
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: responseDict, options: []),
+              let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
+              
+        let escaped = jsonStr.replacingOccurrences(of: "'", with: "\\'")
+        DispatchQueue.main.async {
+            self.webView?.evaluateJavascript("window.onNapSspMessage && window.onNapSspMessage('\(escaped)')")
         }
+    }
+}
+
+// 순환 참조 방지를 위한 프록시 클래스
+final class LeakAvoider: NSObject, WKScriptMessageHandler {
+    weak var delegate: WKScriptMessageHandler?
+    init(_ delegate: WKScriptMessageHandler) {
+        self.delegate = delegate
+        super.init()
+    }
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        delegate?.userContentController(userContentController, didReceive: message)
     }
 }
 
@@ -106,7 +118,8 @@ struct WebViewContainer: UIViewRepresentable {
     let bridge: NapSspHybridBridge
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
-        config.userContentController.add(bridge, name: "NapSspBridge")
+        // LeakAvoider를 사용하여 순환 참조 방지
+        config.userContentController.add(LeakAvoider(bridge), name: "NapSspBridge")
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
         let webView = WKWebView(frame: .zero, configuration: config)
