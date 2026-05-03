@@ -74,14 +74,14 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    implementation("io.github.nasmedia-tech:admixer-ssp:1.0.21")
+    implementation("io.github.nasmedia-tech:admixer-ssp:1.0.23")
     implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
 
     // Mediation
     implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
     implementation("io.github.nasmedia-tech:admixer-adfit:1.0.11")
     implementation("io.github.nasmedia-tech:admixer-pangle:1.0.11")
-    implementation("com.pangle.global:pag-sdk:7.8.5.9")
+    implementation("com.pangle.global:pag-sdk:8.0.0.4")
     implementation("io.github.nasmedia-tech:admixer-applovin:1.0.8")
     implementation("io.github.nasmedia-tech:admixer-unity:1.0.6")
 }
