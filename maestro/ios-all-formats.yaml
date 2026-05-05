@@ -1,0 +1,99 @@
+appId: com.nasmedia.NapSspIOSSample
+---
+# Each format starts from a fresh app state so ad views/full-screen ads cannot cover the next button.
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Load Banner.*"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Load Banner.*"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted banner.*"
+    direction: DOWN
+    timeout: 15000
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Load Native Ad"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Load Native Ad"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted native.*"
+    direction: DOWN
+    timeout: 15000
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Load Outstream Video"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Load Outstream Video"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted video.*"
+    direction: DOWN
+    timeout: 15000
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Show Reward Video"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Show Reward Video"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted rewardVideo.*"
+    direction: DOWN
+    timeout: 15000
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Show Interstitial Video"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Show Interstitial Video"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted interstitialVideo.*"
+    direction: DOWN
+    timeout: 15000
+
+- launchApp:
+    clearState: true
+- assertVisible: "NapSsp iOS Hybrid"
+- tapOn: "Initialize SDK"
+- scrollUntilVisible:
+    element:
+      text: "Show Interstitial Banner.*"
+    direction: DOWN
+    timeout: 10000
+- tapOn: "Show Interstitial Banner.*"
+- scrollUntilVisible:
+    element:
+      text: ".*LOADAD SUCCESS.*Accepted interstitialBanner.*"
+    direction: DOWN
+    timeout: 15000

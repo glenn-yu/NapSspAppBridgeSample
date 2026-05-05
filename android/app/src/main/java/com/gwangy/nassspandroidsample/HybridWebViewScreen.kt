@@ -43,6 +43,15 @@ class NapSspHybridBridge(
 ) {
     private var lastActionTime = 0L
 
+    private val supportedFormats = setOf(
+        "banner",
+        "native",
+        "video",
+        "rewardVideo",
+        "interstitialVideo",
+        "interstitialBanner"
+    )
+
     @JavascriptInterface
     fun postMessage(jsonString: String) {
         val currentTime = System.currentTimeMillis()
@@ -62,7 +71,12 @@ class NapSspHybridBridge(
                 "loadAd" -> {
                     val format = params.optString("format")
                     val adUnitId = params.optString("adUnitId").takeIf { it.isNotEmpty() }
+                    if (format !in supportedFormats) {
+                        sendResponse("loadAd", "error", "Unsupported format: $format")
+                        return
+                    }
                     webView.post { onAdRequest(format, adUnitId) }
+                    sendResponse("loadAd", "success", "Accepted $format")
                 }
                 "clearAds" -> {
                     webView.post {
@@ -84,9 +98,9 @@ class NapSspHybridBridge(
             put("status", status)
             put("data", data)
         }
-        val jsonStr = response.toString().replace("'", "\\'")
+        val responseLiteral = JSONObject.quote(response.toString())
         webView.post {
-            webView.evaluateJavascript("window.onNapSspMessage && window.onNapSspMessage('$jsonStr')", null)
+            webView.evaluateJavascript("window.onNapSspMessage && window.onNapSspMessage($responseLiteral)", null)
         }
     }
 }

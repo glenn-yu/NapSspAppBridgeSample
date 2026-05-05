@@ -112,6 +112,9 @@ examples/    - 포맷별 코드 예시
 | `docs/quickstart.md` | 초보자용 한 화면 빠른 시작 |
 | `docs/guide.md` | 전체 흐름과 상세 예시 |
 | `docs/hybrid-webview.md` | WebView ↔ Native 브릿지 규격 |
+| `docs/public-hybrid-bridge-guide.md` | 외부 공개용 WebView ↔ Native 브릿지 연동 가이드 |
+| `docs/internal-bridge-developer-guide.md` | 내부 개발자용 브릿지 구현/검증/운영 가이드 |
+| `docs/bridge-validation-report.md` | Android/iOS 빌드 및 Maestro 브릿지 검증 결과 |
 | `docs/ios-xcframeworks.md` | iOS xcframework 관리 / Git LFS / artifact 호스팅 요약 |
 | `docs/ios-vendor-lfs-migration-plan.md` | `ios/Vendor/` Git LFS 이전 계획 |
 | `docs/release-notes-draft.md` | 다음 릴리즈용 초안 |

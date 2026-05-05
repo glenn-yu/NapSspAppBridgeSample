@@ -21,10 +21,19 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
     var onAdLoaded: ((UIView?, CGFloat) -> Void)?
 
+    private let supportedFormats: Set<String> = [
+        "banner",
+        "native",
+        "video",
+        "rewardVideo",
+        "interstitialVideo",
+        "interstitialBanner"
+    ]
+
     override init() {
         super.init()
         // SDK 통합 모듈의 콜백 연결
-        NapSspSdkIntegration.onAdEventCallback = { [weak self] event, format, detail in
+        NapSspSdkIntegration.shared.onAdEventCallback = { [weak self] event, format, detail in
             self?.sendResponse(action: "event", status: "success", data: "[\(format)] \(event): \(detail)")
         }
     }
@@ -32,18 +41,22 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard let body = message.body as? String,
               let data = body.data(using: .utf8),
-              let request = try? JSONDecoder().decode(HybridRequest.self, from: data) else { return }
+              let request = try? JSONDecoder().decode(HybridRequest.self, from: data) else {
+            sendResponse(action: "error", status: "error", data: "Invalid JSON")
+            return
+        }
 
         switch request.action {
         case "init":
             NapSspSdkIntegration.initializeSdk()
             sendResponse(action: "init", status: "success", data: "SDK Initialized")
         case "loadAd":
-            let format = request.params?["format"]
-            let adUnitId = request.params?["adUnitId"]
-            if let format = format {
-                handleLoadAd(format: format, adUnitId: adUnitId)
+            guard let format = request.params?["format"], supportedFormats.contains(format) else {
+                sendResponse(action: "loadAd", status: "error", data: "Unsupported format: \(request.params?["format"] ?? "")")
+                return
             }
+            let adUnitId = request.params?["adUnitId"]
+            handleLoadAd(format: format, adUnitId: adUnitId)
         case "clearAds":
             DispatchQueue.main.async {
                 self.onAdLoaded?(nil, 0)
@@ -59,7 +72,10 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         let customId = adUnitId.flatMap { Int($0) }
         
         DispatchQueue.main.async {
-            guard let rootVC = UIApplication.shared.windows.first?.rootViewController else { return }
+            guard let rootVC = UIApplication.shared.windows.first?.rootViewController else {
+                self.sendResponse(action: "loadAd", status: "error", data: "Root view controller not found")
+                return
+            }
             var view: UIView? = nil
             var height: CGFloat = 0
             
@@ -81,7 +97,7 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             
             self.onAdLoaded?(view, height)
             // loadAd에 대한 즉시 응답 (이벤트는 나중에 event 액션으로 별도 전달됨)
-            self.sendResponse(action: "loadAd", status: "success", data: "Triggered \(format)")
+            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
         }
     }
 
@@ -93,11 +109,12 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         ]
         
         guard let jsonData = try? JSONSerialization.data(withJSONObject: responseDict, options: []),
-              let jsonStr = String(data: jsonData, encoding: .utf8) else { return }
+              let jsonStr = String(data: jsonData, encoding: .utf8),
+              let jsArgData = try? JSONSerialization.data(withJSONObject: jsonStr, options: [.fragmentsAllowed]),
+              let jsArg = String(data: jsArgData, encoding: .utf8) else { return }
               
-        let escaped = jsonStr.replacingOccurrences(of: "'", with: "\\'")
         DispatchQueue.main.async {
-            self.webView?.evaluateJavascript("window.onNapSspMessage && window.onNapSspMessage('\(escaped)')")
+            self.webView?.evaluateJavaScript("window.onNapSspMessage && window.onNapSspMessage(\(jsArg))", completionHandler: nil)
         }
     }
 }
