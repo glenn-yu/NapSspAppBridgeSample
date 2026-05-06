@@ -4,12 +4,21 @@
 
 ## 추천 순서
 1. **`quickstart.md`** — 한 화면 빠른 시작
-2. **`guide.md`** — 전체 흐름과 상세 예시
-3. **`hybrid-webview.md`** — 웹-네이티브 브릿지 JSON 규격
-4. **`hybrid-bridge-advanced.md`** — 🆕 고급 연동 및 트러블슈팅 가이드
-5. **`ios-vendor-lfs-migration-plan.md`** — `ios/Vendor/` Git LFS 이전 계획
-6. **`release-notes-draft.md`** — 다음 릴리즈 초안
-7. **플랫폼 공식 가이드** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
+2. **`publisher-minimal-integration.md`** — 일반 매체 앱에 필요한 최소 파일/설정
+3. **`delivery-packages.md`** — 외부 전달 범위 선택 기준
+4. **`public-hybrid-bridge-guide.md`** — WebView ↔ Native 브릿지 공개 규격
+5. **`guide.md`** — 전체 흐름과 상세 예시
+6. **`hybrid-webview.md`** — 웹-네이티브 브릿지 JSON 규격
+7. **`hybrid-bridge-advanced.md`** — 고급 연동 및 트러블슈팅 가이드
+8. **플랫폼 공식 가이드** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
+9. **내부/운영 문서** — `internal-bridge-developer-guide.md`, `bridge-validation-report.md`, `release-notes-draft.md`
+
+## 문서 전달 기준
+
+- **일반 매체사**: `publisher-minimal-integration.md` + 플랫폼별 Native SDK 가이드
+- **Hybrid WebView 매체사**: `public-hybrid-bridge-guide.md` + `publisher-minimal-integration.md`
+- **내부 개발/QA**: `internal-bridge-developer-guide.md` + `bridge-validation-report.md` + 샘플앱 전체
+- **PoC/레퍼런스 검토**: 저장소 전체와 `quickstart.md`
 
 ## 빌드 전 확인
 - Android: JDK 17, `JAVA_HOME`, Android Studio 또는 Gradle 실행 환경

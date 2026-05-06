@@ -2,7 +2,20 @@
 
 이 문서는 저장소 유지보수자와 내부 개발자를 위한 상세 가이드입니다. 공개용 설명보다 구현 파일, 검증 절차, 리스크 항목을 더 구체적으로 다룹니다.
 
-## 1. 현재 구현 파일
+## 1. 문서/코드 분리 방향
+
+현재 저장소는 **실행 가능한 통합 샘플 앱**입니다. 따라서 데모 UI, 테스트 자동화, 키 입력 화면, WebView 브릿지, Native SDK 호출 예제가 함께 들어 있습니다.
+
+외부 전달 시에는 전체 샘플앱을 그대로 주기보다 아래처럼 분리하는 것이 좋습니다.
+
+- 일반 매체사: `publisher-minimal-integration.md` 중심으로 최소 파일만 안내
+- Hybrid WebView 매체사: `public-hybrid-bridge-guide.md` + 최소 연동 파일 안내
+- 내부 개발/QA: 이 문서와 `bridge-validation-report.md`, Maestro 테스트까지 포함
+- PoC/레퍼런스 검토: 저장소 전체와 `quickstart.md` 제공
+
+전달 범위 선택 기준은 `docs/delivery-packages.md`에 정리되어 있습니다.
+
+## 2. 현재 구현 파일
 
 ### 공통 Web UI
 
@@ -29,7 +42,7 @@
 - Interstitial 모듈: `ios/Sources/NapSspIOSSample/Bridge/InterstitialModule.swift`
 - XcodeGen 설정: `ios/project.yml`
 
-## 2. Bridge contract
+## 3. Bridge contract
 
 ### Request
 
@@ -66,7 +79,7 @@
 
 지원하지 않는 포맷은 SDK로 넘기지 않고 `loadAd/error`로 응답해야 합니다.
 
-## 3. Android 상세 흐름
+## 4. Android 상세 흐름
 
 1. `HybridWebViewScreen`이 WebView를 생성합니다.
 2. `NapSspHybridBridge`를 `NapSspBridge` 이름으로 JS에 주입합니다.
@@ -88,7 +101,7 @@
 
 광고 교체 전에도 `clearAllAds()` 또는 format별 destroy가 선행됩니다.
 
-## 4. iOS 상세 흐름
+## 5. iOS 상세 흐름
 
 1. `HybridWebViewScreen`이 `WKWebView`를 생성합니다.
 2. `WKUserContentController`에 `NapSspBridge` handler를 등록합니다.
@@ -100,7 +113,7 @@
 8. 전체 화면 광고는 SDK show API를 호출하고 하단 View는 만들지 않습니다.
 9. SDK 이벤트는 `onAdEventCallback`과 `NapSspAdEventBridge`를 통해 전달됩니다.
 
-## 5. 오류 방지 기준
+## 6. 오류 방지 기준
 
 ### JSON escaping
 
@@ -121,7 +134,7 @@ Native → JS 응답은 JSON 문자열을 JS string literal로 전달합니다.
 
 브릿지는 지원하지 않는 `format`을 SDK 계층으로 넘기지 않습니다. 이 기준은 테스트 자동화에서 bridge contract를 확인하는 핵심 조건입니다.
 
-## 6. 빌드 환경
+## 7. 빌드 환경
 
 ### Android
 
@@ -148,7 +161,7 @@ xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator'
 
 SPM binary dependency resolve가 네트워크 상태에 영향을 받습니다.
 
-## 7. Maestro 테스트
+## 8. Maestro 테스트
 
 테스트 파일:
 
@@ -192,7 +205,7 @@ maestro test --platform ios --udid <SIMULATOR_UDID> maestro/ios-bridge-smoke.yam
 - 전체 포맷 테스트에서 `banner`, `native`, `video`, `rewardVideo`, `interstitialVideo`, `interstitialBanner` 요청 실행
 - bridge 관련 crash 또는 JS bridge not found 오류 미노출
 
-## 8. 운영 전 리스크 정리
+## 9. 운영 전 리스크 정리
 
 아래 항목은 샘플/테스트 편의를 위해 남아 있습니다. 운영 앱 반영 시 정책 검토가 필요합니다.
 
@@ -204,7 +217,7 @@ maestro test --platform ios --udid <SIMULATOR_UDID> maestro/ios-bridge-smoke.yam
 - Reward custom params 샘플값
 - Android/iOS HTML 중복 관리
 
-## 9. 변경 시 체크리스트
+## 10. 변경 시 체크리스트
 
 - [ ] Android/iOS 양쪽 bridge action이 동일한가?
 - [ ] Android/iOS 양쪽 format set이 동일한가?

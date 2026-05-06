@@ -165,17 +165,65 @@ window.webkit.messageHandlers.NapSspBridge.postMessage(
 
 Native 계층은 Android와 동일하게 JSON 파싱, 포맷 검증, SDK 호출, 이벤트 반환을 담당합니다.
 
-## 8. 광고 설정값
+## 8. 실제 매체 앱에 필요한 최소 파일
+
+샘플 앱은 데모 UI, 테스트 화면, 키 입력 화면, QA용 코드까지 포함하므로 실제 매체 앱에 필요한 코드보다 큽니다. 외부 매체사에 전달할 때는 전체 샘플앱보다 최소 연동 파일을 먼저 안내하는 것을 권장합니다.
+
+자세한 분리 기준은 `docs/publisher-minimal-integration.md`와 `docs/delivery-packages.md`를 참고합니다.
+
+### Android
+
+Hybrid WebView 연동에 필요한 핵심 파일:
+
+```text
+android/app/src/main/java/.../HybridWebViewScreen.kt
+android/app/src/main/java/.../bridge/NapSspConfig.kt
+android/app/src/main/java/.../bridge/NapSspSdkIntegration.kt
+android/app/src/main/assets/index.html   # 샘플 참고용. 실제 앱에서는 매체 웹 코드로 대체 가능
+```
+
+함께 필요한 설정:
+
+```text
+android/app/build.gradle.kts dependency
+android/app/src/main/AndroidManifest.xml 권한/meta-data
+android/app/src/main/res/layout/admixer_item_*.xml   # Native 광고 사용 시만
+```
+
+일반 매체 앱에서는 `AdDemoScreen`, `SampleViewModel`, `IntentBridgeReceiver` 같은 샘플/테스트용 파일은 보통 필요하지 않습니다.
+
+### iOS
+
+Hybrid WebView 연동에 필요한 핵심 파일:
+
+```text
+ios/Sources/NapSspIOSSample/HybridWebViewScreen.swift
+ios/Sources/NapSspIOSSample/NapSspConfig.swift
+ios/Sources/NapSspIOSSample/Bridge/NapSspSdkIntegration.swift
+ios/Sources/NapSspIOSSample/index.html   # 샘플 참고용. 실제 앱에서는 매체 웹 코드로 대체 가능
+```
+
+포맷에 따라 추가:
+
+```text
+ios/Sources/NapSspIOSSample/Bridge/InterstitialModule.swift   # 전면 광고 사용 시
+ios/Sources/NapSspIOSSample/Bridge/RewardedModule.swift       # 보상형 광고 사용 시
+ios/Sources/NapSspIOSSample/AMMNativeAdView.xib               # Native 광고 사용 시
+```
+
+일반 매체 앱에서는 `AdDemoScreen`, `SampleState`, `SampleViewModel`, `ContentView` 같은 샘플 UI 파일은 보통 필요하지 않습니다.
+
+## 9. 광고 설정값
 
 샘플 앱은 기본 테스트 값을 포함합니다. 실제 매체 연동 시에는 앱 화면의 `Configure Keys` 또는 플랫폼별 설정 파일을 통해 실제 `MEDIA_KEY`와 `AD_UNIT_ID`를 적용합니다.
 
 권장 방식:
 
 - 소스 코드에 운영 키를 직접 커밋하지 않습니다.
-- Android는 `local.properties` 또는 빌드 설정을 통해 주입합니다.
-- iOS는 빌드 설정 또는 별도 xcconfig를 통해 관리합니다.
+- Android는 `local.properties`, `BuildConfig`, CI secret, 원격 설정 등을 통해 주입합니다.
+- iOS는 `xcconfig`, build setting, 원격 설정 등을 통해 관리합니다.
 
-## 9. 검증 순서
+## 10. 검증 순서
 
 1. 앱 실행
 2. `Initialize SDK` 클릭
@@ -186,7 +234,7 @@ Native 계층은 Android와 동일하게 JSON 파싱, 포맷 검증, SDK 호출,
 7. `CLEARADS SUCCESS` 로그 확인
 8. Native 로그에서 bridge parsing/error 예외가 없는지 확인
 
-## 10. 운영 반영 전 체크리스트
+## 11. 운영 반영 전 체크리스트
 
 - [ ] 실제 `MEDIA_KEY` / `AD_UNIT_ID` 적용
 - [ ] 테스트용 앱 ID 제거 또는 운영용 ID 교체
