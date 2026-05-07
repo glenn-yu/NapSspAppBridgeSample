@@ -1,1 +1,8 @@
-# Add SDK-specific keep rules here when integrating the real nap ssp SDK.
+-keep class com.nasmedia.admixerssp.** { *; }
+-keep class com.nasmedia.admanager.** { *; }
+-keep class com.nasmedia.adfit.** { *; }
+-keep class com.nasmedia.pangle.** { *; }
+-keep class com.nasmedia.applovin.** { *; }
+-keep class com.nasmedia.unity.** { *; }
+-keep class com.kakao.adfit.** { *; }
+-keep class com.google.android.gms.ads.** { *; }

@@ -26,9 +26,9 @@ object NapSspConfig {
         }
 
     val MEDITATION_HINTS = listOf(
-        "AdManager" to "io.github.nasmedia-tech:admixer-admanager:1.0.15_delta",
-        "AdFit" to "io.github.nasmedia-tech:admixer-adfit:1.0.11",
-        "Pangle" to "io.github.nasmedia-tech:admixer-pangle:1.0.11",
+        "AdManager" to "io.github.nasmedia-tech:admixer-admanager:1.0.14",
+        "AdFit" to "io.github.nasmedia-tech:admixer-adfit:1.0.10",
+        "Pangle" to "io.github.nasmedia-tech:admixer-pangle:1.0.10",
         "AppLovin" to "io.github.nasmedia-tech:admixer-applovin:1.0.8",
         "Unity" to "io.github.nasmedia-tech:admixer-unity:1.0.6",
     )
