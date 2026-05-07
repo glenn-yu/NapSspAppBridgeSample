@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NapSSP Bridge 샘플</title>
+    <script src="napssp-bridge.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #6e6e73;
+            margin-bottom: 20px;
+        }
+
+        /* Status badge */
+        #bridge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        #bridge-status.available { background: #dcfce7; color: #166534; }
+        #bridge-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Section */
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #6e6e73;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        /* Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        button {
+            padding: 12px 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            outline: none;
+        }
+        button:active { opacity: 0.75; transform: scale(0.97); }
+
+        .btn-primary {
+            background: #0071e3;
+            color: #fff;
+            grid-column: 1 / -1;
+        }
+
+        .btn-ad    { background: #eff6ff; color: #1d4ed8; }
+        .btn-full  { background: #fdf4ff; color: #7e22ce; }
+        .btn-clear { background: #fff7ed; color: #c2410c; grid-column: 1 / -1; }
+
+        /* Log */
+        #log-area {
+            background: #1c1c1e;
+            border-radius: 10px;
+            padding: 12px;
+            min-height: 160px;
+            max-height: 260px;
+            overflow-y: auto;
+            font-family: 'Menlo', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry { margin-bottom: 2px; }
+        .log-time  { color: #636366; margin-right: 6px; }
+        .log-info  { color: #30d158; }
+        .log-event { color: #ffd60a; }
+        .log-error { color: #ff453a; }
+        .log-warn  { color: #ff9f0a; }
+        .log-raw   { color: #636366; }
+
+        .log-clear-btn {
+            background: none;
+            border: none;
+            color: #636366;
+            font-size: 12px;
+            padding: 0;
+            cursor: pointer;
+            float: right;
+            margin-top: -2px;
+        }
+        .log-clear-btn:active { opacity: 0.6; }
+
+        /* Ad unit override */
+        .input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: #f9fafb;
+        }
+        input[type="number"]:focus { border-color: #0071e3; background: #fff; }
+
+        .hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<h1>NapSSP App Bridge</h1>
+<p class="subtitle">WebView ↔ Native 광고 연동 샘플</p>
+
+<div id="bridge-status">Bridge 확인 중…</div>
+
+<!-- 초기화 -->
+<div class="section">
+    <div class="section-title">SDK 초기화</div>
+    <button class="btn-primary" onclick="doInit()">SDK 초기화 (init)</button>
+</div>
+
+<!-- 광고 요청 -->
+<div class="section">
+    <div class="section-title">광고 요청</div>
+
+    <div class="input-row">
+        <input type="number" id="ad-unit-id" placeholder="Ad Unit ID (선택, 숫자)" inputmode="numeric">
+    </div>
+    <p class="hint">비워두면 앱 기본 설정 Ad Unit이 사용됩니다.</p>
+
+    <br>
+
+    <div class="btn-grid">
+        <button class="btn-ad" onclick="doLoad('banner')">배너 (Banner)</button>
+        <button class="btn-ad" onclick="doLoad('native')">네이티브 (Native)</button>
+        <button class="btn-ad" onclick="doLoad('video')">비디오 (Video)</button>
+        <button class="btn-full" onclick="doLoad('rewardVideo')">보상형 비디오</button>
+        <button class="btn-full" onclick="doLoad('interstitialVideo')">전면 비디오</button>
+        <button class="btn-full" onclick="doLoad('interstitialBanner')">전면 배너</button>
+        <button class="btn-clear" onclick="doClear()">광고 해제 (clearAds)</button>
+    </div>
+</div>
+
+<!-- 이벤트 로그 -->
+<div class="section">
+    <div class="section-title">
+        이벤트 로그
+        <button class="log-clear-btn" onclick="clearLog()">지우기</button>
+    </div>
+    <div id="log-area"><div class="log-entry"><span class="log-raw">— 로그가 여기에 표시됩니다 —</span></div></div>
+</div>
+
+<script>
+    // ── 상태 배지 ──────────────────────────────────────────────────────────────
+
+    function updateStatus() {
+        var el = document.getElementById('bridge-status');
+        if (NapSspBridge.isAvailable()) {
+            el.textContent = 'Bridge 연결됨';
+            el.className = 'available';
+        } else {
+            el.textContent = 'Bridge 없음 (앱 WebView 필요)';
+            el.className = '';
+        }
+    }
+
+    // ── 로그 헬퍼 ──────────────────────────────────────────────────────────────
+
+    function log(text, type) {
+        var area = document.getElementById('log-area');
+        var entry = document.createElement('div');
+        entry.className = 'log-entry';
+
+        var now = new Date();
+        var time = now.toTimeString().slice(0, 8);
+
+        entry.innerHTML =
+            '<span class="log-time">' + time + '</span>' +
+            '<span class="log-' + (type || 'info') + '">' + escapeHtml(text) + '</span>';
+
+        area.appendChild(entry);
+        area.scrollTop = area.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function clearLog() {
+        document.getElementById('log-area').innerHTML = '';
+    }
+
+    // ── NapSspBridge 콜백 설정 ─────────────────────────────────────────────────
+
+    /**
+     * SDK 광고 이벤트 (loaded / displayed / clicked / rewarded / completed / skipped / closed / failed)
+     */
+    NapSspBridge.onEvent = function(event, format, detail) {
+        var emoji = {
+            loaded: '📦', displayed: '▶️', clicked: '👆',
+            rewarded: '🎁', completed: '✅', skipped: '⏭️',
+            closed: '❌', failed: '⚠️'
+        }[event] || '•';
+
+        log(emoji + ' [' + format + '] ' + event + (detail ? ': ' + detail : ''), 'event');
+
+        // 보상 지급 예시
+        if (event === 'rewarded') {
+            log('→ 보상 지급 로직을 여기서 실행하세요.', 'info');
+        }
+    };
+
+    /**
+     * init / loadAd / clearAds / error 응답
+     */
+    NapSspBridge.onResponse = function(action, status, data) {
+        var type = status === 'success' ? 'info' : 'error';
+        log('[' + action + '] ' + status + ' — ' + data, type);
+    };
+
+    // ── 버튼 핸들러 ────────────────────────────────────────────────────────────
+
+    function doInit() {
+        log('init 요청…', 'info');
+        var sent = NapSspBridge.init();
+        if (!sent) log('→ 브릿지 없음 또는 디바운스로 차단됨', 'warn');
+    }
+
+    function doLoad(format) {
+        var adUnitInput = document.getElementById('ad-unit-id').value.trim();
+        var adUnitId = adUnitInput || undefined;
+
+        log('loadAd 요청: ' + format + (adUnitId ? ' (id=' + adUnitId + ')' : ''), 'info');
+        var sent = NapSspBridge.loadAd(format, adUnitId);
+        if (!sent) log('→ 브릿지 없음 또는 디바운스로 차단됨', 'warn');
+    }
+
+    function doClear() {
+        log('clearAds 요청…', 'info');
+        var sent = NapSspBridge.clearAds();
+        if (!sent) log('→ 브릿지 없음 또는 디바운스로 차단됨', 'warn');
+    }
+
+    // ── 초기화 ─────────────────────────────────────────────────────────────────
+
+    updateStatus();
+
+    // 앱 WebView가 준비되고 나서 상태가 바뀔 수 있으므로 1초 후 재확인
+    setTimeout(updateStatus, 1000);
+</script>
+</body>
+</html>
