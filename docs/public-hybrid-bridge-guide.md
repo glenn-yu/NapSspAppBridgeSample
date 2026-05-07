@@ -79,6 +79,13 @@ callNative('loadAd', {
 })
 ```
 
+> **플랫폼별 adUnitId 타입 주의**
+>
+> JS에서 전달하는 `adUnitId`는 항상 **문자열**입니다. 플랫폼 Native 계층에서 각각 다음과 같이 처리합니다.
+>
+> - **Android**: 문자열 그대로 사용합니다.
+> - **iOS**: `Int`로 변환해 SDK에 전달합니다. 숫자가 아닌 값이 전달되면 기본 설정값이 사용됩니다.
+
 ### 광고 해제
 
 ```js
@@ -121,6 +128,26 @@ Native는 JS의 `window.onNapSspMessage(responseString)` 함수를 호출합니�
   "action": "event",
   "status": "success",
   "data": "[banner] loaded: 104704"
+}
+```
+
+에러 응답 예시:
+
+```json
+{
+  "action": "loadAd",
+  "status": "error",
+  "data": "Unsupported format: unknownFormat"
+}
+```
+
+SDK 광고 로드 실패 이벤트 예시:
+
+```json
+{
+  "action": "event",
+  "status": "success",
+  "data": "[banner] failed: [-1] No fill"
 }
 ```
 

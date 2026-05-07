@@ -124,6 +124,13 @@ Native → JS 응답은 JSON 문자열을 JS string literal로 전달합니다.
 
 직접 `'...'` 문자열 결합만 사용하면 작은따옴표, 개행, 역슬래시 포함 데이터에서 JS syntax error가 날 수 있습니다.
 
+### Debounce
+
+Android와 iOS 모두 0.5초 이내 중복 요청을 무시합니다.
+
+- Android: `postMessage`에서 `System.currentTimeMillis()` 기반으로 처리
+- iOS: `userContentController(_:didReceive:)`에서 `Date().timeIntervalSince(lastActionTime)` 기반으로 처리
+
 ### 즉시 ACK
 
 `loadAd` 요청은 광고 네트워크 응답을 기다리지 않고 `Accepted <format>` ACK를 반환합니다. 이 ACK는 브릿지 수신/파싱/라우팅 성공을 검증하기 위한 값입니다.
@@ -214,6 +221,7 @@ maestro test --platform ios --udid <SIMULATOR_UDID> maestro/ios-bridge-smoke.yam
 - Android exported `IntentBridgeReceiver`
 - Android SDK log level `DEBUG`
 - 테스트용 Google Mobile Ads App ID
+- Pangle AppId는 `bridge/NapSspConfig.PANGLE_APP_ID`로 관리 (운영 앱에서는 실제 ID로 교체)
 - Reward custom params 샘플값
 - Android/iOS HTML 중복 관리
 

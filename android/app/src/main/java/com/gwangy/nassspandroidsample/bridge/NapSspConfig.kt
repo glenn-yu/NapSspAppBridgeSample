@@ -8,7 +8,9 @@ import com.gwangy.nassspandroidsample.BuildConfig
  */
 object NapSspConfig {
     val MEDIA_KEY: String = BuildConfig.NAP_MEDIA_KEY
-    
+
+    const val PANGLE_APP_ID = "8245842"
+
     val AD_UNIT_IDS = mapOf(
         "banner_320x100" to BuildConfig.NAP_ADUNIT_BANNER,
         // 나머지 ID들도 BuildConfig에 추가하여 관리 가능합니다.

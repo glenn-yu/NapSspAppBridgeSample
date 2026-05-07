@@ -76,7 +76,7 @@ object NapSspSdkIntegration {
 
             // Pangle 초기화 (Pangle 사용 시 필수)
             val pAGInitConfig = PAGConfig.Builder()
-                .appId("8245842") // 테스트용 발급 앱 ID (필요 시 수정)
+                .appId(NapSspConfig.PANGLE_APP_ID)
                 .debugLog(true)
                 .supportMultiProcess(false)
                 .build()

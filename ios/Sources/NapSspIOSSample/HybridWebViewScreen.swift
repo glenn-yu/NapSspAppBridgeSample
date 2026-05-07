@@ -38,6 +38,8 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
     var onAdLoaded: ((UIView?, CGFloat) -> Void)?
 
+    private var lastActionTime: Date = .distantPast
+
     private let supportedFormats: Set<String> = [
         "banner",
         "native",
@@ -58,6 +60,11 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        // Android debounce와 동일하게 0.5초 이내 중복 요청 무시
+        let now = Date()
+        guard now.timeIntervalSince(lastActionTime) >= 0.5 else { return }
+        lastActionTime = now
+
         guard let body = message.body as? String,
               let data = body.data(using: .utf8),
               let request = try? JSONDecoder().decode(HybridRequest.self, from: data) else {
@@ -95,7 +102,11 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         DispatchQueue.main.async {
             // 광고 View 생성과 화면 표시는 UIKit 메인 스레드에서 처리해야 합니다.
             // WKScriptMessageHandler 호출 위치와 관계없이 main queue로 고정해 UI race condition을 줄입니다.
-            guard let rootVC = UIApplication.shared.windows.first?.rootViewController else {
+            // UIApplication.shared.windows는 iOS 15+에서 deprecated — UIWindowScene 기반으로 교체
+            guard let rootVC = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow })?.rootViewController else {
                 self.sendResponse(action: "loadAd", status: "error", data: "Root view controller not found")
                 return
             }

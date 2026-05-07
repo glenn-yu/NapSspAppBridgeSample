@@ -66,9 +66,9 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation(platform("androidx.compose:compose-bom:2024.09.02"))
-    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.appcompat:appcompat:1.7.1")
+    implementation(platform("androidx.compose:compose-bom:2026.04.01"))
+    implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -78,7 +78,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
 
     // Mediation
-    implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
+    implementation("io.github.nasmedia-tech:admixer-admanager:1.0.15_delta")
     implementation("io.github.nasmedia-tech:admixer-adfit:1.0.11")
     implementation("io.github.nasmedia-tech:admixer-pangle:1.0.11")
     implementation("com.pangle.global:pag-sdk:8.0.0.4")
