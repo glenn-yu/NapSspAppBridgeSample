@@ -110,6 +110,12 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
                 self.sendResponse(action: "loadAd", status: "error", data: "Root view controller not found")
                 return
             }
+            // loadAd에 대한 즉시 응답입니다.
+            // 이 응답은 "광고가 성공적으로 로드되었다"가 아니라 "Native가 요청을 받았다"는 ACK입니다.
+            // Full-screen 광고는 SDK 호출 직후 화면을 덮을 수 있으므로, SDK 호출 전에 JS 로그로 ACK를 먼저 돌려줍니다.
+            // 실제 성공/실패 이벤트는 SDK callback에서 `event` action으로 별도 전달됩니다.
+            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
+
             var view: UIView? = nil
             var height: CGFloat = 0
             
@@ -132,10 +138,6 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             }
             
             self.onAdLoaded?(view, height)
-            // loadAd에 대한 즉시 응답입니다.
-            // 이 응답은 "광고가 성공적으로 로드되었다"가 아니라 "Native가 요청을 받았다"는 ACK입니다.
-            // 실제 성공/실패 이벤트는 SDK callback에서 `event` action으로 별도 전달됩니다.
-            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
         }
     }
 

@@ -93,6 +93,10 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
                 return
             }
 
+            // ACK 응답 (광고 로드 성공이 아님 — 실제 결과는 event action으로 별도 전달)
+            // Full-screen 광고는 SDK 호출 직후 화면을 덮을 수 있으므로 SDK 호출 전에 먼저 응답합니다.
+            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
+
             var view: UIView? = nil
             var height: CGFloat = 0
 
@@ -109,8 +113,6 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             }
 
             self.onAdLoaded?(view, height)
-            // ACK 응답 (광고 로드 성공이 아님 — 실제 결과는 event action으로 별도 전달)
-            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
         }
     }
 

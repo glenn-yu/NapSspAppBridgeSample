@@ -9,19 +9,22 @@
         .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid #e1e4e8; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         h2 { margin-top: 0; color: #007aff; }
         .section-title { font-size: 14px; color: #8e8e93; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; }
-        button { 
-            display: block; width: 100%; padding: 14px; margin: 8px 0; 
+        button {
+            display: block; width: 100%; padding: 14px; margin: 8px 0;
             background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer;
             font-size: 16px; font-weight: 600;
         }
         button.secondary { background: #8e8e93; }
+        input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #d1d1d6; font-size: 14px; }
+        .input-row { display: flex; gap: 8px; }
+        .input-row button { width: auto; margin: 0; padding: 10px 14px; }
         .log-container { background: #1c1c1e; color: #32d74b; padding: 12px; border-radius: 8px; font-family: Menlo, monospace; font-size: 11px; min-height: 200px; overflow-y: auto; }
         .log-entry { margin-bottom: 4px; border-bottom: 1px solid #38383a; padding-bottom: 2px; }
     </style>
 </head>
 <body>
     <h2>NapSsp iOS Hybrid</h2>
-    
+
     <div class="card">
         <div class="section-title">1. Lifecycle</div>
         <button onclick="callNative('init')">Initialize SDK</button>
@@ -41,16 +44,45 @@
         <button class="secondary" onclick="callNative('loadAd', {format: 'interstitialBanner'})">Show Interstitial Banner (F)</button>
     </div>
 
+    <div class="card">
+        <div class="section-title">4. Custom AdUnit (Advanced)</div>
+        <div class="input-row">
+            <input type="text" id="customId" placeholder="AdUnit ID" inputmode="numeric">
+            <button onclick="loadCustomAd()">Load</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="section-title">5. Cleanup</div>
+        <button class="secondary" onclick="callNative('clearAds')">Clear All Ads & Releases</button>
+    </div>
+
     <div id="log" class="log-container"><div class="log-entry">Waiting for bridge...</div></div>
 
     <script>
         const logDiv = document.getElementById('log');
         let isProcessing = false;
 
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
         function log(msg, color = '#32d74b') {
             const now = new Date().toLocaleTimeString();
-            logDiv.innerHTML += `<div class="log-entry"><span style="color: #8e8e93">[${now}]</span> <span style="color: ${color}">${msg}</span></div>`;
+            logDiv.innerHTML += `<div class="log-entry"><span style="color: #8e8e93">[${now}]</span> <span style="color: ${color}">${escapeHtml(msg)}</span></div>`;
             logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function loadCustomAd() {
+            const id = document.getElementById('customId').value.trim();
+            if (!id) {
+                log('Error: Enter AdUnit ID', '#ff453a');
+                return;
+            }
+            callNative('loadAd', {format: 'banner', adUnitId: id});
         }
 
         function callNative(action, params = {}) {
@@ -59,9 +91,9 @@
             setTimeout(() => { isProcessing = false; }, 500);
 
             const request = JSON.stringify({ action, params });
-            log(`REQ: ${action} ${params.format || ''}`, '#fff');
-            
-            if (window.webkit && window.webkit.messageHandlers.NapSspBridge) {
+            log(`REQ: ${action} ${params.format || ''} ${params.adUnitId || ''}`, '#fff');
+
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.NapSspBridge) {
                 window.webkit.messageHandlers.NapSspBridge.postMessage(request);
             } else {
                 log('Error: Bridge not found', '#ff453a');
@@ -69,16 +101,16 @@
         }
 
         window.onNapSspMessage = function(responseStr) {
-            const res = JSON.parse(responseStr);
-            const statusColor = res.status === 'success' ? '#32d74b' : '#ff453a';
-            log(`${res.action.toUpperCase()} ${res.status.toUpperCase()}: ${JSON.stringify(res.data)}`, statusColor);
+            try {
+                const res = JSON.parse(responseStr);
+                const statusColor = res.status === 'success' ? '#32d74b' : '#ff453a';
+                log(`${res.action.toUpperCase()} ${res.status.toUpperCase()}: ${JSON.stringify(res.data)}`, statusColor);
+            } catch (e) {
+                log('Raw response: ' + responseStr, '#ff9f0a');
+            }
         };
 
         log('Bridge ready. Please Initialize first.');
     </script>
 </body>
-    <div class="card">
-        <div class="section-title">4. Cleanup</div>
-        <button class="secondary" onclick="callNative('clearAds')">Clear All Ads & Releases</button>
-    </div>
 </html>

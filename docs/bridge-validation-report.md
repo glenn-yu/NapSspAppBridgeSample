@@ -393,3 +393,146 @@ Process exited with code 0
 
 - iOS는 6개 포맷 모두 WebView 로그에서 `LOADAD SUCCESS: Accepted <format>` ACK를 확인했습니다.
 - 최근 iOS 로그 확인 결과 `NSInvalidArgumentException`, `SIGABRT`, `Bridge not found`, `Invalid JSON`, `Unsupported format`은 확인되지 않았습니다.
+
+## 10. Safari/WebKit Browser QA 확장
+
+검증 일시: 2026-05-18 KST
+
+메모리 접근 상태:
+
+- OpenClaw memory 검색이 `Copilot token exchange failed: HTTP 403`으로 실패했습니다.
+- 이번 작업의 연결 메모리는 `docs/QA_MEMORY_2026-05-18.md`에 별도로 남겼습니다.
+
+추가/수정 파일:
+
+- `ios/Sources/NapSspIOSSample/index.html`
+- `scripts/browser_webkit_qa.mjs`
+- `docs/QA_MEMORY_2026-05-18.md`
+
+확장한 QA 항목:
+
+1. Safari 단독 브라우저처럼 Native bridge가 없는 환경에서 JS API가 throw 없이 실패 처리되는지 확인
+2. WKWebView `window.webkit.messageHandlers.NapSspBridge.postMessage(...)` 호출 payload가 JSON 문자열인지 확인
+3. Native → JS 응답 파싱 및 SDK 이벤트 파싱 확인
+4. malformed Native 응답이 WebKit JS runtime을 중단시키지 않는지 확인
+5. 샘플 HTML의 `body/html` 닫힘 순서와 `</body>` 이후 잔여 콘텐츠 여부 확인
+6. init/load/clear 및 전체 광고 포맷 버튼이 browser QA 샘플에 남아 있는지 확인
+
+수정한 WebKit 샘플 이슈:
+
+- iOS 샘플 HTML에서 `</body>` 뒤에 Cleanup 카드가 위치하던 구조를 수정했습니다.
+- iOS 샘플 Native 응답 콜백에 JSON parse 방어 로직을 추가했습니다.
+- 로그 렌더링에 HTML escaping을 적용했습니다.
+- iOS 샘플에도 Custom AdUnit 입력을 추가해 Android 샘플과 QA 흐름을 맞췄습니다.
+
+검증 명령:
+
+```bash
+node scripts/browser_webkit_qa.mjs
+```
+
+결과:
+
+```text
+browser-webkit-qa: PASS
+```
+
+## 11. iOS Simulator WKWebView 재검증 및 native crash 보정
+
+검증 일시: 2026-05-18 KST
+
+목적:
+
+- Safari/WebKit 정적 QA 이후 실제 iOS Simulator `WKWebView` 앱에서 기존 Maestro smoke / all-formats 흐름이 유지되는지 재확인했습니다.
+
+환경:
+
+- Simulator: iPhone 17 Pro, iOS 26.4
+- UDID: `F5390915-AD8B-47EC-9C54-4B892FFDF011`
+- App ID: `com.nasmedia.NapSspIOSSample`
+- Java: `/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home`
+- Maestro: `2.5.1`
+
+초기 발견 이슈:
+
+1. `ios-all-formats.yaml`의 native 단계에서 앱이 Home Screen으로 이탈했습니다.
+   - Debug screenshot: `tmp/maestro-debug/ios-all-formats-native-failure.png`
+   - Crash report: `~/Library/Logs/DiagnosticReports/NapSspIOSSample-2026-05-18-054811.ips`
+   - 주요 crash frame: `AMMNativeAdViewContainer.failProcess()`
+   - crash 시점 ad unit register 값: `101626`
+2. reward/full-screen 광고는 SDK 호출 직후 광고 화면이 WebView를 덮어 `LOADAD SUCCESS Accepted ...` ACK 로그를 Maestro가 찾지 못할 수 있었습니다.
+   - Debug screenshot: `tmp/maestro-debug/ios-remaining-reward-failure.png`
+
+보정 내용:
+
+- `ios/Sources/NapSspIOSSample/HybridWebViewScreen.swift`
+  - `loadAd` ACK(`Accepted <format>`)를 SDK 호출 전에 JS로 먼저 반환하도록 순서를 조정했습니다.
+  - Full-screen 광고가 즉시 화면을 덮어도 WebView 로그 기반 Maestro 검증이 안정적으로 동작하도록 했습니다.
+- `docs/integration-package/ios/HybridWebViewScreen.swift`
+  - 배포용 integration package 샘플에도 같은 ACK 순서 보정을 반영했습니다.
+- `ios/Sources/NapSspIOSSample/NapSspConfig.swift`
+  - iOS 샘플 기본 media/ad unit 값을 Android 샘플 및 integration package 기본값과 맞췄습니다.
+  - `mediaKey`: `10771`
+  - `native`: `104588`
+  - 그 외 banner/video/reward/interstitial 기본값도 integration package 값과 정렬했습니다.
+
+검증 명령 및 결과:
+
+```bash
+node scripts/browser_webkit_qa.mjs
+# browser-webkit-qa: PASS
+```
+
+```bash
+cd ios
+xcodebuild \
+  -project NapSspIOSSample.xcodeproj \
+  -scheme NapSspIOSSample \
+  -destination 'platform=iOS Simulator,id=F5390915-AD8B-47EC-9C54-4B892FFDF011' \
+  -derivedDataPath .derivedData \
+  -clonedSourcePackagesDirPath .spm-cache \
+  -packageAuthorizationProvider netrc \
+  build
+# ** BUILD SUCCEEDED **
+```
+
+```bash
+xcrun simctl install F5390915-AD8B-47EC-9C54-4B892FFDF011 ios/.derivedData/Build/Products/Debug-iphonesimulator/NapSspIOSSample.app
+```
+
+```bash
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+maestro test --platform ios --udid F5390915-AD8B-47EC-9C54-4B892FFDF011 maestro/ios-all-formats.yaml
+```
+
+결과:
+
+```text
+Flow ios-all-formats
+Load Banner -> LOADAD SUCCESS Accepted banner ... COMPLETED
+Load Native Ad -> LOADAD SUCCESS Accepted native ... COMPLETED
+Load Outstream Video -> LOADAD SUCCESS Accepted video ... COMPLETED
+Show Reward Video -> LOADAD SUCCESS Accepted rewardVideo ... COMPLETED
+Show Interstitial Video -> LOADAD SUCCESS Accepted interstitialVideo ... COMPLETED
+Show Interstitial Banner -> LOADAD SUCCESS Accepted interstitialBanner ... COMPLETED
+Process exited with code 0
+```
+
+```bash
+maestro test --platform ios --udid F5390915-AD8B-47EC-9C54-4B892FFDF011 maestro/ios-bridge-smoke.yaml
+```
+
+결과:
+
+```text
+Flow ios-bridge-smoke
+Initialize SDK -> INIT SUCCESS ... COMPLETED
+Load Banner -> LOADAD SUCCESS Accepted banner ... COMPLETED
+Clear All Ads & Releases -> CLEARADS SUCCESS ... COMPLETED
+Process exited with code 0
+```
+
+추가 확인:
+
+- 보정 후 `ios-all-formats` / `ios-bridge-smoke` 재실행 동안 신규 `NapSspIOSSample-*.ips` crash report는 생성되지 않았습니다.
+- 마지막 crash report는 보정 전 native 실패 시점의 `2026-05-18 05:53:24 +0900` 파일입니다.

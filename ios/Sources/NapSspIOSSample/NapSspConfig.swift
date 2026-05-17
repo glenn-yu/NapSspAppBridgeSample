@@ -1,18 +1,18 @@
 import Foundation
 
 enum NapSspConfig {
-    private static let defaultMediaKey = "10347"
+    private static let defaultMediaKey = "10771"
     private static let defaultAdUnitIDs: [String: String] = [
-        "banner_320x100": "104707",
-        "interstitial_320x480_f": "103868",
-        "interstitial_320x480": "104708",
-        "banner_320x50": "103790",
-        "instream_video": "104711",
-        "outstream_video": "104709",
-        "native": "101626",
-        "banner_300x250_f": "103869",
-        "reward_video": "104710",
-        "banner_300x250": "101624"
+        "banner_320x100": "104704",
+        "interstitial_320x480_f": "104703",
+        "interstitial_320x480": "104702",
+        "banner_320x50": "104701",
+        "instream_video": "104591",
+        "outstream_video": "104589",
+        "native": "104588",
+        "banner_300x250_f": "104703",
+        "reward_video": "103722",
+        "banner_300x250": "104704"
     ]
 
     static var mediaKey: String {
