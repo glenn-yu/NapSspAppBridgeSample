@@ -2,13 +2,35 @@
 .gradle/
 **/build/
 local.properties
+*.apk
+*.aar
+*.ap_
+*.keystore
 
 # Xcode / Swift Package Manager
 DerivedData/
 .swiftpm/
 **/.build/
 Package.resolved
+*.xcuserstate
 xcuserdata/
+*.xcworkspace
+*.xcodeproj
+
+# IDEs & Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
 
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Local logs & Temporary files
+*_log.txt
+*_error.txt
+*.log
+tmp/

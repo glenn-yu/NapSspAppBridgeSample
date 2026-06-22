@@ -1,142 +1,201 @@
 # NapSsp App Bridge Sample
 
-The shortest path to get the sample app running is below. If you are a beginner, follow the Quickstart first.
+[English](#english) | [한국어](#한국어)
 
 ---
 
-<!-- Quickstart (inlined from docs/quickstart.md) -->
+## English
 
-# Quickstart — NapSsp AppBridge Sample
+This is an Android/iOS sample application demonstrating how to integrate the NapSsp (KT Nasmedia AdMixer SSP) SDK v2.0.0 using both WebView hybrid bridge and native methods.
 
-The shortest path to “app opens, keys are configured, ads load.”
-
-## 0) What you need
+### 0) Prerequisites
 - Git
-- Android: JDK 17+ (JDK 21 recommended) + Android Studio or just the Gradle wrapper
+- Android: JDK 17+ (JDK 21 recommended) + Android Studio or Gradle wrapper
 - iOS: macOS + Xcode 15.3+
-- Optional: real `MEDIA_KEY` / `AD_UNIT_ID` values
+- Optional: Real `MEDIA_KEY` and `AD_UNIT_ID` values for validation
 
-## 1) Clone
+### 1) Clone the Repository
+* **macOS / Linux**:
+  ```bash
+  git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
+  cd NapSspAppBridgeSample
+  ```
+* **Windows PowerShell**:
+  ```powershell
+  git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
+  cd NapSspAppBridgeSample
+  ```
 
-### macOS / Linux
-```bash
-git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
-cd NapSspAppBridgeSample
-```
+### 2) Run Android
+* **macOS / Linux**:
+  ```bash
+  cd android
+  ./gradlew assembleDebug
+  ./gradlew assembleDebug -PvendorSdkEnabled=true   # Optional vendor SDK path
+  ```
+* **Windows PowerShell**:
+  ```powershell
+  cd android
+  .\gradlew.bat assembleDebug
+  .\gradlew.bat assembleDebug -PvendorSdkEnabled=true   # Optional vendor SDK path
+  ```
 
-### Windows PowerShell
-```powershell
-git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
-cd NapSspAppBridgeSample
-```
-
-## 2) Run Android
-
-### macOS / Linux
-```bash
-cd android
-./gradlew assembleDebug
-./gradlew assembleDebug -PvendorSdkEnabled=true   # optional vendor path
-```
-
-### Windows PowerShell
-```powershell
-cd android
-.\gradlew.bat assembleDebug
-.\gradlew.bat assembleDebug -PvendorSdkEnabled=true   # optional vendor path
-```
-
-After the app launches:
+Once the app launches:
 1. Tap **Configure Keys**.
 2. Keep the sample defaults or paste your real `MEDIA_KEY` / ad unit ID values.
 3. Try **Banner** first, then **Native**.
-4. Use **HybridWebView** only after the basic flow works.
+4. Try **HybridWebView** after verifying the basic flow.
 
-## 3) Run iOS (macOS only)
-
+### 3) Run iOS (macOS only)
 ```bash
 cd ios
-xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
+DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer" xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
 ```
-
-If you prefer Xcode:
+If using Xcode:
 ```bash
 open ios
 ```
-
-After the app launches:
+Once the app launches:
 1. Tap **Configure Keys**.
 2. Verify the sample defaults or enter real values.
 3. Try **Banner**, **Native**, **Rewarded**, then **Interstitial**.
 
-## 4) Troubleshooting
-- `Unable to locate a Java Runtime` → install JDK 17 or higher (such as Android Studio's bundled JDK) and set `JAVA_HOME`.
-- `./gradlew: not found` or a missing wrapper error → run commands from `android/`, not repo root.
-- `xcodebuild: command not found` → install Xcode and accept the license.
-- Ads do not load → confirm the `MEDIA_KEY` / `AD_UNIT_ID` values and that the vendor SDK path is enabled when needed.
-- Windows cannot build iOS → use a Mac for the iOS target.
+### 4) Project Structure
+```
+android/     - Android Sample App (Kotlin + Compose)
+ios/         - iOS Sample App (SwiftUI + local xcframeworks)
+docs/        - Quickstart, release notes, and integration guides
+examples/    - Format-specific code snippets
+```
 
-## 5) Sanity check order
-- Demo mode / sample defaults
-- Banner
-- Native
-- Rewarded / Interstitial
-- HybridWebView bridge
+### 5) Guide Documents Summary
+
+| File | Description |
+|---|---|
+| `docs/quickstart.md` | Single-page quickstart for beginners |
+| `docs/guide.md` | Integration flow and detailed examples |
+| `docs/hybrid-webview.md` | WebView ↔ Native bridge JSON specifications |
+| `docs/public-hybrid-bridge-guide.md` | Public bridge integration guide for publishers |
+| `docs/internal-bridge-developer-guide.md` | Bridge implementation, validation, and ops guide |
+| `docs/bridge-validation-report.md` | Build and Maestro bridge validation reports |
+| `docs/ios-xcframeworks.md` | iOS xcframework management & Git LFS summary |
+| `docs/ios-vendor-lfs-migration-plan.md` | Migration plan for `ios/Vendor/` Git LFS |
+| `docs/release-notes-draft.md` | Draft notes for the upcoming release |
+| `docs/nap-ssp-android-sdk-native.md` | Android official Native SDK integration guide |
+| `docs/nap-ssp-ios-sdk-native.md` | iOS official Native SDK integration guide |
+
+### 6) Key Highlights
+* **SDK Initialization**: 
+  - Android: `AdMixer.getInstance().initialize(...)` (no need to call `registerAdapter()` in v2)
+  - iOS: `AMMediation.shared.initialize(...)`
+* **Format Calls**: Banner, Native, Rewarded, Interstitial, and Video.
+* **Event Handlers**: Forwards `loaded`, `displayed`, `clicked`, `rewarded`, and `closed` callbacks to the web layer or UI.
+
+### 7) Troubleshooting
+* `Unable to locate a Java Runtime` ➡️ Install JDK 17+ and set the `JAVA_HOME` environment variable.
+* `./gradlew: not found` ➡️ Run the command inside the `android/` directory.
+* `xcodebuild: command not found` ➡️ Install Xcode and accept the Xcode license.
+* **Ads do not load** ➡️ Double-check your `MEDIA_KEY` and `AD_UNIT_ID` values. Make sure the vendor path is active if required.
+
+### 8) Contact & Support
+- Email: nap_mx@nasmedia.co.kr
+- Official Guide: [https://napmx.github.io](https://napmx.github.io)
 
 ---
 
-NapSsp(KT나스미디어 AdMixer SSP) SDK v2.0.0을 WebView 하이브리드 방식과 네이티브 방식으로 연동하는 Android/iOS 샘플 앱입니다.
+## 한국어
 
-## 구조
+이 샘플 앱은 WebView 하이브리드 브릿지 및 네이티브 연동 방식으로 NapSsp (KT나스미디어 AdMixer SSP) SDK v2.0.0을 연동하는 Android 및 iOS 데모 프로젝트입니다.
 
+### 0) 사전 준비사항
+- Git
+- Android: JDK 17+ (JDK 21 권장) + Android Studio 또는 Gradle 래퍼
+- iOS: macOS + Xcode 15.3+
+- 선택사항: 실제 검증을 위한 `MEDIA_KEY` 및 `AD_UNIT_ID` 발급값
+
+### 1) 저장소 클론
+* **macOS / Linux**:
+  ```bash
+  git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
+  cd NapSspAppBridgeSample
+  ```
+* **Windows PowerShell**:
+  ```powershell
+  git clone https://github.com/glenn-yu/NapSspAppBridgeSample.git
+  cd NapSspAppBridgeSample
+  ```
+
+### 2) Android 실행
+* **macOS / Linux**:
+  ```bash
+  cd android
+  ./gradlew assembleDebug
+  ./gradlew assembleDebug -PvendorSdkEnabled=true   # 벤더 SDK를 포함하는 빌드 옵션
+  ```
+* **Windows PowerShell**:
+  ```powershell
+  cd android
+  .\gradlew.bat assembleDebug
+  .\gradlew.bat assembleDebug -PvendorSdkEnabled=true   # 벤더 SDK를 포함하는 빌드 옵션
+  ```
+
+앱 실행 후 검증 방법:
+1. **Configure Keys** 버튼을 누릅니다.
+2. 기본값을 유지하거나 발급받은 실제 `MEDIA_KEY` 및 ad unit ID를 입력합니다.
+3. **Banner** 광고를 먼저 테스트한 뒤 **Native** 광고를 테스트합니다.
+4. 기본 연동이 정상 작동하면 **HybridWebView**를 테스트합니다.
+
+### 3) iOS 실행 (macOS 전용)
+```bash
+cd ios
+DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer" xcodebuild -scheme NapSspIOSSample -destination 'generic/platform=iOS Simulator' build
+```
+Xcode로 프로젝트를 직접 열 경우:
+```bash
+open ios
+```
+앱 실행 후 검증 방법:
+1. **Configure Keys** 버튼을 누릅니다.
+2. 기본 샘플 키 값을 확인하거나 실제 발급받은 값을 입력합니다.
+3. **Banner**, **Native**, **Rewarded**, **Interstitial** 순서로 확인합니다.
+
+### 4) 프로젝트 구조
 ```
 android/     - Android 샘플 앱 (Kotlin + Compose)
-ios/         - iOS 샘플 앱 (SwiftUI + vendored xcframeworks)
-docs/        - 빠른 시작, LFS 계획, 릴리즈 노트, 상세 가이드
-examples/    - 포맷별 코드 예시
+ios/         - iOS 샘플 앱 (SwiftUI + 로컬 xcframeworks)
+docs/        - 빠른 시작, 릴리즈 노트, 연동 가이드 문서 등
+examples/    - 광고 포맷별 소스 코드 예시
 ```
 
-## 빠른 시작
+### 5) 문서 요약
 
-- 초보자는 `docs/quickstart.md`부터 보세요.
-- Android는 `android/`에서 `./gradlew assembleDebug`를 실행합니다.
-- iOS는 macOS에서 `ios/` 폴더를 열고 `xcodebuild` 또는 Xcode로 빌드합니다.
-- 샘플 화면에는 `Use vendored / Use remote SPM` 토글이 있고, 현재 빌드가 어떤 소스를 쓰는지 표시합니다.
-- `docs/ios-xcframeworks.md`에 xcframework 관리 요약을 정리해 두었습니다.
-- 벤더 SDK가 필요한 Android 경로는 `-PvendorSdkEnabled=true` 또는 `NAPSSP_VENDOR_SDK_ENABLED=true`로 켭니다.
-
-## 문서 요약
-
-| 파일 | 내용 |
+| 파일명 | 내용 |
 |---|---|
-| `docs/quickstart.md` | 초보자용 한 화면 빠른 시작 |
-| `docs/guide.md` | 전체 흐름과 상세 예시 |
-| `docs/hybrid-webview.md` | WebView ↔ Native 브릿지 규격 |
-| `docs/public-hybrid-bridge-guide.md` | 외부 공개용 WebView ↔ Native 브릿지 연동 가이드 |
-| `docs/internal-bridge-developer-guide.md` | 내부 개발자용 브릿지 구현/검증/운영 가이드 |
-| `docs/bridge-validation-report.md` | Android/iOS 빌드 및 Maestro 브릿지 검증 결과 |
-| `docs/ios-xcframeworks.md` | iOS xcframework 관리 / Git LFS / artifact 호스팅 요약 |
-| `docs/ios-vendor-lfs-migration-plan.md` | `ios/Vendor/` Git LFS 이전 계획 |
-| `docs/release-notes-draft.md` | 다음 릴리즈용 초안 |
-| `docs/nap-ssp-android-sdk-native.md` | Android 공식 연동 가이드 |
-| `docs/nap-ssp-ios-sdk-native.md` | iOS 공식 연동 가이드 |
+| `docs/quickstart.md` | 초보자를 위한 빠른 시작 가이드 |
+| `docs/guide.md` | 상세 통합 가이드 및 연동 예시 |
+| `docs/hybrid-webview.md` | WebView ↔ Native 브릿지 JSON 명세 |
+| `docs/public-hybrid-bridge-guide.md` | 퍼블리셔용 WebView ↔ Native 브릿지 공개 규격 가이드 |
+| `docs/internal-bridge-developer-guide.md` | 내부 개발자용 브릿지 구현, 검증, 운영 문서 |
+| `docs/bridge-validation-report.md` | Android/iOS 빌드 및 Maestro 시나리오 검증 결과 |
+| `docs/ios-xcframeworks.md` | iOS xcframework 관리 및 Git LFS 요약 |
+| `docs/ios-vendor-lfs-migration-plan.md` | `ios/Vendor/` LFS 마이그레이션 계획 |
+| `docs/release-notes-draft.md` | 차기 릴리즈 노트 초안 |
+| `docs/nap-ssp-android-sdk-native.md` | Android 공식 Native SDK 연동 가이드 |
+| `docs/nap-ssp-ios-sdk-native.md` | iOS 공식 Native SDK 연동 가이드 |
 
-## 핵심 포인트
+### 6) 핵심 기술 요약
+* **SDK 초기화**: 
+  - Android: `AdMixer.getInstance().initialize(...)` (v2 SDK부터는 registerAdapter 호출이 필요 없음)
+  - iOS: `AMMediation.shared.initialize(...)`
+* **지원 포맷**: 배너, 네이티브, 리워드 동영상, 전면 배너, 아웃스트림 비디오 등
+* **이벤트 처리**: `loaded`, `displayed`, `clicked`, `rewarded`, `closed` 등의 생명주기 이벤트를 웹뷰 브릿지 혹은 네이티브 UI로 정확하게 콜백.
 
-- SDK 초기화: `AdMixer.getInstance().initialize(...)` (Android v2부터는 registerAdapter() 호출 불필요) / iOS `AMMediation.shared.initialize(...)`
-- 포맷별 호출: banner / native / rewarded / interstitial / video
-- 이벤트 수신: loaded / displayed / clicked / rewarded / closed 콜백을 웹 또는 UI로 전달
-- iOS 샘플은 현재 `ios/Vendor/` 아래의 로컬 xcframework를 사용해 재현 빌드를 우선합니다.
+### 7) 문제 해결 (Troubleshooting)
+* `Unable to locate a Java Runtime` ➡️ JDK 17 이상을 설치하고 `JAVA_HOME` 환경 변수를 올바르게 설정하세요.
+* `./gradlew: not found` ➡️ 반드시 `android/` 디렉토리 내부에서 래퍼 스크립트를 실행해 주세요.
+* `xcodebuild: command not found` ➡️ Xcode를 설치하고 라이선스 동의를 완료하세요.
+* **광고가 노출되지 않음** ➡️ `MEDIA_KEY`와 `AD_UNIT_ID` 설정값 및 벤더 SDK 설정 옵션이 켜져 있는지 확인하세요.
 
-## 설정 방법
-
-하드코딩 수정 없이 앱에서 바로 테스트할 수 있습니다。
-
-- Android: 앱 실행 후 `Configure Keys` 버튼에서 MEDIA_KEY / Ad Unit ID 입력
-- iOS: 우상단 `Configure Keys` 버튼에서 MEDIA_KEY / Ad Unit ID 입력
-- 입력하지 않으면 샘플 기본값으로 동작합니다。
-
-## 문의
-
+### 8) 문의 및 공식 지원
 - 이메일: nap_mx@nasmedia.co.kr
 - 공식 가이드: [https://napmx.github.io](https://napmx.github.io)
