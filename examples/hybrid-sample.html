@@ -53,11 +53,19 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
+        // 요청마다 고유한 requestId를 발급합니다.
+        // Native는 이 값을 응답과 이후 SDK 이벤트에 그대로 echo하므로, 어떤 요청의 결과인지 매핑할 수 있습니다.
+        function makeRequestId() {
+            if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+            return 'req-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
+        }
+
         // JS -> Native Request
         function callNative(action, params = {}) {
-            const request = JSON.stringify({ action, params });
-            log(`<strong>Request:</strong> ${action} ${params.format || ''}`);
-            
+            const requestId = makeRequestId();
+            const request = JSON.stringify({ action, requestId, params });
+            log(`<strong>Request:</strong> ${action} ${params.format || ''} <small>(id: ${requestId})</small>`);
+
             try {
                 if (window.NapSspBridge && window.NapSspBridge.postMessage) {
                     // Android (JavascriptInterface)
@@ -78,7 +86,9 @@
             try {
                 const response = JSON.parse(responseStr);
                 const color = response.status === 'success' ? '#34a853' : '#ea4335';
-                log(`<span style="color: ${color}"><strong>Response:</strong> ${response.status}</span><br/>` + 
+                // busy: throttle 창(500ms) 안에 들어와 거절된 요청. requestId로 어떤 요청이 거절됐는지 알 수 있습니다.
+                const idSuffix = response.requestId ? ` (id: ${response.requestId})` : '';
+                log(`<span style="color: ${color}"><strong>Response:</strong> ${response.status}${idSuffix}</span><br/>` +
                     `<small>${JSON.stringify(response.data || response.message)}</small>`);
             } catch (e) {
                 log('Raw response: ' + responseStr);

@@ -56,6 +56,13 @@ class NapSspHybridBridge(
 ) {
     private var lastActionTime = 0L
 
+    // 가장 최근 loadAd 요청의 requestId입니다.
+    // loadAd ACK 이후 비동기로 도착하는 SDK 이벤트(loaded/displayed/clicked 등)를
+    // 어느 요청에서 비롯됐는지 JS가 매핑할 수 있도록, 이벤트 응답에 이 값을 echo합니다.
+    // 한 번에 하나의 광고만 활성(isRequestingAd 락) 상태라는 전제에서 동작합니다.
+    var activeRequestId: String? = null
+        private set
+
     private val supportedFormats = setOf(
         "banner",
         "native",
@@ -67,21 +74,37 @@ class NapSspHybridBridge(
 
     @JavascriptInterface
     fun postMessage(jsonString: String) {
+        // requestId까지 echo하려면 throttle 차단 시점에도 requestId를 알아야 하므로,
+        // debounce 체크보다 먼저 JSON을 파싱합니다. 파싱 자체가 실패하면 requestId 없이 error를 돌려줍니다.
+        val request = try {
+            JSONObject(jsonString)
+        } catch (e: Exception) {
+            sendResponse("error", "error", e.message ?: "Invalid JSON")
+            return
+        }
+
+        // requestId는 JS가 요청마다 발급하는 상관관계 ID입니다(옵션).
+        // 모든 응답과 이후 SDK 이벤트에 그대로 echo해 요청-결과를 짝지을 수 있게 합니다.
+        val requestId = request.optString("requestId").takeIf { it.isNotEmpty() }
+
         val currentTime = System.currentTimeMillis()
         // 버튼 연타나 JS 중복 호출로 같은 요청이 너무 빠르게 들어오면 SDK 상태가 꼬일 수 있습니다.
-        // 샘플 HTML의 debounce 기준과 맞춰 0.5초 안에 들어온 중복 요청은 무시합니다.
-        if (currentTime - lastActionTime < 500) return
+        // 샘플 HTML의 debounce 기준과 맞춰 0.5초 안에 들어온 중복 요청은 처리하지 않고,
+        // busy 상태로 즉시 응답해 JS가 거절된 요청과 재시도 시점을 알 수 있게 합니다.
+        if (currentTime - lastActionTime < 500) {
+            sendResponse("busy", "busy", "Request ignored within 500ms throttle window", requestId)
+            return
+        }
         lastActionTime = currentTime
 
         try {
-            val request = JSONObject(jsonString)
             val action = request.optString("action")
             val params = request.optJSONObject("params") ?: JSONObject()
 
             when (action) {
                 "init" -> {
                     NapSspSdkIntegration.initialize(webView.context)
-                    sendResponse("init", "success", "SDK Initialized")
+                    sendResponse("init", "success", "SDK Initialized", requestId)
                 }
                 "loadAd" -> {
                     val format = params.optString("format")
@@ -89,34 +112,40 @@ class NapSspHybridBridge(
                     // 브릿지가 모르는 광고 포맷은 SDK까지 넘기지 않고 여기서 즉시 차단합니다.
                     // 이렇게 해야 JS/Native 양쪽 contract가 어긋났을 때 원인을 빠르게 찾을 수 있습니다.
                     if (format !in supportedFormats) {
-                        sendResponse("loadAd", "error", "Unsupported format: $format")
+                        sendResponse("loadAd", "error", "Unsupported format: $format", requestId)
                         return
                     }
+                    // 이후 비동기로 도착하는 SDK 이벤트를 이 요청과 매핑하기 위해 requestId를 보관합니다.
+                    activeRequestId = requestId
                     // WebView의 JavaScriptInterface 메서드는 UI 스레드가 아닐 수 있습니다.
                     // 광고 View 생성과 Compose 상태 변경은 UI 스레드에서 처리해야 하므로 webView.post로 넘깁니다.
                     webView.post { onAdRequest(format, adUnitId) }
                     // ACK: 요청 접수 성공을 의미합니다. 실제 광고 로드 성공은 SDK 이벤트로 별도 전달됩니다.
-                    sendResponse("loadAd", "success", "Accepted $format")
+                    sendResponse("loadAd", "success", "Accepted $format", requestId)
                 }
                 "clearAds" -> {
                     webView.post {
                         onAdRequest("clear", null)
                         NapSspSdkIntegration.clearAllAds()
-                        sendResponse("clearAds", "success", "All ads cleared")
+                        // 광고를 모두 정리했으므로 이후 지연 이벤트를 매핑할 활성 요청도 비웁니다.
+                        activeRequestId = null
+                        sendResponse("clearAds", "success", "All ads cleared", requestId)
                     }
                 }
-                else -> sendResponse(action, "error", "Unknown action")
+                else -> sendResponse(action, "error", "Unknown action", requestId)
             }
         } catch (e: Exception) {
-            sendResponse("error", "error", e.message ?: "Invalid JSON")
+            sendResponse("error", "error", e.message ?: "Invalid JSON", requestId)
         }
     }
 
-    fun sendResponse(action: String, status: String, data: Any) {
+    fun sendResponse(action: String, status: String, data: Any, requestId: String? = null) {
         val response = JSONObject().apply {
             put("action", action)
             put("status", status)
             put("data", data)
+            // requestId는 JS가 보냈을 때만 echo합니다(없으면 필드 자체를 생략).
+            if (requestId != null) put("requestId", requestId)
         }
         // response.toString()을 JavaScript 코드에 그대로 끼워 넣으면 따옴표, 줄바꿈, 역슬래시 같은
         // 특수문자 때문에 JS 문법 오류나 의도치 않은 문자열 종료가 발생할 수 있습니다.
@@ -222,7 +251,8 @@ fun HybridWebViewScreen(
                 // loadAd ACK 이후 실제 광고 상태 변화는 여기서 JS로 전달됩니다.
                 // 예: loaded, displayed, clicked, failed 등 SDK callback 기반 이벤트.
                 NapSspSdkIntegration.onAdEventCallback = { event, format, detail ->
-                    bridge.sendResponse("event", "success", "[$format] $event: $detail")
+                    // 이벤트는 가장 최근 loadAd 요청에서 비롯되므로 그 requestId를 함께 echo합니다.
+                    bridge.sendResponse("event", "success", "[$format] $event: $detail", bridge.activeRequestId)
                 }
 
                 webView.apply {

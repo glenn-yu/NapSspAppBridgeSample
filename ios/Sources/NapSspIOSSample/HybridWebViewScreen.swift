@@ -12,6 +12,8 @@ import AdMixerMediation
 /// `params`에는 광고 포맷(format), 광고 유닛 ID(adUnitId) 같은 부가 정보를 담습니다.
 struct HybridRequest: Codable {
     let action: String
+    /// JS가 요청마다 발급하는 상관관계 ID입니다(옵션). 응답과 이후 SDK 이벤트에 그대로 echo됩니다.
+    let requestId: String?
     let params: [String: String]?
 }
 
@@ -24,6 +26,8 @@ struct HybridResponse: Codable {
     let action: String
     let status: String
     let data: String // JS에서 JSON.parse를 일관되게 쓸 수 있도록 문자열로 전달하거나 구조화된 데이터를 담습니다.
+    /// 요청에 requestId가 있었을 때만 채워져 JS가 응답을 원래 요청과 짝지을 수 있게 합니다.
+    let requestId: String?
 }
 
 /// WKWebView와 iOS Native 광고 SDK 사이를 연결하는 브릿지입니다.
@@ -40,6 +44,11 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
 
     private var lastActionTime: Date = .distantPast
 
+    // 가장 최근 loadAd 요청의 requestId입니다.
+    // loadAd ACK 이후 비동기로 도착하는 SDK 이벤트(loaded/displayed/clicked 등)를
+    // 어느 요청에서 비롯됐는지 JS가 매핑할 수 있도록, 이벤트 응답에 이 값을 echo합니다.
+    private var activeRequestId: String?
+
     private let supportedFormats: Set<String> = [
         "banner",
         "native",
@@ -55,16 +64,14 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         // loadAd ACK 이후 실제 광고 상태 변화(loaded/displayed/clicked/failed 등)는
         // 이 callback을 통해 JS의 `event` action으로 전달됩니다.
         NapSspSdkIntegration.shared.onAdEventCallback = { [weak self] event, format, detail in
-            self?.sendResponse(action: "event", status: "success", data: "[\(format)] \(event): \(detail)")
+            // 이벤트는 가장 최근 loadAd 요청에서 비롯되므로 그 requestId를 함께 echo합니다.
+            self?.sendResponse(action: "event", status: "success", data: "[\(format)] \(event): \(detail)", requestId: self?.activeRequestId)
         }
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        // Android debounce와 동일하게 0.5초 이내 중복 요청 무시
-        let now = Date()
-        guard now.timeIntervalSince(lastActionTime) >= 0.5 else { return }
-        lastActionTime = now
-
+        // requestId까지 echo하려면 throttle 차단 시점에도 requestId를 알아야 하므로,
+        // debounce 체크보다 먼저 JSON을 디코드합니다. 디코드 자체가 실패하면 requestId 없이 error를 돌려줍니다.
         guard let body = message.body as? String,
               let data = body.data(using: .utf8),
               let request = try? JSONDecoder().decode(HybridRequest.self, from: data) else {
@@ -72,29 +79,43 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
             return
         }
 
+        let requestId = request.requestId
+
+        // Android debounce와 동일하게 0.5초 이내 중복 요청은 처리하지 않고, busy 상태로 즉시 응답합니다.
+        let now = Date()
+        guard now.timeIntervalSince(lastActionTime) >= 0.5 else {
+            sendResponse(action: "busy", status: "busy", data: "Request ignored within 500ms throttle window", requestId: requestId)
+            return
+        }
+        lastActionTime = now
+
         switch request.action {
         case "init":
             NapSspSdkIntegration.initializeSdk()
-            sendResponse(action: "init", status: "success", data: "SDK Initialized")
+            sendResponse(action: "init", status: "success", data: "SDK Initialized", requestId: requestId)
         case "loadAd":
             guard let format = request.params?["format"], supportedFormats.contains(format) else {
-                sendResponse(action: "loadAd", status: "error", data: "Unsupported format: \(request.params?["format"] ?? "")")
+                sendResponse(action: "loadAd", status: "error", data: "Unsupported format: \(request.params?["format"] ?? "")", requestId: requestId)
                 return
             }
             let adUnitId = request.params?["adUnitId"]
-            handleLoadAd(format: format, adUnitId: adUnitId)
+            // 이후 비동기로 도착하는 SDK 이벤트를 이 요청과 매핑하기 위해 requestId를 보관합니다.
+            activeRequestId = requestId
+            handleLoadAd(format: format, adUnitId: adUnitId, requestId: requestId)
         case "clearAds":
             DispatchQueue.main.async {
                 self.onAdLoaded?(nil, 0)
                 NapSspSdkIntegration.clearAllAds()
-                self.sendResponse(action: "clearAds", status: "success", data: "All ads cleared")
+                // 광고를 모두 정리했으므로 이후 지연 이벤트를 매핑할 활성 요청도 비웁니다.
+                self.activeRequestId = nil
+                self.sendResponse(action: "clearAds", status: "success", data: "All ads cleared", requestId: requestId)
             }
         default:
-            sendResponse(action: request.action, status: "error", data: "Unknown action")
+            sendResponse(action: request.action, status: "error", data: "Unknown action", requestId: requestId)
         }
     }
 
-    private func handleLoadAd(format: String, adUnitId: String? = nil) {
+    private func handleLoadAd(format: String, adUnitId: String? = nil, requestId: String? = nil) {
         // JS에서는 문자열로 adUnitId가 들어오므로 SDK가 요구하는 Int 형태로 변환합니다.
         // 값이 비어 있거나 숫자가 아니면 nil로 두고 SDK 기본 설정을 사용합니다.
         let customId = adUnitId.flatMap { Int($0) }
@@ -107,14 +128,14 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
                 .compactMap({ $0 as? UIWindowScene })
                 .flatMap({ $0.windows })
                 .first(where: { $0.isKeyWindow })?.rootViewController else {
-                self.sendResponse(action: "loadAd", status: "error", data: "Root view controller not found")
+                self.sendResponse(action: "loadAd", status: "error", data: "Root view controller not found", requestId: requestId)
                 return
             }
             // loadAd에 대한 즉시 응답입니다.
             // 이 응답은 "광고가 성공적으로 로드되었다"가 아니라 "Native가 요청을 받았다"는 ACK입니다.
             // Full-screen 광고는 SDK 호출 직후 화면을 덮을 수 있으므로, SDK 호출 전에 JS 로그로 ACK를 먼저 돌려줍니다.
             // 실제 성공/실패 이벤트는 SDK callback에서 `event` action으로 별도 전달됩니다.
-            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)")
+            self.sendResponse(action: "loadAd", status: "success", data: "Accepted \(format)", requestId: requestId)
 
             var view: UIView? = nil
             var height: CGFloat = 0
@@ -141,13 +162,17 @@ final class NapSspHybridBridge: NSObject, WKScriptMessageHandler {
         }
     }
 
-    private func sendResponse(action: String, status: String, data: String) {
-        let responseDict: [String: Any] = [
+    private func sendResponse(action: String, status: String, data: String, requestId: String? = nil) {
+        var responseDict: [String: Any] = [
             "action": action,
             "status": status,
             "data": data
         ]
-        
+        // requestId는 JS가 보냈을 때만 echo합니다(없으면 필드 자체를 생략).
+        if let requestId = requestId {
+            responseDict["requestId"] = requestId
+        }
+
         // JSON 문자열을 JavaScript 코드에 직접 끼워 넣으면 따옴표, 줄바꿈, 역슬래시 같은
         // 특수문자로 인해 JS 문법 오류가 발생할 수 있습니다.
         // 그래서 한 번 response JSON 문자열을 만들고, 다시 JS 문자열 리터럴로 안전하게 escape합니다.
