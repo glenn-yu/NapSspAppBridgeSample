@@ -1,7 +1,7 @@
 # nap ssp Android SDK - Native 연동 가이드
 
-> **출처**: [nasmob.atlassian.net](https://nasmob.atlassian.net/wiki/spaces/ASIG/pages/1888747571/Android+SDK+-+Native)  
-> **문의**: nap_adx@nasmedia.co.kr
+> **출처**: [napmx.github.io](https://napmx.github.io/#/android/)  
+> **문의**: nap_mx@nasmedia.co.kr
 
 ---
 
@@ -70,7 +70,7 @@
 - Google App ID
 - Pangle App ID
 
-→ 발급 문의: nap_adx@nasmedia.co.kr
+→ 발급 문의: nap_mx@nasmedia.co.kr
 
 ---
 
@@ -1082,7 +1082,7 @@ public class InterstitialVideoActivity extends AppCompatActivity {
 ## 6. 비즈보드
 
 > KaKao Adfit 비즈보드 연동을 위한 가이드입니다.  
-> **문의**: nap_adx@nasmedia.co.kr
+> **문의**: nap_mx@nasmedia.co.kr
 
 ### 비즈보드 지면 정책
 
@@ -1116,5 +1116,5 @@ public class InterstitialVideoActivity extends AppCompatActivity {
 
 ## 문의
 
-- **이메일**: nap_adx@nasmedia.co.kr
+- **이메일**: nap_mx@nasmedia.co.kr
 - **파트너 사이트**: nap ssp 파트너 사이트

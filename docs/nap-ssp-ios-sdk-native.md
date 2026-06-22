@@ -1,7 +1,7 @@
 # nap ssp iOS SDK - Native 연동 가이드
 
-> **출처**: [nasmob.atlassian.net](https://nasmob.atlassian.net/wiki/spaces/ASIG/pages/744620513/iOS+SDK+-+Native)  
-> **문의**: nap_adx@nasmedia.co.kr
+> **출처**: [napmx.github.io](https://napmx.github.io/#/ios/)  
+> **문의**: nap_mx@nasmedia.co.kr
 
 ---
 
@@ -71,7 +71,7 @@
 - nap SSP 파트너 사이트에 가입 후 미디어 등록 및 애드유닛 생성을 완료해야 **media key**와 **adunit id**를 확인할 수 있습니다.
 - media key와 adunit id가 파트너 사이트와 상이할 경우 광고가 원활히 노출되지 않을 수 있습니다.
 
-**별도 key 값이 필요한 네트워크 (발급 문의: nap_adx@nasmedia.co.kr)**
+**별도 key 값이 필요한 네트워크 (발급 문의: nap_mx@nasmedia.co.kr)**
 
 - Google App ID
 - Pangle App ID
@@ -214,7 +214,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 파트너 네트워크별 가이드에 따라 **SKAdNetwork ID** 및 필수 체크 사항을 확인하세요.
 
 - **Google AdManager**: `GADApplicationIdentifier` 추가 (형식: `ca-app-pub-################~##########`)
-  - **Google App ID 발급**: nap ssp 운영팀(nap_adx@nasmedia.co.kr) 문의
+  - **Google App ID 발급**: nap ssp 운영팀(nap_mx@nasmedia.co.kr) 문의
   - [구글 애드매니저 가이드](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/quick-start?hl=ko#update_your_infoplist)
 - [카카오 AdFit 가이드](https://adfit.github.io/adfit-ios-sdk/documentation/adfitsdk/skadnetwork)
 - [모비위드 가이드](https://github.com/mobon/MobWithAD_iOS)
@@ -303,7 +303,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 **Q5. Adfit 상용 광고는 언제 응답되나요?**  
 `[연동 테스트] → [매체 라이브] → [Adfit 매체 심사] → [심사 완료] → [상용 광고 송출]`  
-라이브 후 운영팀(nap_adx@nasmedia.co.kr) 문의 필요.
+라이브 후 운영팀(nap_mx@nasmedia.co.kr) 문의 필요.
 
 ---
 
@@ -867,7 +867,7 @@ extension ViewController: AMMVideoInterstitialDelegate {
 ## 6. 비즈보드
 
 > KaKao Adfit 비즈보드 연동을 위한 가이드입니다.  
-> **문의**: nap_adx@nasmedia.co.kr
+> **문의**: nap_mx@nasmedia.co.kr
 
 ### 비즈보드 지면 정책
 
@@ -901,5 +901,5 @@ extension ViewController: AMMVideoInterstitialDelegate {
 
 ## 문의
 
-- **이메일**: nap_adx@nasmedia.co.kr
+- **이메일**: nap_mx@nasmedia.co.kr
 - **파트너 사이트**: nap ssp 파트너 사이트

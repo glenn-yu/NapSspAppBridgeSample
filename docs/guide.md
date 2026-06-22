@@ -91,8 +91,8 @@ window.onNapSspMessage = function(responseStr) {
 
 더 상세한 SDK 사양이나 최신 버전의 네이티브 연동 가이드는 아래 공식 문서를 참조하세요.
 
-*   **Android SDK 공식 가이드**: [https://nasmob.atlassian.net/wiki/x/HwAPLQ](https://nasmob.atlassian.net/wiki/x/HwAPLQ)
-*   **iOS SDK 공식 가이드**: [https://nasmob.atlassian.net/wiki/x/4QFiL](https://nasmob.atlassian.net/wiki/x/4QFiL)
+*   **Android SDK 공식 가이드**: [https://napmx.github.io/#/android/](https://napmx.github.io/#/android/)
+*   **iOS SDK 공식 가이드**: [https://napmx.github.io/#/ios/](https://napmx.github.io/#/ios/)
 
 ---
 *Nasmedia Technical Support (2026-04-16 Updated)*

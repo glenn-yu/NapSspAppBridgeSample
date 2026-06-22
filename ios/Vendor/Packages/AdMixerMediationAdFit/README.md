@@ -30,4 +30,4 @@ Swift Package Manager를 통해 설치합니다.
 ## 📮 문의하기
 
 + [퍼블리셔 사이트](https://publisher.admixer.co.kr/signin)
-+ nap_adx@nasmedia.co.kr
++ nap_mx@nasmedia.co.kr

@@ -99,4 +99,4 @@ HybridWebViewScreen()
 
 ## 문의
 
-nap_adx@nasmedia.co.kr
+nap_mx@nasmedia.co.kr

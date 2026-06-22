@@ -85,7 +85,7 @@ After the app launches:
 
 ---
 
-NapSsp(Nasmedia AdMixer SSP) SDK v2.0.0을 WebView 하이브리드 방식과 네이티브 방식으로 연동하는 Android/iOS 샘플 앱입니다.
+NapSsp(KT나스미디어 AdMixer SSP) SDK v2.0.0을 WebView 하이브리드 방식과 네이티브 방식으로 연동하는 Android/iOS 샘플 앱입니다.
 
 ## 구조
 
@@ -139,4 +139,4 @@ examples/    - 포맷별 코드 예시
 ## 문의
 
 - 이메일: nap_mx@nasmedia.co.kr
-- 공식 가이드: `docs/nap-ssp-android-sdk-native.md`
+- 공식 가이드: [https://napmx.github.io](https://napmx.github.io)

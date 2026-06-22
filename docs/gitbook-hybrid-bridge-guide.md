@@ -1528,4 +1528,4 @@ export JAVA_HOME=/path/to/jdk17
 
 ## 문의
 
-이메일: nap_adx@nasmedia.co.kr
+이메일: nap_mx@nasmedia.co.kr
