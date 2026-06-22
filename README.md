@@ -12,7 +12,7 @@ The shortest path to “app opens, keys are configured, ads load.”
 
 ## 0) What you need
 - Git
-- Android: JDK 17 + Android Studio or just the Gradle wrapper
+- Android: JDK 17+ (JDK 21 recommended) + Android Studio or just the Gradle wrapper
 - iOS: macOS + Xcode 15.3+
 - Optional: real `MEDIA_KEY` / `AD_UNIT_ID` values
 
@@ -70,7 +70,7 @@ After the app launches:
 3. Try **Banner**, **Native**, **Rewarded**, then **Interstitial**.
 
 ## 4) Troubleshooting
-- `Unable to locate a Java Runtime` → install JDK 17 and set `JAVA_HOME`.
+- `Unable to locate a Java Runtime` → install JDK 17 or higher (such as Android Studio's bundled JDK) and set `JAVA_HOME`.
 - `./gradlew: not found` or a missing wrapper error → run commands from `android/`, not repo root.
 - `xcodebuild: command not found` → install Xcode and accept the license.
 - Ads do not load → confirm the `MEDIA_KEY` / `AD_UNIT_ID` values and that the vendor SDK path is enabled when needed.
@@ -85,7 +85,7 @@ After the app launches:
 
 ---
 
-NapSsp(Nasmedia AdMixer SSP) SDK를 WebView 하이브리드 방식과 네이티브 방식으로 연동하는 Android/iOS 샘플 앱입니다.
+NapSsp(Nasmedia AdMixer SSP) SDK v2.0.0을 WebView 하이브리드 방식과 네이티브 방식으로 연동하는 Android/iOS 샘플 앱입니다.
 
 ## 구조
 
@@ -123,7 +123,7 @@ examples/    - 포맷별 코드 예시
 
 ## 핵심 포인트
 
-- SDK 초기화: `AdMixer.getInstance().initialize(...)` / iOS `AMMediation.shared.initialize(...)`
+- SDK 초기화: `AdMixer.getInstance().initialize(...)` (Android v2부터는 registerAdapter() 호출 불필요) / iOS `AMMediation.shared.initialize(...)`
 - 포맷별 호출: banner / native / rewarded / interstitial / video
 - 이벤트 수신: loaded / displayed / clicked / rewarded / closed 콜백을 웹 또는 UI로 전달
 - iOS 샘플은 현재 `ios/Vendor/` 아래의 로컬 xcframework를 사용해 재현 빌드를 우선합니다.
@@ -138,5 +138,5 @@ examples/    - 포맷별 코드 예시
 
 ## 문의
 
-- 이메일: nap_adx@nasmedia.co.kr
+- 이메일: nap_mx@nasmedia.co.kr
 - 공식 가이드: `docs/nap-ssp-android-sdk-native.md`
