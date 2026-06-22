@@ -5,6 +5,8 @@
 ## [0.2.0] - 2026-06-22
 
 ### Added
+- Hybrid WebView bridge now supports an optional `requestId`: it is echoed on the matching response and on the SDK lifecycle events that follow a `loadAd`, so the web layer can correlate async loaded/clicked/closed events with their request (Android + iOS, with HTML samples and docs).
+- Explicit `busy` response (carrying the `requestId`) when a request is dropped by the 500ms throttle, instead of being silently ignored.
 - Beginner quickstart with exact macOS, Linux, and Windows commands plus troubleshooting.
 - Git LFS migration plan for `ios/Vendor/`.
 - Release notes draft for the next tag.
@@ -23,6 +25,9 @@
 ### Fixed
 - Android and iOS sample wiring now covers rewarded and interstitial flows end to end.
 - The iOS build story remains reproducible through the vendored local binary targets in `ios/Vendor/`.
+
+### Removed
+- Internal build/debug artifacts (`android/artifacts/`, smoke report, build logs) and dangling internal-only documentation references, for the public release.
 
 ### Notes
 - Android still requires a valid JDK 17 locally; this repo does not bundle a Java runtime.
