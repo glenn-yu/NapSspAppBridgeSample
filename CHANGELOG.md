@@ -8,7 +8,10 @@
 - Release notes draft for the next tag.
 
 ### Changed
-- Android CI now sets up JDK 17 with Gradle caching and runs from the real `android/` working directory.
+- Upgraded AdMixer SDK dependencies to version 2.0.0 (replacing legacy classes with new `AMM*` classes).
+- Refactored Android reflection bridges to concrete type-safe calls to support v2.0.0 SDK's abstract AdListener class.
+- Updated native ad layout XML view IDs to use the `nap_mx_` prefix.
+- Android CI now sets up JDK 21/17 with Gradle caching and runs from the real `android/` working directory.
 - iOS CI now caches Xcode/SwiftPM build products and writes derived data into a predictable path.
 - Docs now point new contributors to the shorter quickstart and the new vendor/release notes pages.
 

@@ -20,9 +20,9 @@ android {
     namespace = "com.gwangy.nassspandroidsample"
     compileSdk = 35
 
-    // [최종 해결] JVM Toolchain을 사용하여 전체 컴파일 환경을 17로 강제 고정
+    // [최종 해결] JVM Toolchain을 사용하여 전체 컴파일 환경을 21로 설정
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
 
     compileOptions {
@@ -67,21 +67,21 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation(platform("androidx.compose:compose-bom:2026.04.01"))
-    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation(platform("androidx.compose:compose-bom:2024.10.00"))
+    implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    implementation("io.github.nasmedia-tech:admixer-ssp:1.0.23")
-    implementation("com.google.android.gms:play-services-ads-identifier:18.9.0")
+    implementation("io.github.nasmedia-tech:admixer-ssp:2.0.0")
+    implementation("com.google.android.gms:play-services-ads-identifier:18.2.0")
 
     // Mediation
-    implementation("io.github.nasmedia-tech:admixer-admanager:1.0.14")
-    implementation("io.github.nasmedia-tech:admixer-adfit:1.0.10")
-    implementation("io.github.nasmedia-tech:admixer-pangle:1.0.10")
-    implementation("com.pangle.global:pag-sdk:8.0.0.4")
-    implementation("io.github.nasmedia-tech:admixer-applovin:1.0.8")
-    implementation("io.github.nasmedia-tech:admixer-unity:1.0.6")
+    implementation("io.github.nasmedia-tech:admixer-admanager:2.0.0")
+    implementation("io.github.nasmedia-tech:admixer-adfit:2.0.0")
+    implementation("io.github.nasmedia-tech:admixer-pangle:2.0.0")
+    implementation("com.pangle.global:pag-sdk:8.0.0.5")
+    implementation("io.github.nasmedia-tech:admixer-applovin:2.0.0")
+    implementation("io.github.nasmedia-tech:admixer-unity:2.0.0")
 }

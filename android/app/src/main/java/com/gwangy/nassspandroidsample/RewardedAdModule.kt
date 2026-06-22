@@ -1,12 +1,19 @@
 package com.gwangy.nassspandroidsample
 
+import android.app.Activity
 import android.content.Context
+import com.nasmedia.admixerssp.ads.AMMRewardVideo
+import com.nasmedia.admixerssp.ads.AMMRewardVideoLoadCallback
+import com.nasmedia.admixerssp.ads.AdError
+import com.nasmedia.admixerssp.ads.AdInfo
+import com.nasmedia.admixerssp.ads.FullScreenContentCallback
+import com.nasmedia.admixerssp.ads.OnUserEarnedRewardListener
 
 class RewardedAdModule(
     private val context: Context,
     private val emitEvent: (eventName: String, payload: Map<String, Any?>) -> Unit = { _, _ -> },
 ) {
-    private var rewardedAd: Any? = null
+    private var rewardedAd: AMMRewardVideo? = null
     private var adUnitId: String? = null
 
     fun create(adUnitId: String): Boolean {
@@ -15,66 +22,94 @@ class RewardedAdModule(
         close()
         this.adUnitId = adUnitId
 
-        return runCatching {
-            val ad = Class.forName("com.nasmedia.admixerssp.ads.RewardInterstitialVideoAd")
-                .getConstructor(Context::class.java)
-                .newInstance(context)
-            val adInfo = VendorSdkBridgeSupport.buildAdInfo(adUnitId)
-            val listener = VendorSdkBridgeSupport.createAdListenerProxy { eventName, payload ->
-                emitEvent(
-                    eventName,
-                    payload + mapOf(
-                        "adUnitId" to adUnitId,
-                        "format" to "rewarded",
-                    ),
-                )
-            }
-
-            VendorSdkBridgeSupport.setAdInfo(ad, adInfo)
-            VendorSdkBridgeSupport.setListener(ad, listener)
-            rewardedAd = ad
-            emitEvent("created", mapOf("adUnitId" to adUnitId, "format" to "rewarded"))
-            true
-        }.getOrElse {
-            emitEvent(
-                "failed",
-                mapOf(
-                    "adUnitId" to adUnitId,
-                    "format" to "rewarded",
-                    "errorMessage" to (it.message ?: "Unable to create rewarded ad"),
-                ),
-            )
-            false
-        }
+        emitEvent("created", mapOf("adUnitId" to adUnitId, "format" to "rewarded"))
+        return true
     }
 
     fun load(): Boolean {
-        val ad = ensureCreated() ?: return false
+        if (!VendorSdkBridgeSupport.isEnabled()) return false
+        val currentAdUnitId = adUnitId ?: return false
+
         return runCatching {
-            VendorSdkBridgeSupport.invokeMethod(ad, "loadRewardVideoAd")
+            val adInfo = AdInfo.Builder(currentAdUnitId)
+                .build()
+
+            AMMRewardVideo.loadAd(context, adInfo, object : AMMRewardVideoLoadCallback() {
+                override fun onSuccessLoadReward(adapterName: String, ad: AMMRewardVideo) {
+                    rewardedAd = ad
+                    emitEvent(
+                        "loaded",
+                        mapOf(
+                            "adUnitId" to currentAdUnitId,
+                            "format" to "rewarded",
+                            "adapterName" to adapterName
+                        )
+                    )
+
+                    ad.setFullScreenContentCallback(object : FullScreenContentCallback() {
+                        override fun onAdShowedFullScreenContent() {
+                            emitEvent("displayed", mapOf("adUnitId" to currentAdUnitId, "format" to "rewarded"))
+                        }
+                        override fun onAdClicked() {
+                            emitEvent("clicked", mapOf("adUnitId" to currentAdUnitId, "format" to "rewarded"))
+                        }
+                        override fun onAdCompleted() {
+                            emitEvent("completed", mapOf("adUnitId" to currentAdUnitId, "format" to "rewarded"))
+                        }
+                        override fun onAdDismissedFullScreenContent() {
+                            emitEvent("closed", mapOf("adUnitId" to currentAdUnitId, "format" to "rewarded"))
+                            close()
+                        }
+                        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                            emitEvent(
+                                "failed",
+                                mapOf(
+                                    "adUnitId" to currentAdUnitId,
+                                    "format" to "rewarded",
+                                    "errorMessage" to "${adError.code} / ${adError.message}"
+                                )
+                            )
+                            close()
+                        }
+                    })
+                }
+
+                override fun onFailLoadReward(errorCode: Int, errorMsg: String?) {
+                    emitEvent(
+                        "failed",
+                        mapOf(
+                            "adUnitId" to currentAdUnitId,
+                            "format" to "rewarded",
+                            "errorMessage" to "[$errorCode] $errorMsg"
+                        )
+                    )
+                    close()
+                }
+            })
+            true
         }.getOrDefault(false)
     }
 
     fun show(): Boolean {
         val ad = rewardedAd ?: return false
+        val activity = context as? Activity ?: return false
         return runCatching {
-            VendorSdkBridgeSupport.invokeMethod(ad, "showRewardVideoAd")
+            ad.show(activity, object : OnUserEarnedRewardListener {
+                override fun onUserEarnedReward() {
+                    emitEvent("rewarded", mapOf("adUnitId" to (adUnitId ?: ""), "format" to "rewarded"))
+                }
+            })
+            true
         }.getOrDefault(false)
     }
 
     fun close(): Boolean {
-        val ad = rewardedAd ?: return false
-        val stopped = runCatching {
-            VendorSdkBridgeSupport.stopAndClear(ad, "stopRewardVideoAd")
-        }.getOrDefault(false)
-        rewardedAd = null
-        return stopped
-    }
-
-    private fun ensureCreated(): Any? {
-        val existing = rewardedAd
-        if (existing != null) return existing
-        val currentAdUnitId = adUnitId ?: return null
-        return if (create(currentAdUnitId)) rewardedAd else null
+        val ad = rewardedAd
+        if (ad != null) {
+            ad.stop()
+            rewardedAd = null
+            return true
+        }
+        return false
     }
 }

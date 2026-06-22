@@ -4,50 +4,50 @@
     android:background="#f7f7f7">
 
     <ImageView
-        android:id="@+id/iv_icon"
+        android:id="@+id/nap_mx_iv_icon"
         android:layout_width="90dp"
         android:layout_height="90dp"
         android:layout_alignParentStart="true"
         android:layout_margin="12dp" />
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/nap_mx_tv_title"
         android:layout_width="match_parent"
         android:layout_height="68dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="19dp"
-        android:layout_toEndOf="@id/iv_icon"
+        android:layout_toEndOf="@id/nap_mx_iv_icon"
         android:textSize="15sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/tv_adv"
+        android:id="@+id/nap_mx_tv_adv"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_below="@id/tv_title"
-        android:layout_toEndOf="@id/iv_icon"
+        android:layout_below="@id/nap_mx_tv_title"
+        android:layout_toEndOf="@id/nap_mx_iv_icon"
         android:textColor="#c7c7c7"
         android:textSize="11sp" />
 
     <TextView
-        android:id="@+id/tv_desc"
+        android:id="@+id/nap_mx_tv_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_icon"
+        android:layout_below="@id/nap_mx_iv_icon"
         android:textColor="#2a2a2a"
         android:textSize="11sp" />
 
     <com.nasmedia.admixerssp.common.nativeads.NativeMainAdView
-        android:id="@+id/iv_main"
+        android:id="@+id/nap_mx_iv_main"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_below="@+id/tv_desc" />
+        android:layout_below="@+id/nap_mx_tv_desc" />
 
     <Button
-        android:id="@+id/btn_cta"
+        android:id="@+id/nap_mx_btn_cta"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_below="@+id/iv_main"
+        android:layout_below="@+id/nap_mx_iv_main"
         android:background="#2a2a2a"
         android:textColor="#ffffff" />
 </RelativeLayout>

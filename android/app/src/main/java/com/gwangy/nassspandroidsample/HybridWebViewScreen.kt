@@ -30,7 +30,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.gwangy.nassspandroidsample.bridge.NapSspConfig
 import com.gwangy.nassspandroidsample.bridge.NapSspSdkIntegration
-import com.nasmedia.admixerssp.ads.AdView
+import com.nasmedia.admixerssp.ads.AMMBannerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -263,7 +263,7 @@ fun HybridWebViewScreen(
                                     FrameLayout.LayoutParams.MATCH_PARENT
                                 )
                                 addView(adView)
-                                if (adView is AdView) adView.onResume()
+                                if (adView is AMMBannerView) adView.onResume()
                                 adView.requestLayout()
                             }
                         }

@@ -1,128 +1,102 @@
 package com.gwangy.nassspandroidsample
 
-import java.lang.reflect.Method
-import java.lang.reflect.Proxy
+import com.nasmedia.admixerssp.ads.*
 
 internal object VendorSdkBridgeSupport {
     fun isEnabled(): Boolean = BuildConfig.VENDOR_SDK_ENABLED
 
     fun buildAdInfo(adUnitId: String, interstitialType: String? = null): Any {
-        val builderClass = Class.forName("com.nasmedia.admixerssp.ads.AdInfo\$Builder")
-        val builder = builderClass.getConstructor(String::class.java).newInstance(adUnitId)
-
-        invokeIfPresent(builder, "setIsUseMediation", true)
-
-        if (interstitialType != null) {
-            val typeClass = Class.forName("com.nasmedia.admixerssp.ads.AdInfo\$InterstitialAdType")
-            val enumValue = enumValueOf(typeClass, interstitialType)
-            invokeIfPresent(builder, "interstitialAdType", enumValue)
-        }
-
-        return invoke(builder, "build") ?: error("Unable to build AdInfo")
+        return AdInfo.Builder(adUnitId)
+            .build()
     }
 
     fun createAdListenerProxy(onEvent: (eventName: String, payload: Map<String, Any?>) -> Unit): Any {
-        val listenerClass = Class.forName("com.nasmedia.admixerssp.ads.AdListener")
-        return Proxy.newProxyInstance(
-            listenerClass.classLoader,
-            arrayOf(listenerClass),
-        ) { _, method, args ->
-            when (method.name) {
-                "onReceivedAd" -> {
-                    onEvent("loaded", mapOf())
-                    null
-                }
-                "onFailedToReceiveAd" -> {
-                    val errorCode = args?.getOrNull(2) as? Int
-                    val errorMsg = args?.getOrNull(3)?.toString().orEmpty()
-                    onEvent(
-                        "failed",
-                        mapOf(
-                            "errorCode" to errorCode,
-                            "errorMessage" to errorMsg,
-                        ),
+        return object : AdListener() {
+            override fun onReceivedAd(adapterName: String, adView: Any) {
+                onEvent("loaded", mapOf("adapterName" to adapterName))
+            }
+
+            override fun onFailedToReceiveAd(adView: Any?, adapterName: String, errorCode: Int, errorMsg: String?) {
+                onEvent(
+                    "failed",
+                    mapOf(
+                        "errorCode" to errorCode,
+                        "errorMessage" to (errorMsg ?: ""),
+                        "adapterName" to adapterName
                     )
-                    null
-                }
-                "onEventAd" -> {
-                    val eventName = args?.getOrNull(1)?.toString().orEmpty()
-                    val mappedEvent = when (eventName.uppercase()) {
-                        "DISPLAYED" -> "displayed"
-                        "CLICK" -> "clicked"
-                        "CLOSE" -> "closed"
-                        "EARNEDREWARD" -> "rewarded"
-                        "COMPLETION" -> "completed"
-                        "SKIPPED" -> "skipped"
-                        else -> eventName.lowercase()
-                    }
-                    onEvent(mappedEvent, mapOf("rawEvent" to eventName))
-                    null
-                }
-                else -> defaultReturn(method)
+                )
+            }
+
+            override fun onAdDisplayed() {
+                onEvent("displayed", mapOf())
+            }
+
+            override fun onAdClicked() {
+                onEvent("clicked", mapOf())
             }
         }
     }
 
-    fun setListener(target: Any, listener: Any): Boolean =
-        invokeIfPresent(target, "setAdViewListener", listener) ||
-            invokeIfPresent(target, "setAdListener", listener) ||
-            invokeIfPresent(target, "setListener", listener)
+    fun setListener(target: Any, listener: Any): Boolean {
+        val adListener = listener as? AdListener ?: return false
+        return when (target) {
+            is AMMBannerView -> { target.setAdViewListener(adListener); true }
+            is AMMNativeAdView -> { target.setAdViewListener(adListener); true }
+            is AMMVideoView -> { target.setAdViewListener(adListener); true }
+            else -> false
+        }
+    }
 
-    fun setAdInfo(target: Any, adInfo: Any): Boolean = invokeIfPresent(target, "setAdInfo", adInfo)
+    fun setAdInfo(target: Any, adInfo: Any): Boolean {
+        val info = adInfo as? AdInfo ?: return false
+        return when (target) {
+            is AMMBannerView -> { target.setAdInfo(info); true }
+            is AMMNativeAdView -> { target.setAdInfo(info); true }
+            is AMMVideoView -> { target.setAdInfo(info); true }
+            else -> false
+        }
+    }
 
     fun invokeMethod(target: Any, vararg methodNames: String): Boolean {
         methodNames.forEach { methodName ->
-            if (invokeIfPresent(target, methodName)) return true
+            when (methodName) {
+                "loadAd" -> {
+                    when (target) {
+                        is AMMBannerView -> { target.loadAd(); return true }
+                        is AMMVideoView -> { target.loadAd(); return true }
+                    }
+                }
+                "loadNativeAd" -> {
+                    if (target is AMMNativeAdView) { target.loadNativeAd(); return true }
+                }
+            }
         }
         return false
     }
 
     fun stopAndClear(target: Any, vararg methodNames: String): Boolean {
-        val stopped = invokeMethod(target, *methodNames)
+        var stopped = false
+        methodNames.forEach { methodName ->
+            when (methodName) {
+                "stop" -> {
+                    when (target) {
+                        is AMMBannerView -> { target.stop(); stopped = true }
+                        is AMMNativeAdView -> { target.stop(); stopped = true }
+                        is AMMVideoView -> { target.stop(); stopped = true }
+                        is AMMInterstitial -> { target.stop(); stopped = true }
+                        is AMMVideoInterstitial -> { target.stop(); stopped = true }
+                        is AMMRewardVideo -> { target.stop(); stopped = true }
+                    }
+                }
+            }
+        }
         runCatching {
-            invokeIfPresent(target, "setListener", null)
-            invokeIfPresent(target, "setAdListener", null)
-            invokeIfPresent(target, "setAdViewListener", null)
+            when (target) {
+                is AMMBannerView -> target.setAdViewListener(null)
+                is AMMNativeAdView -> target.setAdViewListener(null)
+                is AMMVideoView -> target.setAdViewListener(null)
+            }
         }
         return stopped
-    }
-
-    private fun enumValueOf(enumClass: Class<*>, enumName: String): Any {
-        @Suppress("UNCHECKED_CAST")
-        val clazz = enumClass as Class<out Enum<*>>
-        return java.lang.Enum.valueOf(clazz, enumName)
-    }
-
-    private fun invokeIfPresent(target: Any, methodName: String, vararg args: Any?): Boolean =
-        runCatching {
-            invoke(target, methodName, *args)
-            true
-        }.getOrDefault(false)
-
-    private fun invoke(target: Any, methodName: String, vararg args: Any?): Any? {
-        val methods = target.javaClass.methods.filter { it.name == methodName && it.parameterTypes.size == args.size }
-        val method = methods.firstOrNull { candidate ->
-            candidate.parameterTypes.zip(args).all { (paramType, arg) ->
-                arg == null || paramType.isAssignableFrom(arg.javaClass) || isPrimitiveMatch(paramType, arg.javaClass)
-            }
-        } ?: error("Method $methodName not found on ${target.javaClass.name}")
-        return method.invoke(target, *args)
-    }
-
-    private fun isPrimitiveMatch(paramType: Class<*>, argType: Class<*>): Boolean =
-        (paramType == java.lang.Integer.TYPE && argType == Int::class.javaObjectType) ||
-            (paramType == java.lang.Boolean.TYPE && argType == Boolean::class.javaObjectType) ||
-            (paramType == java.lang.Long.TYPE && argType == Long::class.javaObjectType) ||
-            (paramType == java.lang.Float.TYPE && argType == Float::class.javaObjectType) ||
-            (paramType == java.lang.Double.TYPE && argType == Double::class.javaObjectType)
-
-    private fun defaultReturn(method: Method): Any? = when (method.returnType) {
-        java.lang.Boolean.TYPE -> false
-        java.lang.Integer.TYPE -> 0
-        java.lang.Long.TYPE -> 0L
-        java.lang.Float.TYPE -> 0f
-        java.lang.Double.TYPE -> 0.0
-        java.lang.Void.TYPE -> null
-        else -> null
     }
 }

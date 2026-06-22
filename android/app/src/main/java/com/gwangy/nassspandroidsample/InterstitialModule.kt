@@ -1,12 +1,18 @@
 package com.gwangy.nassspandroidsample
 
+import android.app.Activity
 import android.content.Context
+import com.nasmedia.admixerssp.ads.AMMInterstitial
+import com.nasmedia.admixerssp.ads.AMMInterstitialLoadCallback
+import com.nasmedia.admixerssp.ads.AdError
+import com.nasmedia.admixerssp.ads.AdInfo
+import com.nasmedia.admixerssp.ads.FullScreenContentCallback
 
 class InterstitialModule(
     private val context: Context,
     private val emitEvent: (eventName: String, payload: Map<String, Any?>) -> Unit = { _, _ -> },
 ) {
-    private var interstitialAd: Any? = null
+    private var interstitialAd: AMMInterstitial? = null
     private var adUnitId: String? = null
 
     fun create(adUnitId: String): Boolean {
@@ -15,69 +21,87 @@ class InterstitialModule(
         close()
         this.adUnitId = adUnitId
 
-        return runCatching {
-            val ad = Class.forName("com.nasmedia.admixerssp.ads.InterstitialAd")
-                .getConstructor(Context::class.java)
-                .newInstance(context)
-            val adInfo = VendorSdkBridgeSupport.buildAdInfo(
-                adUnitId = adUnitId,
-                interstitialType = "Basic",
-            )
-            val listener = VendorSdkBridgeSupport.createAdListenerProxy { eventName, payload ->
-                emitEvent(
-                    eventName,
-                    payload + mapOf(
-                        "adUnitId" to adUnitId,
-                        "format" to "interstitial",
-                    ),
-                )
-            }
-
-            VendorSdkBridgeSupport.setAdInfo(ad, adInfo)
-            VendorSdkBridgeSupport.setListener(ad, listener)
-            interstitialAd = ad
-            emitEvent("created", mapOf("adUnitId" to adUnitId, "format" to "interstitial"))
-            true
-        }.getOrElse {
-            emitEvent(
-                "failed",
-                mapOf(
-                    "adUnitId" to adUnitId,
-                    "format" to "interstitial",
-                    "errorMessage" to (it.message ?: "Unable to create interstitial ad"),
-                ),
-            )
-            false
-        }
+        emitEvent("created", mapOf("adUnitId" to adUnitId, "format" to "interstitial"))
+        return true
     }
 
     fun load(): Boolean {
-        val ad = ensureCreated() ?: return false
+        if (!VendorSdkBridgeSupport.isEnabled()) return false
+        val currentAdUnitId = adUnitId ?: return false
+
         return runCatching {
-            VendorSdkBridgeSupport.invokeMethod(ad, "loadInterstitial", "startInterstitial")
+            val adInfo = AdInfo.Builder(currentAdUnitId)
+                .build()
+
+            AMMInterstitial.loadAd(context, adInfo, object : AMMInterstitialLoadCallback() {
+                override fun onSuccessLoadInterstitial(adapterName: String, ad: AMMInterstitial) {
+                    interstitialAd = ad
+                    emitEvent(
+                        "loaded",
+                        mapOf(
+                            "adUnitId" to currentAdUnitId,
+                            "format" to "interstitial",
+                            "adapterName" to adapterName
+                        )
+                    )
+
+                    ad.setFullScreenContentCallback(object : FullScreenContentCallback() {
+                        override fun onAdShowedFullScreenContent() {
+                            emitEvent("displayed", mapOf("adUnitId" to currentAdUnitId, "format" to "interstitial"))
+                        }
+                        override fun onAdClicked() {
+                            emitEvent("clicked", mapOf("adUnitId" to currentAdUnitId, "format" to "interstitial"))
+                        }
+                        override fun onAdDismissedFullScreenContent() {
+                            emitEvent("closed", mapOf("adUnitId" to currentAdUnitId, "format" to "interstitial"))
+                            close()
+                        }
+                        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                            emitEvent(
+                                "failed",
+                                mapOf(
+                                    "adUnitId" to currentAdUnitId,
+                                    "format" to "interstitial",
+                                    "errorMessage" to "${adError.code} / ${adError.message}"
+                                )
+                            )
+                            close()
+                        }
+                    })
+                }
+
+                override fun onFailLoadInterstitial(errorCode: Int, errorMsg: String?) {
+                    emitEvent(
+                        "failed",
+                        mapOf(
+                            "adUnitId" to currentAdUnitId,
+                            "format" to "interstitial",
+                            "errorMessage" to "[$errorCode] $errorMsg"
+                        )
+                    )
+                    close()
+                }
+            })
+            true
         }.getOrDefault(false)
     }
 
     fun show(): Boolean {
         val ad = interstitialAd ?: return false
+        val activity = context as? Activity ?: return false
         return runCatching {
-            VendorSdkBridgeSupport.invokeMethod(ad, "showInterstitial")
+            ad.showAd(activity)
+            true
         }.getOrDefault(false)
     }
 
     fun close(): Boolean {
-        val ad = interstitialAd ?: return false
-        val stopped = runCatching {
-            VendorSdkBridgeSupport.stopAndClear(ad, "stopInterstitial")
-        }.getOrDefault(false)
-        interstitialAd = null
-        return stopped
-    }
-
-    private fun ensureCreated(): Any? {
-        val existing = interstitialAd
-        if (existing != null) return existing
-        val currentAdUnitId = adUnitId ?: return null
-        return if (create(currentAdUnitId)) interstitialAd else null
+        val ad = interstitialAd
+        if (ad != null) {
+            ad.stop()
+            interstitialAd = null
+            return true
+        }
+        return false
     }
 }
