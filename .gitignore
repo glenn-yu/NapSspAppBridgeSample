@@ -43,3 +43,10 @@ skills/
 # Testing & Script Directories
 scripts/
 maestro/
+
+# Build/debug artifacts (do not track in the public sample)
+**/artifacts/
+*-smoke-report.txt
+build_check.bat
+build_result.txt
+*_result.txt
