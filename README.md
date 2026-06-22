@@ -76,11 +76,6 @@ examples/    - Format-specific code snippets
 | `docs/guide.md` | Integration flow and detailed examples |
 | `docs/hybrid-webview.md` | WebView ↔ Native bridge JSON specifications |
 | `docs/public-hybrid-bridge-guide.md` | Public bridge integration guide for publishers |
-| `docs/internal-bridge-developer-guide.md` | Bridge implementation, validation, and ops guide |
-| `docs/bridge-validation-report.md` | Build and Maestro bridge validation reports |
-| `docs/ios-xcframeworks.md` | iOS xcframework management & Git LFS summary |
-| `docs/ios-vendor-lfs-migration-plan.md` | Migration plan for `ios/Vendor/` Git LFS |
-| `docs/release-notes-draft.md` | Draft notes for the upcoming release |
 | `docs/nap-ssp-android-sdk-native.md` | Android official Native SDK integration guide |
 | `docs/nap-ssp-ios-sdk-native.md` | iOS official Native SDK integration guide |
 
@@ -175,11 +170,6 @@ examples/    - 광고 포맷별 소스 코드 예시
 | `docs/guide.md` | 상세 통합 가이드 및 연동 예시 |
 | `docs/hybrid-webview.md` | WebView ↔ Native 브릿지 JSON 명세 |
 | `docs/public-hybrid-bridge-guide.md` | 퍼블리셔용 WebView ↔ Native 브릿지 공개 규격 가이드 |
-| `docs/internal-bridge-developer-guide.md` | 내부 개발자용 브릿지 구현, 검증, 운영 문서 |
-| `docs/bridge-validation-report.md` | Android/iOS 빌드 및 Maestro 시나리오 검증 결과 |
-| `docs/ios-xcframeworks.md` | iOS xcframework 관리 및 Git LFS 요약 |
-| `docs/ios-vendor-lfs-migration-plan.md` | `ios/Vendor/` LFS 마이그레이션 계획 |
-| `docs/release-notes-draft.md` | 차기 릴리즈 노트 초안 |
 | `docs/nap-ssp-android-sdk-native.md` | Android 공식 Native SDK 연동 가이드 |
 | `docs/nap-ssp-ios-sdk-native.md` | iOS 공식 Native SDK 연동 가이드 |
 

@@ -17,12 +17,10 @@ This directory contains all the information needed to integrate the **Nap SSP SD
 6. **`hybrid-webview.md`** — Web-Native bridge JSON schema specification
 7. **`hybrid-bridge-advanced.md`** — Advanced integration and troubleshooting guides
 8. **Platform Guides** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
-9. **Internal/Ops Docs** — `internal-bridge-developer-guide.md`, `bridge-validation-report.md`, `release-notes-draft.md`
 
 ### Document Scopes & Recipients
 - **External Publishers**: `publisher-minimal-integration.md` + Native SDK guide for each platform.
 - **Hybrid WebView Publishers**: `public-hybrid-bridge-guide.md` + `publisher-minimal-integration.md`.
-- **Internal Developers & QA**: `internal-bridge-developer-guide.md` + `bridge-validation-report.md` + sample app repository.
 - **PoC & Technical Reviews**: Full repository + `quickstart.md`.
 
 ### Build Prerequisites
@@ -34,7 +32,7 @@ This directory contains all the information needed to integrate the **Nap SSP SD
 - **No Ads Loading**: Verify that the `MediaKey` and `AdUnitID` in `Configure Keys` are active.
 - **No Click Events Received**: Ensure that `AdListener` (Android) or `Delegate` (iOS) is set on the ad view object.
 - **Build Compilation Failure**: Check JDK, Xcode, SDK version mappings and dependency targets first.
-- **SPM / Gradle Dependency Issues**: Refer to `docs/mediation.md` and the official platform guides.
+- **SPM / Gradle Dependency Issues**: Refer to the official platform guides.
 
 ---
 
@@ -51,12 +49,10 @@ This directory contains all the information needed to integrate the **Nap SSP SD
 6. **`hybrid-webview.md`** — 웹-네이티브 브릿지 JSON 규격
 7. **`hybrid-bridge-advanced.md`** — 고급 연동 및 트러블슈팅 가이드
 8. **플랫폼 공식 가이드** — `nap-ssp-android-sdk-native.md`, `nap-ssp-ios-sdk-native.md`
-9. **내부/운영 문서** — `internal-bridge-developer-guide.md`, `bridge-validation-report.md`, `release-notes-draft.md`
 
 ### 문서 전달 기준
 - **일반 매체사**: `publisher-minimal-integration.md` + 플랫폼별 Native SDK 가이드
 - **Hybrid WebView 매체사**: `public-hybrid-bridge-guide.md` + `publisher-minimal-integration.md`
-- **내부 개발/QA**: `internal-bridge-developer-guide.md` + `bridge-validation-report.md` + 샘플앱 전체
 - **PoC/레퍼런스 검토**: 저장소 전체와 `quickstart.md`
 
 ### 빌드 전 확인
@@ -68,4 +64,4 @@ This directory contains all the information needed to integrate the **Nap SSP SD
 - **광고가 안 나와요**: `Configure Keys`의 MediaKey와 AdUnitID가 실제 발급값인지 확인하세요.
 - **클릭 이벤트가 안 와요**: 광고 뷰에 `AdListener`(Android) 또는 `Delegate`(iOS)가 설정되었는지 확인하세요.
 - **빌드 에러**: JDK, Xcode, SDK 버전과 의존성 설정을 먼저 확인하세요.
-- **SPM / Gradle 의존성 오류**: `docs/mediation.md`와 플랫폼별 공식 가이드를 함께 확인하세요.
+- **SPM / Gradle 의존성 오류**: 플랫폼별 공식 가이드를 확인하세요.
