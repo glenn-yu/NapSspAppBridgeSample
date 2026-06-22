@@ -39,3 +39,7 @@ tmp/
 .claude/
 skills/
 .agents/
+
+# Testing & Script Directories
+scripts/
+maestro/
