@@ -2,10 +2,14 @@
 
 ## Unreleased
 
+## [0.2.0] - 2026-06-22
+
 ### Added
 - Beginner quickstart with exact macOS, Linux, and Windows commands plus troubleshooting.
 - Git LFS migration plan for `ios/Vendor/`.
 - Release notes draft for the next tag.
+- Added MIT LICENSE file and expanded `.gitignore` patterns.
+- Bilingual (English/Korean) support for main documentation files (README, guide, quickstart).
 
 ### Changed
 - Upgraded AdMixer SDK dependencies to version 2.0.0 (replacing legacy classes with new `AMM*` classes).
@@ -14,6 +18,7 @@
 - Android CI now sets up JDK 21/17 with Gradle caching and runs from the real `android/` working directory.
 - iOS CI now caches Xcode/SwiftPM build products and writes derived data into a predictable path.
 - Docs now point new contributors to the shorter quickstart and the new vendor/release notes pages.
+- Updated all guide links to point to the new official guide website (https://napmx.github.io).
 
 ### Fixed
 - Android and iOS sample wiring now covers rewarded and interstitial flows end to end.
