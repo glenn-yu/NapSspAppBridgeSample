@@ -95,7 +95,7 @@ HybridWebViewScreen()
 
 ## 자세한 연동 가이드
 
-`docs/gitbook-hybrid-bridge-guide.md`를 참고하세요.
+`docs/public-hybrid-bridge-guide.md`를 참고하세요.
 
 ## 문의
 

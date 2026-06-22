@@ -8,7 +8,7 @@
 
 This guide isolates the **minimum required files and configuration settings** needed for integration into publisher applications, removing dependencies on sample UI and debugging resources.
 
-Since the full sample application includes demo workflows, automation suites, configuration panels, and complex layouts, it is significantly larger than what is needed for production. Use this guide to package only the necessary resources for your integration.
+Since the full sample application includes demo workflows, configuration panels, and complex layouts, it is significantly larger than what is needed for production. Use this guide to package only the necessary resources for your integration.
 
 ### 1. Requirements Assessment
 
@@ -204,9 +204,9 @@ The following files are only used for demo testing and should be excluded from y
 * **iOS**: `HybridWebViewScreen.swift` + `Bridge/*` + XIB.
 * **Web**: Bridge request/response specifications (or sample `index.html`).
 
-#### Option C: Internal Development / QA
-* **Docs**: `docs/internal-bridge-developer-guide.md`, `docs/bridge-validation-report.md`, `docs/mediation.md`
-* Include this bundle only when testing full automation pipelines or mediation setup locally.
+#### Option C: Full Sample (PoC / Technical Review)
+* **Docs**: The entire `docs/` set + `quickstart.md`
+* Deliver the full repository when reviewers need to run the interactive demo app end-to-end.
 
 ---
 
@@ -226,7 +226,7 @@ The following files are only used for demo testing and should be excluded from y
 To lower the entry barrier for publishers, avoid sending the full repository immediately.
 1. Provide **Option A** (with this minimal guide) for native implementations.
 2. Provide **Option B** (with the public bridge guide) for hybrid layouts.
-3. Keep the full repository and internal docs for **Option C** (internal QA/Dev).
+3. Provide the **full repository** (Option C) for PoC and technical reviews.
 
 ---
 
@@ -234,7 +234,7 @@ To lower the entry barrier for publishers, avoid sending the full repository imm
 
 이 문서는 샘플 앱 전체가 아니라 **일반 매체 앱에 실제로 필요한 최소 파일과 설정**만 분리해서 전달하기 위한 가이드입니다.
 
-샘플 앱은 데모 화면, 테스트 자동화, 키 입력 UI, 하이브리드 WebView 예제까지 포함하므로 실제 연동에 필요한 코드보다 큽니다. 매체사에 전달할 때는 아래 항목만 추려서 안내하는 것을 권장합니다.
+샘플 앱은 데모 화면, 키 입력 UI, 하이브리드 WebView 예제까지 포함하므로 실제 연동에 필요한 코드보다 큽니다. 매체사에 전달할 때는 아래 항목만 추려서 안내하는 것을 권장합니다.
 
 ### 1. 먼저 결정할 것
 
@@ -427,9 +427,9 @@ ios/Sources/NapSspIOSSample/index.html   # 샘플용. 실제 앱에서는 매체
 * **iOS**: `HybridWebViewScreen.swift` + `Bridge/*` + 필요한 XIB
 * **JS**: bridge request/response 규격 또는 샘플 index.html
 
-#### C안. 내부 유지보수/QA용
-* **전달 문서**: `docs/internal-bridge-developer-guide.md`, `docs/bridge-validation-report.md`, `docs/mediation.md`
-* 샘플앱 전체 구조와 테스트 자동화까지 필요할 때만 이 묶음을 사용합니다.
+#### C안. 전체 샘플 (PoC/기술 검토용)
+* **전달 문서**: `docs/` 문서 전체 + `quickstart.md`
+* 데모 앱을 직접 실행해보는 PoC/레퍼런스 검토가 필요할 때 저장소 전체를 전달합니다.
 
 ---
 
@@ -452,4 +452,4 @@ ios/Sources/NapSspIOSSample/index.html   # 샘플용. 실제 앱에서는 매체
 권장 방식은 다음과 같습니다.
 1. **일반 매체사**에는 이 최소 연동 가이드와 필요한 파일 목록만 전달합니다.
 2. **Hybrid WebView 매체사**에는 공개 브릿지 가이드를 함께 전달합니다.
-3. **내부 개발/QA**에는 전체 샘플앱과 내부 개발자 가이드를 전달합니다.
+3. **PoC/기술 검토**에는 전체 샘플앱과 문서를 전달합니다.
