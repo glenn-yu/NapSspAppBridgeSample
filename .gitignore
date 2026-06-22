@@ -34,3 +34,8 @@ xcuserdata/
 *_error.txt
 *.log
 tmp/
+
+# Agent & Claude Custom Directories
+.claude/
+skills/
+.agents/
